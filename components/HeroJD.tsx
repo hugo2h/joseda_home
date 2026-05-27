@@ -55,9 +55,23 @@ export default function HeroJD({
 
       // ── Entrance animation ────────────────────────────────────────────────
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-      tl.from(labelRef.current, { y: 20, opacity: 0, duration: 0.8, delay: 0.4 })
-        .from([line1Ref.current, line2Ref.current], { y: '110%', duration: 1.05, stagger: 0.13 }, '-=0.45')
-        .from(subRef.current,  { y: 18, opacity: 0, duration: 0.9, ease: 'power2.out' }, '-=0.25');
+
+      // Fondo: zoom-out cinematográfico (scale 1.05 → 1, opacity 0 → 1)
+      const bgWrap = sectionRef.current?.querySelector<HTMLElement>('.hero-bg-wrap');
+      if (bgWrap) {
+        tl.from(bgWrap, {
+          scale  : 1.05,
+          opacity: 0,
+          duration: 1.2,
+          ease   : 'power2.out',
+        }, 0);
+      }
+
+      // Texto: secuencia existente, ligeramente retrasada para que el fondo
+      // ya esté visible cuando aparecen las letras
+      tl.from(labelRef.current, { y: 20, opacity: 0, duration: 0.8 }, 0.3)
+        .from([line1Ref.current, line2Ref.current], { y: '110%', duration: 1.05, stagger: 0.13 }, 0.45)
+        .from(subRef.current,  { y: 18, opacity: 0, duration: 0.9, ease: 'power2.out' }, 0.9);
 
       // ── Scroll pin + text parallax ────────────────────────────────────────
       if (sv && innerRef.current) {
@@ -74,7 +88,7 @@ export default function HeroJD({
             pinSpacing   : true,
             pinType      : 'transform',
             anticipatePin: 1,
-            scrub        : 2.5,
+            scrub        : 1.5,   // era 2.5 — más reactivo al inicio del scroll
           },
         }).fromTo(
           textElements,
@@ -180,7 +194,7 @@ export default function HeroJD({
     <section className="hero" id="inicio" ref={sectionRef}>
 
       {/* ── Fondo fotográfico + overlays ── */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden' }}>
+      <div className="hero-bg-wrap" style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden' }}>
         <Image
           src="/images/hero-bg.jpg"
           alt=""

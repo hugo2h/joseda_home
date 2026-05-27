@@ -337,15 +337,29 @@ body {
   min-width: 0.28em;
   user-select: none;
 }
-/* ── Imagen de fondo del Hero — object-position responsive ── */
+/* ── Imagen de fondo del Hero — object-position + máscara de fundido ── */
 .hero-bg-img {
-  object-position: center 30%;   /* desktop: centra el arco azul + silueta JD */
+  object-position: 50% 20%;
+  /* Máscara inferior: la foto se desvanece hacia el fondo oscuro,
+     creando un acabado premium sin corte brusco */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 45%,
+    rgba(0,0,0,0.6) 72%,
+    transparent 96%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    black 45%,
+    rgba(0,0,0,0.6) 72%,
+    transparent 96%
+  );
 }
 @media (max-width: 768px) {
-  .hero-bg-img { object-position: center 22%; }
+  .hero-bg-img { object-position: 50% 18%; }
 }
 @media (max-width: 480px) {
-  .hero-bg-img { object-position: center 18%; }
+  .hero-bg-img { object-position: 50% 15%; }
 }
 
 .reveal-wrap {
@@ -936,13 +950,40 @@ body {
   border-radius: 0 14px 14px 0;
 }
 .ct-photo-img {
-  object-position: center 15%;   /* desktop: cara + torso, espacio arriba */
+  object-position: 50% 20%;
+  /* Máscara izquierda: la foto se funde con la columna de texto,
+     sin overlay adicional, acabado más limpio */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0,0,0,0.5) 12%,
+    black 30%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0,0,0,0.5) 12%,
+    black 30%
+  );
   transition: transform 0.7s ease;
 }
 @media (max-width: 768px) {
-  /* En móvil la foto ocupa todo el ancho (columna apilada),
-     centrar verticalmente para mostrar cara completa */
-  .ct-photo-img { object-position: center top; }
+  /* Columna apilada en móvil: máscara superior en vez de lateral */
+  .ct-photo-img {
+    object-position: 50% 10%;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0,0,0,0.5) 8%,
+      black 22%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0,0,0,0.5) 8%,
+      black 22%
+    );
+  }
 }
 .ct-canvas:hover .ct-photo-img {
   transform: scale(1.04);

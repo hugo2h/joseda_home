@@ -90,7 +90,29 @@ context/
 
 ## HISTORIAL DE CAMBIOS
 
-### 2026-05-27 — Sesión 6 (actual)
+### 2026-05-27 — Sesión 7 (actual)
+
+#### PASO 1 — Integración de assets locales + fundidos CSS premium
+- **Imágenes**: ya usaban `/public/images/` correctamente. No había placeholders.
+- **`object-position`**: actualizado a `50% 20%` en Hero y Contact (responsive: 50% 18% en ≤768px, 50% 15% en ≤480px / Contact móvil: `50% 10%`).
+- **`mask-image` Hero (`.hero-bg-img`)**: fade inferior `black 45% → transparent 96%` para fundir la foto con el fondo oscuro sin corte brusco.
+- **`mask-image` Contact (`.ct-photo-img`)**: fade lateral izquierdo `transparent → black 30%` en desktop; fade superior en móvil (columna apilada).
+- Nota: `-webkit-mask-image` incluido para compatibilidad Safari/iOS.
+
+#### PASO 2 — Optimización de scroll y animación de entrada
+- **`HeroJD.tsx`**: Clase `hero-bg-wrap` añadida al contenedor de imagen para targetearla con GSAP.
+- **Animación de entrada (GSAP)**: `hero-bg-wrap` hace `scale: 1.05 → 1, opacity: 0 → 1, duration: 1.2s, ease: power2.out` en el mismo `gsap.context` (cleanup automático). Texto sigue a continuación con offset temporal.
+- **`scrub: 2.5 → 1.5`**: scroll-driven animation 40% más reactiva al empezar a bajar.
+- **`SmoothScrollProvider.tsx`**: Lenis desktop `duration: 1.2 → 1.0` para mayor inmediatez.
+- `heroScrollBridge.ts` y `lenisControl.ts`: son puentes de ciclo de vida sin config de scroll, no se modifican.
+
+#### Build verificado
+- `npx tsc --noEmit` → 0 errores.
+- `npm run build` → ✓ Compiled successfully.
+
+---
+
+### 2026-05-27 — Sesión 6
 
 #### PASO 1 — Optimización de imágenes responsive (Hero + Contacto)
 - **Problema**: `objectPosition` estaba como inline style → los media-queries CSS no podían sobreescribirlo.

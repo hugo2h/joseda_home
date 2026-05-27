@@ -19,7 +19,7 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
     const CONFIG = {
-      duration    : prefersReduced ? 0 : isMobile ? 0.75 : 1.2,
+      duration    : prefersReduced ? 0 : isMobile ? 0.75 : 1.0,  // era 1.2 — más directo en desktop
       easing      : (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel : !prefersReduced,
     } as const;
