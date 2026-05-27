@@ -1078,11 +1078,12 @@ body {
     height: 100% !important;
     display: flex !important;
     flex-direction: column !important;
-    /* Texto abajo a la izquierda — como el diseño original */
-    justify-content: flex-end !important;
+    /* Centrado vertical igual que en escritorio */
+    justify-content: center !important;
     align-items: flex-start !important;
     text-align: left !important;
-    padding: 0 1.5rem 5rem 1.5rem !important;
+    /* Padding equilibrado, sin padding-bottom masivo */
+    padding: 0 1.5rem !important;
     margin: 0 !important;
   }
   /* Titular: escala fluida entre 2rem (≈320px) y 3.2rem (≈768px) */
