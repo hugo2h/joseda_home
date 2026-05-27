@@ -200,8 +200,8 @@ export default function HeroJD({
       <div
         className="absolute inset-0 w-full h-full pointer-events-none z-0"
         style={{
-          maskImage        : 'linear-gradient(to bottom, black 85%, transparent 100%)',
-          WebkitMaskImage  : 'linear-gradient(to bottom, black 85%, transparent 100%)',
+          maskImage        : 'linear-gradient(to bottom, black 70%, transparent 100%)',
+          WebkitMaskImage  : 'linear-gradient(to bottom, black 70%, transparent 100%)',
         }}
       >
         <Image
@@ -210,7 +210,7 @@ export default function HeroJD({
           fill
           priority={true}
           sizes="(max-width: 768px) 100vw, 100vw"
-          className="object-cover object-center md:object-[50%_20%] saturate-[1.1] brightness-[1.05] hero-bg-img"
+          className="object-cover object-[50%_80%] md:object-[50%_20%] saturate-[1.1] brightness-[1.05] hero-bg-img"
         />
         {/* Overlay oscuro con degradado diagonal — legibilidad premium */}
         <div
