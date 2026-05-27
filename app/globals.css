@@ -338,16 +338,17 @@ body {
   user-select: none;
 }
 /* ── Imagen de fondo del Hero ── */
-/* Sin mask-image: los overlays oscuros del JSX ya gestionan
-   el degradado y la legibilidad. La máscara recortaba la foto. */
 .hero-bg-img {
-  object-position: center 35%;   /* desktop: centra auditorio + silueta JD */
+  object-position: center 40%;   /* desktop: auditorio + silueta JD centrada */
 }
 @media (max-width: 768px) {
-  .hero-bg-img { object-position: center center; }
+  /* En móvil portrait la foto landscape se escala por altura.
+     Bajamos el encuadre para mostrar el escenario (donde está JD)
+     en lugar del techo oscuro del auditorio.                     */
+  .hero-bg-img { object-position: center 60%; }
 }
 @media (max-width: 480px) {
-  .hero-bg-img { object-position: center center; }
+  .hero-bg-img { object-position: center 65%; }
 }
 
 .reveal-wrap {
@@ -931,33 +932,31 @@ body {
 /* Foto de perfil — reemplaza el NeuralCanvas SVG */
 .ct-canvas {
   position: relative;
-  min-height: 500px;
+  min-height: 520px;
   overflow: hidden;
-  /* Fondo oscuro para el espacio vacío que deja objectFit:contain */
-  background: #08080f;
 }
 .ct-photo {
   border-radius: 0 14px 14px 0;
 }
 .ct-photo-img {
-  /* contain: muestra la foto COMPLETA sin recortar nada */
-  object-fit: contain !important;
-  object-position: center center;
+  /* La foto es 1080×1920 (portrait 9:16).
+     objectPosition sube el encuadre para mostrar cara + torso de JD
+     y corta el fondo/suelo, que no aporta información.           */
+  object-position: center 12%;
   transition: transform 0.5s ease;
 }
 .ct-canvas:hover .ct-photo-img {
   transform: scale(1.03);
 }
 @media (max-width: 768px) {
-  .ct-canvas { min-height: 260px; }
-  .ct-photo-img { object-position: center center; }
+  .ct-canvas  { min-height: 300px; }
+  .ct-photo-img { object-position: center 10%; }
 }
 .ct-photo-overlay {
   position: absolute;
   inset: 0;
-  /* Con objectFit:contain la foto no llega a los bordes —
-     solo mantenemos un velo muy sutil para integrar el fondo */
-  background: linear-gradient(to right, rgba(5,5,5,0.35) 0%, transparent 18%);
+  /* Fade lateral izquierdo para que la foto se funda con la columna de texto */
+  background: linear-gradient(to right, rgba(5,5,5,0.55) 0%, transparent 35%);
   pointer-events: none;
 }
 
