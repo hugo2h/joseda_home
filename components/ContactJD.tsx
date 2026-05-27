@@ -92,7 +92,7 @@ export default function ContactJD() {
               alt="José David Pérez Ibáñez dando formación"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              style={{ objectFit: 'cover' }}
+              style={{ objectFit: 'contain' }}
               className="ct-photo-img"
             />
             {/* Overlay izquierdo — funde suavemente con la columna de texto */}

@@ -337,40 +337,17 @@ body {
   min-width: 0.28em;
   user-select: none;
 }
-/* ── Imagen de fondo del Hero — object-position + máscara de fundido ── */
+/* ── Imagen de fondo del Hero ── */
+/* Sin mask-image: los overlays oscuros del JSX ya gestionan
+   el degradado y la legibilidad. La máscara recortaba la foto. */
 .hero-bg-img {
-  object-position: 50% 20%;
-  /* Máscara inferior: la foto se desvanece hacia el fondo oscuro,
-     creando un acabado premium sin corte brusco */
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    black 45%,
-    rgba(0,0,0,0.6) 72%,
-    transparent 96%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    black 45%,
-    rgba(0,0,0,0.6) 72%,
-    transparent 96%
-  );
+  object-position: center 35%;   /* desktop: centra auditorio + silueta JD */
 }
 @media (max-width: 768px) {
-  .hero-bg-img {
-    /* En móvil centramos sobre JD (auditorio + silueta) sin corte */
-    object-position: center center;
-    /* Máscara muy suave — solo el 10% inferior se desvanece,
-       para no cortar la imagen en pantalla pequeña */
-    -webkit-mask-image: linear-gradient(to bottom, black 78%, transparent 100%);
-    mask-image: linear-gradient(to bottom, black 78%, transparent 100%);
-  }
+  .hero-bg-img { object-position: center center; }
 }
 @media (max-width: 480px) {
-  .hero-bg-img {
-    object-position: center center;
-    -webkit-mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
-    mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
-  }
+  .hero-bg-img { object-position: center center; }
 }
 
 .reveal-wrap {
@@ -956,49 +933,31 @@ body {
   position: relative;
   min-height: 500px;
   overflow: hidden;
+  /* Fondo oscuro para el espacio vacío que deja objectFit:contain */
+  background: #08080f;
 }
 .ct-photo {
   border-radius: 0 14px 14px 0;
 }
 .ct-photo-img {
-  object-position: 50% 20%;
-  /* Máscara izquierda: la foto se funde con la columna de texto,
-     sin overlay adicional, acabado más limpio */
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(0,0,0,0.5) 12%,
-    black 30%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(0,0,0,0.5) 12%,
-    black 30%
-  );
-  transition: transform 0.7s ease;
-}
-@media (max-width: 768px) {
-  /* Columna apilada en móvil: sin máscara lateral, centrar en JD */
-  .ct-photo-img {
-    object-position: 50% 15%;
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
+  /* contain: muestra la foto COMPLETA sin recortar nada */
+  object-fit: contain !important;
+  object-position: center center;
+  transition: transform 0.5s ease;
 }
 .ct-canvas:hover .ct-photo-img {
-  transform: scale(1.04);
+  transform: scale(1.03);
+}
+@media (max-width: 768px) {
+  .ct-canvas { min-height: 260px; }
+  .ct-photo-img { object-position: center center; }
 }
 .ct-photo-overlay {
   position: absolute;
   inset: 0;
-  background:
-    /* Darkening global — integra con el tema oscuro */
-    linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
-    /* Fade izquierdo — fusiona con la columna de texto */
-    linear-gradient(to right, rgba(5, 5, 5, 0.68) 0%, transparent 48%),
-    /* Fade inferior — suaviza el borde de la tarjeta */
-    linear-gradient(to top, rgba(5, 5, 5, 0.42) 0%, transparent 28%);
+  /* Con objectFit:contain la foto no llega a los bordes —
+     solo mantenemos un velo muy sutil para integrar el fondo */
+  background: linear-gradient(to right, rgba(5,5,5,0.35) 0%, transparent 18%);
   pointer-events: none;
 }
 
