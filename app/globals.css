@@ -1055,11 +1055,21 @@ body {
   .mq-row { animation-play-state: paused; }
 
   /* ── Hero ── */
-  /* 100dvh = altura dinámica real en móvil (descuenta barra del navegador)
-     evita que el Hero quede más alto que la pantalla visible             */
-  .hero           { height: 100dvh; padding: 5.5rem 5% 5rem; }
-  /* Zona segura interna — el texto nunca toca los bordes del teléfono */
-  .hero-inner     { padding: 0 1.25rem; }
+  /* Altura exacta: viewport dinámico menos los 2 frames del app-shell */
+  .hero {
+    height: calc(100svh - (var(--frame) * 2)) !important;
+    min-height: 100%;
+    padding: 3.5rem 5% 3.5rem !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .hero-inner {
+    padding: 0 1rem;
+    /* Sube ligeramente el texto para compensar visualmente topbar + bottombar */
+    margin-top: -1.5rem;
+  }
   /* Titular: escala fluida entre 2rem (≈320px) y 3.2rem (≈768px) */
   .hero-headline  { font-size: clamp(2rem, 9vw, 3.2rem); line-height: 1.08; }
   .hero-label     { margin-bottom: 1.5rem; font-size: 0.68rem; }

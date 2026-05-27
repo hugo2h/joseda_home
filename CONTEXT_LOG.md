@@ -90,7 +90,18 @@ context/
 
 ## HISTORIAL DE CAMBIOS
 
-### 2026-05-27 — Sesión 7 (actual)
+### 2026-05-27 — Sesión 8 (actual)
+
+#### Fix: centrado y altura exacta del Hero en móvil
+- **Problema**: el Hero se cortaba por abajo y el texto no quedaba centrado verticalmente en móvil porque el padding vertical era excesivo y `100dvh` no descontaba los frames del app-shell.
+- **Fix en `globals.css` (≤768px)**:
+  - `.hero { height: calc(100svh - (var(--frame) * 2)) !important }` — altura exacta descontando los 2 frames del shell (4px × 2).
+  - `padding: 3.5rem 5% 3.5rem !important` — paddings verticales reducidos para que flexbox pueda centrar.
+  - `.hero-inner { margin-top: -1.5rem }` — compensa visualmente la topbar + bottombar.
+
+---
+
+### 2026-05-27 — Sesión 7
 
 #### PASO 1 — Integración de assets locales + fundidos CSS premium
 - **Imágenes**: ya usaban `/public/images/` correctamente. No había placeholders.
