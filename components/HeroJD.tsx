@@ -233,7 +233,7 @@ export default function HeroJD({
       </div>
 
       {/* ── Bloque de texto — z:10 ── */}
-      <div className="hero-inner relative z-10 w-full flex flex-col justify-end h-full pb-16 md:pb-20 px-6" ref={innerRef}>
+      <div className="hero-inner relative z-10 w-full flex flex-col justify-center h-full px-6 md:px-12" ref={innerRef}>
         <p className="hero-label" ref={labelRef}>{label}</p>
 
         <h1
