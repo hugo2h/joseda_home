@@ -356,10 +356,21 @@ body {
   );
 }
 @media (max-width: 768px) {
-  .hero-bg-img { object-position: 50% 18%; }
+  .hero-bg-img {
+    /* En móvil centramos sobre JD (auditorio + silueta) sin corte */
+    object-position: center center;
+    /* Máscara muy suave — solo el 10% inferior se desvanece,
+       para no cortar la imagen en pantalla pequeña */
+    -webkit-mask-image: linear-gradient(to bottom, black 78%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 78%, transparent 100%);
+  }
 }
 @media (max-width: 480px) {
-  .hero-bg-img { object-position: 50% 15%; }
+  .hero-bg-img {
+    object-position: center center;
+    -webkit-mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
+  }
 }
 
 .reveal-wrap {
@@ -968,21 +979,11 @@ body {
   transition: transform 0.7s ease;
 }
 @media (max-width: 768px) {
-  /* Columna apilada en móvil: máscara superior en vez de lateral */
+  /* Columna apilada en móvil: sin máscara lateral, centrar en JD */
   .ct-photo-img {
-    object-position: 50% 10%;
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(0,0,0,0.5) 8%,
-      black 22%
-    );
-    mask-image: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(0,0,0,0.5) 8%,
-      black 22%
-    );
+    object-position: 50% 15%;
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 }
 .ct-canvas:hover .ct-photo-img {
@@ -1096,7 +1097,9 @@ body {
   .mq-row { animation-play-state: paused; }
 
   /* ── Hero ── */
-  .hero           { padding: 5.5rem 5% 5rem; }
+  /* 100dvh = altura dinámica real en móvil (descuenta barra del navegador)
+     evita que el Hero quede más alto que la pantalla visible             */
+  .hero           { height: 100dvh; padding: 5.5rem 5% 5rem; }
   /* Zona segura interna — el texto nunca toca los bordes del teléfono */
   .hero-inner     { padding: 0 1.25rem; }
   /* Titular: escala fluida entre 2rem (≈320px) y 3.2rem (≈768px) */

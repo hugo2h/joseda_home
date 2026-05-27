@@ -49,32 +49,35 @@ export default function HeroJD({
 
   useIsomorphicLayoutEffect(() => {
     if (!sectionRef.current) return;
-    const sv = document.querySelector<HTMLElement>('.scroll-viewport');
+    const sv       = document.querySelector<HTMLElement>('.scroll-viewport');
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
     const ctx = gsap.context(() => {
 
       // ── Entrance animation ────────────────────────────────────────────────
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      // En móvil: duraciones más cortas para no bloquear la interacción
+      const dur = isMobile ? 0.65 : 1.0;
+      const tl  = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
       // Fondo: zoom-out cinematográfico (scale 1.05 → 1, opacity 0 → 1)
       const bgWrap = sectionRef.current?.querySelector<HTMLElement>('.hero-bg-wrap');
       if (bgWrap) {
         tl.from(bgWrap, {
-          scale  : 1.05,
-          opacity: 0,
-          duration: 1.2,
-          ease   : 'power2.out',
+          scale   : 1.05,
+          opacity : 0,
+          duration: isMobile ? 0.7 : 1.2,
+          ease    : 'power2.out',
         }, 0);
       }
 
-      // Texto: secuencia existente, ligeramente retrasada para que el fondo
-      // ya esté visible cuando aparecen las letras
-      tl.from(labelRef.current, { y: 20, opacity: 0, duration: 0.8 }, 0.3)
-        .from([line1Ref.current, line2Ref.current], { y: '110%', duration: 1.05, stagger: 0.13 }, 0.45)
-        .from(subRef.current,  { y: 18, opacity: 0, duration: 0.9, ease: 'power2.out' }, 0.9);
+      tl.from(labelRef.current, { y: 20, opacity: 0, duration: dur * 0.8 }, isMobile ? 0.15 : 0.3)
+        .from([line1Ref.current, line2Ref.current], { y: '110%', duration: dur, stagger: 0.1 }, isMobile ? 0.25 : 0.45)
+        .from(subRef.current,  { y: 18, opacity: 0, duration: dur * 0.9, ease: 'power2.out' }, isMobile ? 0.6 : 0.9);
 
-      // ── Scroll pin + text parallax ────────────────────────────────────────
-      if (sv && innerRef.current) {
+      // ── Scroll pin + text parallax (SOLO DESKTOP) ─────────────────────────
+      // En móvil el pin provoca un "atasco" largo antes de avanzar → se desactiva.
+      // El Hero simplemente scrollea con normalidad en pantallas pequeñas.
+      if (!isMobile && sv && innerRef.current) {
         const wraps        = Array.from(innerRef.current.querySelectorAll('.reveal-wrap'));
         const textElements = [labelRef.current, subRef.current, ...wraps].filter(Boolean);
 
@@ -88,7 +91,7 @@ export default function HeroJD({
             pinSpacing   : true,
             pinType      : 'transform',
             anticipatePin: 1,
-            scrub        : 1.5,   // era 2.5 — más reactivo al inicio del scroll
+            scrub        : 1.5,
           },
         }).fromTo(
           textElements,
