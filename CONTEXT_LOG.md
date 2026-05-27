@@ -90,7 +90,34 @@ context/
 
 ## HISTORIAL DE CAMBIOS
 
-### 2026-05-27 — Sesión 5 (actual)
+### 2026-05-27 — Sesión 6 (actual)
+
+#### PASO 1 — Optimización de imágenes responsive (Hero + Contacto)
+- **Problema**: `objectPosition` estaba como inline style → los media-queries CSS no podían sobreescribirlo.
+- **HeroJD.tsx**: Eliminado `objectPosition` del inline style. Añadida clase `hero-bg-img`. `priority` y `sizes="100vw"` ya estaban correctos.
+- **ContactJD.tsx**: Eliminado `objectPosition` del inline style. Ya tenía clase `ct-photo-img`.
+- **globals.css**:
+  - `.hero-bg-img { object-position: center 30% }` → `@768px: center 22%` → `@480px: center 18%`.
+  - `.ct-photo-img { object-position: center 15% }` → `@768px: center top` (columna apilada en móvil).
+
+#### PASO 2 — Performance y accesibilidad
+- **`SmoothScrollProvider.tsx`**: `prefersReducedMotion` → `duration: 0, smoothWheel: false`. `isMobile` → `duration: 0.75` (vs 1.2 desktop). Scroll más rápido y menos lag en gama baja.
+- **`Cursos.tsx`**: `useReducedMotion()` de Framer Motion → `initial={false}` cuando está activo (sin animación de entrada).
+- **`Podcasts.tsx`**: Mismo patrón en `PRow` + prop `reduceMotion` añadida a la interface.
+- **`globals.css`** — nuevo bloque `@media (prefers-reduced-motion: reduce)`:
+  - `*, *::before, *::after`: `animation-duration: 0.01ms`, `transition-duration: 0.01ms` (estándar W3C).
+  - `.mq-row`, `.wave-char`, `.ct-photo-img`, `.scroll-line`: animaciones y transiciones desactivadas.
+- **`globals.css`** — `@media (max-width: 768px)`:
+  - `.mq-row { animation-play-state: paused }` — marquee 120s pausado en móvil (GPU ahorro).
+- **Three.js / R3F**: ya eliminado desde Sesión 3, no hay Canvas ni `dpr` que gestionar.
+
+#### Build verificado
+- `npx tsc --noEmit` → 0 errores.
+- `npm run build` → ✓ Compiled successfully, 0 warnings.
+
+---
+
+### 2026-05-27 — Sesión 5
 
 #### PASO 1 — Corrección espaciado Hero (bug palabras pegadas)
 - **Bug**: `.hero-char` usa `display: inline-block`. Los spans de espacio (`{' '}`) con ese display podían colapsar su ancho a 0, causando que las palabras se visualizaran juntas ("Transformatuformade").

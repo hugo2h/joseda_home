@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useIsomorphicLayoutEffect } from '@/lib/useIsomorphicLayoutEffect';
@@ -41,6 +41,7 @@ const MAX_FAN_ANGLE = -4;
 
 // ─── Componente ────────────────────────────────────────────────────────────
 export default function Cursos() {
+  const reduceMotion     = useReducedMotion();
   const sectionRef       = useRef<HTMLElement>(null);
   const titleRef         = useRef<HTMLHeadingElement>(null);
   const textRefs         = useRef<(HTMLDivElement | null)[]>([]);
@@ -209,8 +210,8 @@ export default function Cursos() {
             onMouseEnter={() => handleCardEnter(i)}
             onMouseLeave={() => handleCardLeave(i)}
             style={{ cursor: 'default' }}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 30 }}
+            whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
             transition={{ duration: 0.65, ease: 'easeOut', delay: i * 0.13 }}
             viewport={{
               once  : true,

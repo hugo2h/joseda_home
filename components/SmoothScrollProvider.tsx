@@ -13,10 +13,15 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
     let lenis: Lenis | null = null;
     let lenisRAF: ((time: number) => void) | null = null;
 
+    // Reduced motion: scroll instantáneo (accesibilidad + rendimiento)
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Móvil: duración más corta para evitar sensación de lag en gama baja
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
     const CONFIG = {
-      duration    : 1.2,
+      duration    : prefersReduced ? 0 : isMobile ? 0.75 : 1.2,
       easing      : (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel : true,
+      smoothWheel : !prefersReduced,
     } as const;
 
     function init(scrollTo = 0) {

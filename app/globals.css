@@ -337,6 +337,16 @@ body {
   min-width: 0.28em;
   user-select: none;
 }
+/* ── Imagen de fondo del Hero — object-position responsive ── */
+.hero-bg-img {
+  object-position: center 30%;   /* desktop: centra el arco azul + silueta JD */
+}
+@media (max-width: 768px) {
+  .hero-bg-img { object-position: center 22%; }
+}
+@media (max-width: 480px) {
+  .hero-bg-img { object-position: center 18%; }
+}
 
 .reveal-wrap {
   display: block;
@@ -926,7 +936,13 @@ body {
   border-radius: 0 14px 14px 0;
 }
 .ct-photo-img {
+  object-position: center 15%;   /* desktop: cara + torso, espacio arriba */
   transition: transform 0.7s ease;
+}
+@media (max-width: 768px) {
+  /* En móvil la foto ocupa todo el ancho (columna apilada),
+     centrar verticalmente para mostrar cara completa */
+  .ct-photo-img { object-position: center top; }
 }
 .ct-canvas:hover .ct-photo-img {
   transform: scale(1.04);
@@ -1034,6 +1050,9 @@ body {
   /* ── Layout global ── */
   .cards-wrapper { padding: 0 0.75rem 0.75rem; gap: 0.75rem; }
   .section-card  { border-radius: 1rem; }
+
+  /* ── Marquee — en móvil es decoración invisible, se pausa para ahorrar GPU ── */
+  .mq-row { animation-play-state: paused; }
 
   /* ── Hero ── */
   .hero           { padding: 5.5rem 5% 5rem; }
@@ -1148,6 +1167,37 @@ body {
   .p-row            { padding: 1.25rem 4.5vw; }
   .ct-title         { font-size: clamp(1.5rem, 6vw, 2.2rem); }
   .ct-left          { padding: 28px 18px; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION — accesibilidad + rendimiento en gama baja
+   Respeta la preferencia de sistema "Reducir movimiento".
+   Detiene todas las animaciones CSS y acorta las transiciones a casi 0.
+══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  /* Regla base W3C — afecta a todas las animaciones/transiciones CSS */
+  *, *::before, *::after {
+    animation-duration        : 0.01ms !important;
+    animation-iteration-count : 1      !important;
+    transition-duration       : 0.01ms !important;
+    scroll-behavior           : auto   !important;
+  }
+
+  /* Marquee de fondo — texto decorativo de 120s */
+  .mq-row { animation: none !important; will-change: auto; }
+
+  /* Sweep del botón hero/nav */
+  .hero-scroll-sweep::after,
+  .ct-btn::before { animation: none !important; }
+
+  /* Wave del CTA de About */
+  .wave-char { animation: none !important; }
+
+  /* Hover scale de la foto de contacto */
+  .ct-photo-img { transition: none !important; }
+
+  /* Scroll-indicator */
+  .scroll-line { animation: none !important; }
 }
 
 /* ── Animaciones globales ── */

@@ -187,7 +187,8 @@ export default function HeroJD({
           fill
           priority
           sizes="100vw"
-          style={{ objectFit: 'cover', objectPosition: 'center 30%' }}
+          className="hero-bg-img"
+          style={{ objectFit: 'cover' }}
         />
         {/* Overlay oscuro con degradado diagonal — legibilidad premium */}
         <div

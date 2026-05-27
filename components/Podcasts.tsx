@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { gsap } from 'gsap';
 import { useIsomorphicLayoutEffect } from '@/lib/useIsomorphicLayoutEffect';
 
@@ -47,17 +47,18 @@ interface PRowProps {
   index       : number;
   onMouseEnter: () => void;
   svRoot      : React.RefObject<Element | null>;
+  reduceMotion: boolean;
 }
 
-function PRow({ podcast, index, onMouseEnter, svRoot }: PRowProps) {
+function PRow({ podcast, index, onMouseEnter, svRoot, reduceMotion }: PRowProps) {
   return (
     <motion.div
       className="p-row"
       onMouseEnter={onMouseEnter}
       style={{ cursor: 'default' }}
       role="listitem"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       transition={{ duration: 0.60, ease: 'easeOut', delay: index * 0.10 }}
       viewport={{
         once  : true,
@@ -76,6 +77,7 @@ function PRow({ podcast, index, onMouseEnter, svRoot }: PRowProps) {
 
 // ─── Componente ────────────────────────────────────────────────────────────
 export default function Podcasts() {
+  const reduceMotion    = useReducedMotion() ?? false;
   const titleRef        = useRef<HTMLHeadingElement>(null);
   const modalRef        = useRef<HTMLDivElement>(null);
   const trackRef        = useRef<HTMLDivElement>(null);
@@ -237,6 +239,7 @@ export default function Podcasts() {
             index={i}
             onMouseEnter={() => handleSlideChange(i)}
             svRoot={scrollViewportRef}
+            reduceMotion={reduceMotion}
           />
         ))}
       </div>
