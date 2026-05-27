@@ -196,16 +196,21 @@ export default function HeroJD({
   return (
     <section className="hero" id="inicio" ref={sectionRef}>
 
-      {/* ── Fondo fotográfico + overlays ── */}
-      <div className="hero-bg-wrap" style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden' }}>
+      {/* ── Foto de fondo optimizada con gradiente ajustado para no tapar en móvil ── */}
+      <div
+        className="absolute inset-0 w-full h-full pointer-events-none z-0"
+        style={{
+          maskImage        : 'linear-gradient(to bottom, black 85%, transparent 100%)',
+          WebkitMaskImage  : 'linear-gradient(to bottom, black 85%, transparent 100%)',
+        }}
+      >
         <Image
           src="/images/hero-bg.jpg"
-          alt=""
+          alt="José David"
           fill
-          priority
-          sizes="100vw"
-          className="hero-bg-img"
-          style={{ objectFit: 'cover' }}
+          priority={true}
+          sizes="(max-width: 768px) 100vw, 100vw"
+          className="object-cover object-center md:object-[50%_20%] saturate-[1.1] brightness-[1.05] hero-bg-img"
         />
         {/* Overlay oscuro con degradado diagonal — legibilidad premium */}
         <div
@@ -227,8 +232,8 @@ export default function HeroJD({
         />
       </div>
 
-      {/* ── Bloque de texto — centrado, z:1 ── */}
-      <div className="hero-inner" ref={innerRef}>
+      {/* ── Bloque de texto — z:10 ── */}
+      <div className="hero-inner relative z-10 w-full flex flex-col justify-end h-full pb-16 md:pb-20 px-6" ref={innerRef}>
         <p className="hero-label" ref={labelRef}>{label}</p>
 
         <h1
