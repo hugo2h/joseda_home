@@ -130,8 +130,9 @@ export default function HeroJD({
       if (text[i] === ' ') {
         const idx = startIdx + i;
         result.push(
-          <span key={idx} ref={(el) => { charRefs.current[idx] = el; }} className="hero-char">
-            {' '}
+          //   = non-breaking space: nunca colapsa en display:inline-block
+          <span key={idx} ref={(el) => { charRefs.current[idx] = el; }} className="hero-char hero-char--space" aria-hidden="true">
+            {' '}
           </span>,
         );
         i++;

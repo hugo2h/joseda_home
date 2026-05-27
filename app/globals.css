@@ -331,6 +331,12 @@ body {
   transition: color 0.18s ease;
   cursor: default;
 }
+/* Espacio entre palabras — min-width garantiza anchura visible
+   aunque el whitespace colapse en algunos contextos inline-block */
+.hero-char--space {
+  min-width: 0.28em;
+  user-select: none;
+}
 
 .reveal-wrap {
   display: block;
@@ -1030,10 +1036,14 @@ body {
   .section-card  { border-radius: 1rem; }
 
   /* ── Hero ── */
-  .hero           { padding: 5.5rem 6% 5rem; }
-  .hero-headline  { font-size: clamp(2rem, 9vw, 3.2rem); }
+  .hero           { padding: 5.5rem 5% 5rem; }
+  /* Zona segura interna — el texto nunca toca los bordes del teléfono */
+  .hero-inner     { padding: 0 1.25rem; }
+  /* Titular: escala fluida entre 2rem (≈320px) y 3.2rem (≈768px) */
+  .hero-headline  { font-size: clamp(2rem, 9vw, 3.2rem); line-height: 1.08; }
   .hero-label     { margin-bottom: 1.5rem; font-size: 0.68rem; }
-  .hero-sub       { margin-top: 1.5rem; font-size: 0.875rem; max-width: 95%; }
+  /* Párrafo descriptivo: ancho completo en móvil, font legible */
+  .hero-sub       { margin-top: 1.5rem; font-size: 0.9rem; max-width: 100%; }
   .scroll-indicator { left: 6%; bottom: calc(var(--nav-bh, 48px) + 1rem); }
   .hero-stamp     { display: none; }
 
@@ -1122,7 +1132,12 @@ body {
 
 /* ── Móviles pequeños ≤ 480px ── */
 @media (max-width: 480px) {
-  .hero-headline    { font-size: clamp(1.85rem, 8vw, 2.5rem); }
+  /* Zona segura extra en pantallas muy pequeñas (≤480px) */
+  .hero-inner     { padding: 0 1rem; }
+  /* Titular: fluido entre 1.75rem (≈320px) y 2.4rem (≈480px) */
+  .hero-headline  { font-size: clamp(1.75rem, 8.5vw, 2.4rem); line-height: 1.1; }
+  /* Párrafo: font-size legible en pantallas de 320px */
+  .hero-sub       { font-size: 0.84rem; }
   .about-os         { padding: 3.5rem 4.5vw 3.5rem; }
   .about-os-title   { font-size: clamp(1.8rem, 7.5vw, 2.4rem); }
   .work-title       { font-size: clamp(1.9rem, 7vw, 2.5rem); }

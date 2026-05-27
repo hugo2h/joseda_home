@@ -90,7 +90,29 @@ context/
 
 ## HISTORIAL DE CAMBIOS
 
-### 2026-05-27 — Sesión 4 (actual)
+### 2026-05-27 — Sesión 5 (actual)
+
+#### PASO 1 — Corrección espaciado Hero (bug palabras pegadas)
+- **Bug**: `.hero-char` usa `display: inline-block`. Los spans de espacio (`{' '}`) con ese display podían colapsar su ancho a 0, causando que las palabras se visualizaran juntas ("Transformatuformade").
+- **Fix en `HeroJD.tsx`**: En la función `chars()`, los spans de espacio ahora usan `{' '}` (non-breaking space, nunca colapsa) y se les añade la clase `hero-char--space`.
+- **Fix en `globals.css`**: Nueva regla `.hero-char--space { min-width: 0.28em; user-select: none; }` — garantía doble de anchura visible.
+
+#### PASO 2 — Responsive móvil Hero
+- **`globals.css` ≤768px**:
+  - `.hero-inner { padding: 0 1.25rem }` — zona segura interior, texto nunca toca los bordes.
+  - `.hero-headline { font-size: clamp(2rem, 9vw, 3.2rem); line-height: 1.08 }`.
+  - `.hero-sub { font-size: 0.9rem; max-width: 100% }` — ancho completo en móvil.
+- **`globals.css` ≤480px**:
+  - `.hero-inner { padding: 0 1rem }` — zona segura en pantallas muy pequeñas.
+  - `.hero-headline { font-size: clamp(1.75rem, 8.5vw, 2.4rem); line-height: 1.1 }`.
+  - `.hero-sub { font-size: 0.84rem }` — legible en pantallas de 320px.
+
+#### Regla nueva añadida
+- **`display: inline-block` + whitespace**: Los spans con `display: inline-block` que contengan solo un espacio regular pueden colapsar a 0 de anchura. Usar siempre ` ` (non-breaking space) o `min-width` explícito en spans de espacio para GSAP character animations.
+
+---
+
+### 2026-05-27 — Sesión 4
 
 #### PASO 1 — Rediseño de Contacto (ContactJD.tsx)
 - **Eliminado**: `NeuralCanvas` component completo — SVG con nodos/líneas animados en RAF + GSAP pulso.
