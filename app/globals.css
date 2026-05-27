@@ -342,13 +342,15 @@ body {
   object-position: center 40%;   /* desktop: auditorio + silueta JD centrada */
 }
 @media (max-width: 768px) {
-  /* En móvil portrait la foto landscape se escala por altura.
-     Bajamos el encuadre para mostrar el escenario (donde está JD)
-     en lugar del techo oscuro del auditorio.                     */
-  .hero-bg-img { object-position: center 60%; }
+  /* Fix definitivo: la foto landscape se escala por altura en portrait.
+     Pegamos el encuadre al suelo (bottom) → el recorte ocurre siempre
+     por arriba (techo oscuro), nunca por abajo (donde está JD). */
+  .hero-bg-img { object-position: center bottom !important; }
 }
 @media (max-width: 480px) {
-  .hero-bg-img { object-position: center 65%; }
+  /* En pantallas muy pequeñas desplazamos ligeramente a la derecha
+     para centrar mejor a JD en su posición en el escenario. */
+  .hero-bg-img { object-position: 70% 100% !important; }
 }
 
 .reveal-wrap {
@@ -1051,24 +1053,27 @@ body {
   .cards-wrapper { padding: 0 0.75rem 0.75rem; gap: 0.75rem; }
   .section-card  { border-radius: 1rem; }
 
-  /* ── Marquee — en móvil es decoración invisible, se pausa para ahorrar GPU ── */
+  /* ── Marquee — eliminado del DOM en móvil (display:none > pausar GPU) ── */
   .mq-row { animation-play-state: paused; }
+  .mq-bg  { display: none !important; }
+
+  /* ── Lights de fondo — radial-gradients fijos bloquean el renderizado móvil ── */
+  .bg-lights { display: none !important; }
+
+  /* ── Scrollbar custom — en móvil usamos el scroll nativo del SO ── */
+  .cscroll-btn,
+  .cscroll-track,
+  .cscroll-thumb { display: none !important; }
 
   /* ── Hero ── */
-  /* Altura exacta: viewport dinámico menos los 2 frames del app-shell */
   .hero {
     height: calc(100svh - (var(--frame) * 2)) !important;
     min-height: 100%;
-    padding: 3.5rem 5% 3.5rem !important;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    overflow: hidden;
+    padding: 0 !important;
   }
   .hero-inner {
-    padding: 0 1rem;
-    /* Sube ligeramente el texto para compensar visualmente topbar + bottombar */
-    margin-top: -1.5rem;
+    margin-top: 0;
   }
   /* Titular: escala fluida entre 2rem (≈320px) y 3.2rem (≈768px) */
   .hero-headline  { font-size: clamp(2rem, 9vw, 3.2rem); line-height: 1.08; }

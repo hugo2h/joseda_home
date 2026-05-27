@@ -27,6 +27,9 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
     function init(scrollTo = 0) {
       if (lenis) destroy();
 
+      // Móvil: scroll nativo táctil del SO — no necesita Lenis y evita memory leaks en Safari/Chrome Mobile
+      if (window.matchMedia('(max-width: 768px)').matches) return;
+
       const scrollViewport = document.querySelector<HTMLElement>('.scroll-viewport');
       const contentFlow    = document.querySelector<HTMLElement>('.content-flow');
 
