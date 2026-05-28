@@ -1,7 +1,10 @@
 'use client';
 
 import { useRef } from 'react';
-import { gsap } from 'gsap';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 import { useIsomorphicLayoutEffect } from '@/lib/useIsomorphicLayoutEffect';
 
 // ─────────────────────────────────────────────────────────────────────────────
