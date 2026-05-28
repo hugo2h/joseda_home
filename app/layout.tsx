@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 
-import SocialModal       from '@/components/SocialModal';
 import MarqueeBackground from '@/components/MarqueeBackground';
 
 export const metadata: Metadata = {
@@ -26,7 +25,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {children}
 
-        <SocialModal />
       </body>
     </html>
   );
