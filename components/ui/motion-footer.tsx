@@ -10,16 +10,16 @@ import gsap from '@/lib/gsap-setup';
 
 const LINKS = [
   {
-    label   : 'Tribu de Profes',
-    href    : '#podcasts',
-    desc    : 'Comunidad & podcast',
-    Icon    : Mic,
+    label   : 'Ver Cursos',
+    href    : '#cursos',
+    desc    : 'Formación en IA',
+    Icon    : Play,
   },
   {
-    label   : 'Mentorías',
-    href    : '#cursos',
-    desc    : 'Formación docente',
-    Icon    : Play,
+    label   : 'Unirse a la Tribu',
+    href    : '#podcasts',
+    desc    : 'Comunidad docente',
+    Icon    : Mic,
   },
   {
     label   : 'Contacto',

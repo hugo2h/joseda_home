@@ -3,11 +3,9 @@
 import { useRef } from 'react';
 import type { ReactNode } from 'react';
 import Image from 'next/image';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import gsap from '@/lib/gsap-setup';
+import { ContainerScroll } from '@/components/ui/container-scroll-animation';
 import { useIsomorphicLayoutEffect } from '@/lib/useIsomorphicLayoutEffect';
-
-gsap.registerPlugin(ScrollTrigger);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // BentoCard — tarjeta con efecto spotlight (radial-gradient sigue al ratón)
@@ -119,7 +117,49 @@ export default function AboutJD() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="about" style={{ padding: '7rem 5vw', background: 'transparent' }}>
+    <>
+      {/* ── ContainerScroll 3D — revelado de retrato al hacer scroll ── */}
+      <ContainerScroll
+        titleComponent={
+          <>
+            <p style={{
+              fontSize     : '0.72rem',
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              color        : 'var(--accent)',
+              marginBottom : '1rem',
+            }}>
+              02 — Sobre Mí
+            </p>
+            <h2 style={{
+              fontFamily   : 'var(--serif)',
+              fontSize     : 'clamp(2rem, 5vw, 4.5rem)',
+              fontWeight   : 300,
+              letterSpacing: '-0.03em',
+              lineHeight   : 1.02,
+              color        : '#fff',
+            }}>
+              Conoce al maestro<br />
+              <em style={{ color: 'var(--accent)', fontStyle: 'italic' }}>detrás del código.</em>
+            </h2>
+          </>
+        }
+      >
+        <Image
+          src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1400&q=80"
+          alt="Retrato de José David"
+          fill
+          sizes="(max-width: 768px) 90vw, 1100px"
+          style={{ objectFit: 'cover', objectPosition: 'center top' }}
+        />
+        <div aria-hidden="true" style={{
+          position  : 'absolute',
+          inset     : 0,
+          background: 'linear-gradient(to top, rgba(5,5,5,0.65) 0%, transparent 55%)',
+        }} />
+      </ContainerScroll>
+
+      <section ref={sectionRef} id="about" style={{ padding: '3rem 5vw 7rem', background: 'transparent' }}>
 
       {/* Cabecera */}
       <div style={{ marginBottom: '3.5rem' }}>
@@ -315,6 +355,7 @@ export default function AboutJD() {
         </BentoCard>
 
       </div>
-    </section>
+      </section>
+    </>
   );
 }

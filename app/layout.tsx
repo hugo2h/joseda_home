@@ -3,6 +3,7 @@ import './globals.css';
 
 import MarqueeBackground    from '@/components/MarqueeBackground';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
+import ConfettiBackground   from '@/components/ui/confetti-background';
 
 export const metadata: Metadata = {
   title      : 'José David — Educación & IA',
@@ -22,6 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           <MarqueeBackground />
         </div>
+
+        {/* Campo de partículas 3D sutil — fijo, detrás del scroll-viewport */}
+        <ConfettiBackground />
 
         {/* Motor de scroll global — Lenis sobre window */}
         <SmoothScrollProvider>

@@ -13,6 +13,25 @@ export default function HeroJD() {
   const titleRef    = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLHeadingElement>(null);
   const ctaRef      = useRef<HTMLDivElement>(null);
+  const videoRef    = useRef<HTMLVideoElement>(null);
+  const seamRef     = useRef<HTMLDivElement>(null);   // capa de crossfade en el loop
+
+  // Loop "seamless": funde a negro 0.6s antes del final y vuelve a 0 al reiniciar.
+  const handleTimeUpdate = () => {
+    const v = videoRef.current;
+    const s = seamRef.current;
+    if (!v || !s || !v.duration) return;
+    s.style.opacity = v.duration - v.currentTime < 0.6 ? '1' : '0';
+  };
+
+  const handleEnded = () => {
+    const v = videoRef.current;
+    const s = seamRef.current;
+    if (!v) return;
+    v.currentTime = 0;
+    void v.play();
+    if (s) requestAnimationFrame(() => { s.style.opacity = '0'; });
+  };
 
   useIsomorphicLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -86,15 +105,32 @@ export default function HeroJD() {
         ref={bgWrapRef}
         style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden' }}
       >
-        {/* Vídeo de fondo */}
+        {/* Vídeo de fondo — loop manual con crossfade seamless, atenuado para dar protagonismo al texto */}
         <video
+          ref={videoRef}
           autoPlay
-          loop
           muted
           playsInline
+          onTimeUpdate={handleTimeUpdate}
+          onEnded={handleEnded}
           src="/videos/hero.mp4.mp4"
           className="hero-bg-video"
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }}
+        />
+
+        {/* Capa de crossfade — funde a negro 0.6s en el punto de loop */}
+        <div
+          ref={seamRef}
+          aria-hidden="true"
+          style={{
+            position  : 'absolute',
+            inset     : 0,
+            zIndex    : 1,
+            background: '#000',
+            opacity   : 0,
+            transition: 'opacity 0.6s ease',
+            pointerEvents: 'none',
+          }}
         />
 
         {/* Overlay oscuro — legibilidad del texto */}
@@ -104,7 +140,7 @@ export default function HeroJD() {
             position  : 'absolute',
             inset     : 0,
             zIndex    : 1,
-            background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.1) 100%)',
+            background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0.25) 100%)',
           }}
         />
 

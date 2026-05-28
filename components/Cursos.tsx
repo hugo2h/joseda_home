@@ -1,15 +1,15 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import gsap from '@/lib/gsap-setup';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // ─── Datos ────────────────────────────────────────────────────────────────────
 const CURSOS = [
   {
     id   : 1,
     num  : '01',
-    title: 'Cursos Online\npara Docentes',
+    title: 'Cursos Online para Docentes',
     sub  : 'Formación online práctica y actualizada para integrar la Inteligencia Artificial en el aula. Aprende a automatizar tareas, crear recursos y recuperar tu tiempo sin perder calidad educativa.',
     tags : ['IA en educación', 'automatización', 'recursos digitales'],
     accent: '#38bdf8',
@@ -19,271 +19,223 @@ const CURSOS = [
   {
     id   : 2,
     num  : '02',
-    title: 'Formaciones\ny Mentorías',
+    title: 'Formaciones y Mentorías',
     sub  : 'Ponente nacional e internacional para centros educativos, institutos y universidades. Talleres, conferencias y mentorías personalizadas para equipos docentes que quieren liderar el cambio.',
     tags : ['conferencias', 'talleres', 'mentoría docente'],
     accent: '#a78bfa',
     cta  : 'Solicitar formación',
-    photo: '/jd-ponente.jpg',
+    photo: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80',
   },
   {
     id   : 3,
     num  : '03',
-    title: 'Comunidad\nTribu de Profes',
+    title: 'Comunidad Tribu de Profes',
     sub  : 'Una comunidad activa de docentes que comparten recursos, estrategias y herramientas de IA. Aprende en comunidad, avanza más rápido y conecta con otros profes innovadores de toda España.',
     tags : ['comunidad', 'networking', 'recursos compartidos'],
     accent: '#34d399',
     cta  : 'Unirse a la tribu',
-    photo: '/jd-formacion.jpg',
+    photo: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=1200&q=80',
   },
 ] as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Cursos — Split Layout 50/50 + Horizontal Reveal (Aristide Benoist style)
+// Cursos — Acordeón vertical estilo Aristide Benoist (Framer Motion)
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Cursos() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    if (isMobile || !containerRef.current) return;
-
-    const ctx = gsap.context(() => {
-      const panels = gsap.utils.toArray<HTMLElement>('.curso-panel');
-
-      gsap.to(panels, {
-        xPercent: -100 * (panels.length - 1),
-        ease    : 'power2.inOut',
-        scrollTrigger: {
-          trigger: containerRef.current,
-          pin    : true,
-          scrub  : 1,
-          end    : () => '+=' + containerRef.current!.offsetWidth,
-        },
-      });
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
+  const [openId, setOpenId] = useState<number | null>(1);
 
   return (
-    <section
-      id="cursos"
-      style={{ background: 'transparent', overflow: 'hidden' }}
-    >
+    <section id="cursos" style={{ background: 'transparent', padding: '6rem 5vw 7rem' }}>
       {/* ── Cabecera ── */}
-      <div style={{
-        padding       : '5rem 5vw 3rem',
-        display       : 'flex',
-        alignItems    : 'flex-end',
-        justifyContent: 'space-between',
-        gap           : '2rem',
-        borderTop     : '1px solid rgba(255,255,255,0.08)',
-        borderBottom  : '1px solid rgba(255,255,255,0.08)',
-      }}>
-        <div>
-          <p style={{
-            fontSize     : '0.72rem',
-            letterSpacing: '0.22em',
-            textTransform: 'uppercase',
-            color        : 'var(--accent)',
-            marginBottom : '1rem',
-          }}>
-            03 — Cursos
-          </p>
-          <h2 style={{
-            fontFamily   : 'var(--serif)',
-            fontSize     : 'clamp(2.5rem, 6vw, 6rem)',
-            fontWeight   : 300,
-            letterSpacing: '-0.03em',
-            lineHeight   : 0.95,
-            color        : '#fff',
-          }}>
-            Aprende.<br />
-            <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Transforma.</em>
-          </h2>
-        </div>
+      <div style={{ marginBottom: '3.5rem', maxWidth: '900px' }}>
         <p style={{
-          maxWidth : '320px',
-          fontSize : '0.88rem',
-          lineHeight: 1.75,
-          color    : 'var(--muted)',
-          flexShrink: 0,
+          fontSize     : '0.72rem',
+          letterSpacing: '0.22em',
+          textTransform: 'uppercase',
+          color        : 'var(--accent)',
+          marginBottom : '1rem',
         }}>
-          Formación de alto impacto para docentes que quieren integrar la IA con criterio pedagógico.
+          03 — Cursos
         </p>
+        <h2 style={{
+          fontFamily   : 'var(--serif)',
+          fontSize     : 'clamp(2.5rem, 6vw, 5.5rem)',
+          fontWeight   : 300,
+          letterSpacing: '-0.03em',
+          lineHeight   : 0.95,
+          color        : '#fff',
+        }}>
+          Aprende.{' '}
+          <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Transforma.</em>
+        </h2>
       </div>
 
-      {/* ── Flex row — trigger + pin de GSAP ── */}
-      <div
-        ref={containerRef}
-        style={{
-          display: 'flex',
-          width  : `${CURSOS.length * 100}vw`,
-          height : '78vh',
-        }}
-        className="cursos-container"
-      >
-        {CURSOS.map((c) => (
-          <div
-            key={c.id}
-            className="curso-panel"
-            style={{
-              width    : '100vw',
-              height   : '100%',
-              flexShrink: 0,
-              display  : 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              boxSizing: 'border-box',
-              borderRight: '1px solid rgba(255,255,255,0.05)',
-            }}
-          >
-            {/* ── Lado A: Foto B&W ── */}
-            <div style={{
-              position : 'relative',
-              overflow : 'hidden',
-              borderRight: '1px solid rgba(255,255,255,0.06)',
-            }}>
-              <Image
-                src={c.photo}
-                alt={c.title.replace('\n', ' ')}
-                fill
-                sizes="50vw"
-                style={{
-                  objectFit    : 'cover',
-                  objectPosition: 'center top',
-                  filter       : 'grayscale(100%) contrast(1.08) brightness(0.82)',
-                  transition   : 'filter 0.6s ease',
-                }}
-                priority={c.id === 1}
-              />
-              {/* Overlay gradiente sutil */}
-              <div style={{
-                position  : 'absolute',
-                inset     : 0,
-                background: 'linear-gradient(to right, rgba(0,0,0,0.18) 0%, transparent 60%), linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 50%)',
-                pointerEvents: 'none',
-              }} />
-              {/* Número decorativo sobre foto */}
-              <div style={{
-                position     : 'absolute',
-                bottom       : '2rem',
-                left         : '2.5rem',
-                fontSize     : 'clamp(6rem, 14vw, 12rem)',
-                fontWeight   : 100,
-                color        : 'rgba(255,255,255,0.10)',
-                lineHeight   : 1,
-                fontFamily   : 'var(--serif)',
-                userSelect   : 'none',
-                pointerEvents: 'none',
-                letterSpacing: '-0.04em',
-              }}>
-                {c.num}
-              </div>
-            </div>
-
-            {/* ── Lado B: Contenido ── */}
-            <div style={{
-              display       : 'flex',
-              flexDirection : 'column',
-              justifyContent: 'center',
-              padding       : '5vw 4vw',
-              position      : 'relative',
-            }}>
-              {/* Tags */}
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
-                {c.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    style={{
-                      padding      : '0.22rem 0.75rem',
-                      borderRadius : '9999px',
-                      background   : 'rgba(255,255,255,0.05)',
-                      border       : `1px solid ${c.accent}35`,
-                      fontSize     : '0.68rem',
-                      color        : c.accent,
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              {/* Título */}
-              <h3 style={{
-                fontFamily   : 'var(--serif)',
-                fontSize     : 'clamp(2rem, 4.5vw, 4.5rem)',
-                fontWeight   : 300,
-                letterSpacing: '-0.03em',
-                color        : '#ffffff',
-                marginBottom : '1.5rem',
-                lineHeight   : 0.95,
-                whiteSpace   : 'pre-line',
-              }}>
-                {c.title}
-              </h3>
-
-              {/* Separador */}
-              <div style={{
-                width       : '3rem',
-                height      : '1px',
-                background  : `${c.accent}80`,
-                marginBottom: '1.75rem',
-              }} />
-
-              {/* Descripción */}
-              <p style={{
-                fontSize    : '0.93rem',
-                lineHeight  : 1.82,
-                color       : 'rgba(255,255,255,0.48)',
-                maxWidth    : '46ch',
-                marginBottom: '2.75rem',
-              }}>
-                {c.sub}
-              </p>
-
-              {/* CTA */}
-              <div>
-                <button
-                  type="button"
+      {/* ── Acordeón ── */}
+      <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
+        {CURSOS.map((c) => {
+          const isOpen = openId === c.id;
+          return (
+            <motion.div
+              key={c.id}
+              layout
+              onClick={() => setOpenId(isOpen ? null : c.id)}
+              style={{
+                borderTop : '1px solid rgba(255,255,255,0.1)',
+                padding   : '1.75rem 0',
+                cursor    : 'pointer',
+                overflow  : 'hidden',
+              }}
+              transition={{ layout: { duration: 0.5, ease: [0.4, 0, 0.2, 1] } }}
+            >
+              {/* ── Cabecera del item ── */}
+              <motion.div
+                layout="position"
+                style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}
+              >
+                {/* Miniatura */}
+                <motion.div
+                  layout
                   style={{
-                    display      : 'inline-flex',
-                    alignItems   : 'center',
-                    gap          : '0.6rem',
-                    padding      : '0.9rem 2.2rem',
-                    borderRadius : '9999px',
-                    background   : 'transparent',
-                    color        : '#ffffff',
-                    fontSize     : '0.8rem',
-                    fontWeight   : 500,
-                    letterSpacing: '0.07em',
-                    textTransform: 'uppercase',
-                    border       : '1px solid rgba(255,255,255,0.22)',
-                    cursor       : 'pointer',
-                    transition   : 'border-color 0.25s, color 0.25s, background 0.25s',
+                    position    : 'relative',
+                    width       : isOpen ? 92 : 64,
+                    height      : isOpen ? 92 : 64,
+                    borderRadius: '0.85rem',
+                    overflow    : 'hidden',
+                    flexShrink  : 0,
+                    border      : `1px solid ${c.accent}40`,
                   }}
-                  onMouseEnter={(e) => {
-                    const btn = e.currentTarget as HTMLButtonElement;
-                    btn.style.borderColor = c.accent;
-                    btn.style.color = c.accent;
-                    btn.style.background = `${c.accent}10`;
-                  }}
-                  onMouseLeave={(e) => {
-                    const btn = e.currentTarget as HTMLButtonElement;
-                    btn.style.borderColor = 'rgba(255,255,255,0.22)';
-                    btn.style.color = '#ffffff';
-                    btn.style.background = 'transparent';
+                  transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                >
+                  <Image
+                    src={c.photo}
+                    alt={c.title}
+                    fill
+                    sizes="92px"
+                    style={{ objectFit: 'cover', filter: 'grayscale(60%) brightness(0.9)' }}
+                  />
+                </motion.div>
+
+                {/* Número */}
+                <span style={{
+                  fontFamily   : 'var(--serif)',
+                  fontSize     : '0.9rem',
+                  color        : c.accent,
+                  letterSpacing: '0.1em',
+                  width        : '2rem',
+                  flexShrink   : 0,
+                }}>
+                  {c.num}
+                </span>
+
+                {/* Título */}
+                <h3 style={{
+                  flex         : 1,
+                  fontFamily   : 'var(--serif)',
+                  fontSize     : 'clamp(1.25rem, 3vw, 2.4rem)',
+                  fontWeight   : 300,
+                  letterSpacing: '-0.02em',
+                  color        : isOpen ? '#fff' : 'rgba(255,255,255,0.72)',
+                  lineHeight   : 1.05,
+                  transition   : 'color 0.3s',
+                }}>
+                  {c.title}
+                </h3>
+
+                {/* Indicador +/− */}
+                <motion.span
+                  animate={{ rotate: isOpen ? 45 : 0 }}
+                  transition={{ duration: 0.35 }}
+                  style={{
+                    fontSize  : '1.6rem',
+                    fontWeight: 200,
+                    color     : c.accent,
+                    lineHeight: 1,
+                    flexShrink: 0,
                   }}
                 >
-                  {c.cta}
-                  <span style={{ fontSize: '1rem', lineHeight: 1 }}>→</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+                  +
+                </motion.span>
+              </motion.div>
+
+              {/* ── Cuerpo expandible ── */}
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    key="body"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <div style={{ paddingLeft: 'calc(64px + 1.5rem)', paddingTop: '1.5rem' }}>
+                      {/* Tags */}
+                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+                        {c.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            style={{
+                              padding      : '0.22rem 0.75rem',
+                              borderRadius : '9999px',
+                              background   : 'rgba(255,255,255,0.05)',
+                              border       : `1px solid ${c.accent}35`,
+                              fontSize     : '0.68rem',
+                              color        : c.accent,
+                              letterSpacing: '0.1em',
+                              textTransform: 'uppercase',
+                            }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Descripción */}
+                      <p style={{
+                        fontSize    : '0.95rem',
+                        lineHeight  : 1.8,
+                        color       : 'rgba(255,255,255,0.55)',
+                        maxWidth    : '52ch',
+                        marginBottom: '2rem',
+                      }}>
+                        {c.sub}
+                      </p>
+
+                      {/* CTA */}
+                      <button
+                        type="button"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                          display      : 'inline-flex',
+                          alignItems   : 'center',
+                          gap          : '0.6rem',
+                          padding      : '0.85rem 2rem',
+                          borderRadius : '9999px',
+                          background   : c.accent,
+                          color        : '#0a0a0a',
+                          fontSize     : '0.8rem',
+                          fontWeight   : 600,
+                          letterSpacing: '0.06em',
+                          textTransform: 'uppercase',
+                          border       : 'none',
+                          cursor       : 'pointer',
+                          transition   : 'opacity 0.2s',
+                        }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.85'; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+                      >
+                        {c.cta}
+                        <span style={{ fontSize: '1rem', lineHeight: 1 }}>→</span>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          );
+        })}
+        {/* Línea de cierre */}
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }} />
       </div>
     </section>
   );
