@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
+import Image from 'next/image';
 import gsap from '@/lib/gsap-setup';
 
 // ─── Datos ────────────────────────────────────────────────────────────────────
@@ -8,41 +9,40 @@ const CURSOS = [
   {
     id   : 1,
     num  : '01',
-    title: 'Cursos Online para Docentes',
+    title: 'Cursos Online\npara Docentes',
     sub  : 'Formación online práctica y actualizada para integrar la Inteligencia Artificial en el aula. Aprende a automatizar tareas, crear recursos y recuperar tu tiempo sin perder calidad educativa.',
     tags : ['IA en educación', 'automatización', 'recursos digitales'],
-    color : 'rgba(56,189,248,0.08)',
     accent: '#38bdf8',
     cta  : 'Ver cursos',
+    photo: '/jd-auditorio.jpg',
   },
   {
     id   : 2,
     num  : '02',
-    title: 'Formaciones y Mentorías',
+    title: 'Formaciones\ny Mentorías',
     sub  : 'Ponente nacional e internacional para centros educativos, institutos y universidades. Talleres, conferencias y mentorías personalizadas para equipos docentes que quieren liderar el cambio.',
     tags : ['conferencias', 'talleres', 'mentoría docente'],
-    color : 'rgba(167,139,250,0.08)',
     accent: '#a78bfa',
     cta  : 'Solicitar formación',
+    photo: '/jd-ponente.jpg',
   },
   {
     id   : 3,
     num  : '03',
-    title: 'Comunidad Tribu de Profes',
+    title: 'Comunidad\nTribu de Profes',
     sub  : 'Una comunidad activa de docentes que comparten recursos, estrategias y herramientas de IA. Aprende en comunidad, avanza más rápido y conecta con otros profes innovadores de toda España.',
     tags : ['comunidad', 'networking', 'recursos compartidos'],
-    color : 'rgba(52,211,153,0.08)',
     accent: '#34d399',
     cta  : 'Unirse a la tribu',
+    photo: '/jd-formacion.jpg',
   },
 ] as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Cursos — Horizontal Reveal (Aristide Benoist style)
-// containerRef apunta al flex-row (N×100vw) → offsetWidth = N×vw = end correcto
+// Cursos — Split Layout 50/50 + Horizontal Reveal (Aristide Benoist style)
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Cursos() {
-  const containerRef = useRef<HTMLDivElement>(null);   // flex row — N × 100vw
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
@@ -53,12 +53,11 @@ export default function Cursos() {
 
       gsap.to(panels, {
         xPercent: -100 * (panels.length - 1),
-        ease    : 'none',
+        ease    : 'power2.inOut',
         scrollTrigger: {
           trigger: containerRef.current,
           pin    : true,
           scrub  : 1,
-          // Sin scroller — GSAP usa window (Lenis integrado vía gsap.ticker)
           end    : () => '+=' + containerRef.current!.offsetWidth,
         },
       });
@@ -120,8 +119,8 @@ export default function Cursos() {
         ref={containerRef}
         style={{
           display: 'flex',
-          width  : `${CURSOS.length * 100}vw`,    // N × 100vw → offsetWidth correcto para `end`
-          height : '70vh',
+          width  : `${CURSOS.length * 100}vw`,
+          height : '78vh',
         }}
         className="cursos-container"
       >
@@ -130,49 +129,80 @@ export default function Cursos() {
             key={c.id}
             className="curso-panel"
             style={{
-              width         : '100vw',
-              height        : '100%',
-              flexShrink    : 0,
+              width    : '100vw',
+              height   : '100%',
+              flexShrink: 0,
+              display  : 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              boxSizing: 'border-box',
+              borderRight: '1px solid rgba(255,255,255,0.05)',
+            }}
+          >
+            {/* ── Lado A: Foto B&W ── */}
+            <div style={{
+              position : 'relative',
+              overflow : 'hidden',
+              borderRight: '1px solid rgba(255,255,255,0.06)',
+            }}>
+              <Image
+                src={c.photo}
+                alt={c.title.replace('\n', ' ')}
+                fill
+                sizes="50vw"
+                style={{
+                  objectFit    : 'cover',
+                  objectPosition: 'center top',
+                  filter       : 'grayscale(100%) contrast(1.08) brightness(0.82)',
+                  transition   : 'filter 0.6s ease',
+                }}
+                priority={c.id === 1}
+              />
+              {/* Overlay gradiente sutil */}
+              <div style={{
+                position  : 'absolute',
+                inset     : 0,
+                background: 'linear-gradient(to right, rgba(0,0,0,0.18) 0%, transparent 60%), linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 50%)',
+                pointerEvents: 'none',
+              }} />
+              {/* Número decorativo sobre foto */}
+              <div style={{
+                position     : 'absolute',
+                bottom       : '2rem',
+                left         : '2.5rem',
+                fontSize     : 'clamp(6rem, 14vw, 12rem)',
+                fontWeight   : 100,
+                color        : 'rgba(255,255,255,0.10)',
+                lineHeight   : 1,
+                fontFamily   : 'var(--serif)',
+                userSelect   : 'none',
+                pointerEvents: 'none',
+                letterSpacing: '-0.04em',
+              }}>
+                {c.num}
+              </div>
+            </div>
+
+            {/* ── Lado B: Contenido ── */}
+            <div style={{
               display       : 'flex',
               flexDirection : 'column',
               justifyContent: 'center',
-              padding       : '5vw',
+              padding       : '5vw 4vw',
               position      : 'relative',
-              background    : c.color,
-              borderRight   : '1px solid rgba(255,255,255,0.05)',
-              boxSizing     : 'border-box',
-            }}
-          >
-            {/* Número decorativo */}
-            <div style={{
-              position     : 'absolute',
-              bottom       : '1.5rem',
-              right        : '5vw',
-              fontSize     : 'clamp(8rem, 22vw, 18rem)',
-              fontWeight   : 100,
-              color        : 'rgba(255,255,255,0.04)',
-              lineHeight   : 1,
-              fontFamily   : 'var(--serif)',
-              userSelect   : 'none',
-              pointerEvents: 'none',
             }}>
-              {c.num}
-            </div>
-
-            {/* Contenido */}
-            <div style={{ position: 'relative', zIndex: 1, maxWidth: '680px' }}>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
+              {/* Tags */}
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
                 {c.tags.map((tag) => (
                   <span
                     key={tag}
                     style={{
                       padding      : '0.22rem 0.75rem',
                       borderRadius : '9999px',
-                      background   : 'rgba(255,255,255,0.06)',
-                      border       : `1px solid ${c.accent}40`,
-                      fontSize     : '0.7rem',
+                      background   : 'rgba(255,255,255,0.05)',
+                      border       : `1px solid ${c.accent}35`,
+                      fontSize     : '0.68rem',
                       color        : c.accent,
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.1em',
                       textTransform: 'uppercase',
                     }}
                   >
@@ -181,51 +211,76 @@ export default function Cursos() {
                 ))}
               </div>
 
+              {/* Título */}
               <h3 style={{
                 fontFamily   : 'var(--serif)',
-                fontSize     : 'clamp(2.2rem, 5vw, 5rem)',
+                fontSize     : 'clamp(2rem, 4.5vw, 4.5rem)',
                 fontWeight   : 300,
-                letterSpacing: '-0.025em',
+                letterSpacing: '-0.03em',
                 color        : '#ffffff',
-                marginBottom : '1.25rem',
-                lineHeight   : 1,
+                marginBottom : '1.5rem',
+                lineHeight   : 0.95,
+                whiteSpace   : 'pre-line',
               }}>
                 {c.title}
               </h3>
 
+              {/* Separador */}
+              <div style={{
+                width       : '3rem',
+                height      : '1px',
+                background  : `${c.accent}80`,
+                marginBottom: '1.75rem',
+              }} />
+
+              {/* Descripción */}
               <p style={{
-                fontSize    : '0.95rem',
-                lineHeight  : 1.8,
-                color       : 'rgba(255,255,255,0.52)',
-                maxWidth    : '52ch',
-                marginBottom: '2.5rem',
+                fontSize    : '0.93rem',
+                lineHeight  : 1.82,
+                color       : 'rgba(255,255,255,0.48)',
+                maxWidth    : '46ch',
+                marginBottom: '2.75rem',
               }}>
                 {c.sub}
               </p>
 
-              <button
-                type="button"
-                style={{
-                  display      : 'inline-flex',
-                  alignItems   : 'center',
-                  gap          : '0.5rem',
-                  padding      : '0.85rem 2rem',
-                  borderRadius : '9999px',
-                  background   : c.accent,
-                  color        : '#0a0a0a',
-                  fontSize     : '0.82rem',
-                  fontWeight   : 600,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  border       : 'none',
-                  cursor       : 'pointer',
-                  transition   : 'opacity 0.2s',
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.85'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
-              >
-                {c.cta}&nbsp;→
-              </button>
+              {/* CTA */}
+              <div>
+                <button
+                  type="button"
+                  style={{
+                    display      : 'inline-flex',
+                    alignItems   : 'center',
+                    gap          : '0.6rem',
+                    padding      : '0.9rem 2.2rem',
+                    borderRadius : '9999px',
+                    background   : 'transparent',
+                    color        : '#ffffff',
+                    fontSize     : '0.8rem',
+                    fontWeight   : 500,
+                    letterSpacing: '0.07em',
+                    textTransform: 'uppercase',
+                    border       : '1px solid rgba(255,255,255,0.22)',
+                    cursor       : 'pointer',
+                    transition   : 'border-color 0.25s, color 0.25s, background 0.25s',
+                  }}
+                  onMouseEnter={(e) => {
+                    const btn = e.currentTarget as HTMLButtonElement;
+                    btn.style.borderColor = c.accent;
+                    btn.style.color = c.accent;
+                    btn.style.background = `${c.accent}10`;
+                  }}
+                  onMouseLeave={(e) => {
+                    const btn = e.currentTarget as HTMLButtonElement;
+                    btn.style.borderColor = 'rgba(255,255,255,0.22)';
+                    btn.style.color = '#ffffff';
+                    btn.style.background = 'transparent';
+                  }}
+                >
+                  {c.cta}
+                  <span style={{ fontSize: '1rem', lineHeight: 1 }}>→</span>
+                </button>
+              </div>
             </div>
           </div>
         ))}

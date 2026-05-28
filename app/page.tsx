@@ -6,7 +6,7 @@ import AboutJD   from '@/components/AboutJD';
 import Cursos    from '@/components/Cursos';
 import Podcasts  from '@/components/Podcasts';
 import ContactJD from '@/components/ContactJD';
-import FooterJD  from '@/components/FooterJD';
+import CinematicFooter from '@/components/ui/motion-footer';
 
 export default function Home() {
   return (
@@ -29,7 +29,7 @@ export default function Home() {
         <div className="section-card"><ContactJD /></div>
       </div>
 
-      <FooterJD />
+      <CinematicFooter />
 
     </PageLayout>
   );
