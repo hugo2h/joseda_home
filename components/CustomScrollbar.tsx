@@ -47,32 +47,18 @@ export default function CustomScrollbar() {
 
     const getMaxY = () => track.offsetHeight - THUMB_H;
 
-    let svUnsubscribe: (() => void) | undefined;
-
-    const buildTracker = () => {
-      svUnsubscribe?.();
-      svUnsubscribe = undefined;
-
-      const sv = getScrollViewport();
-      if (!sv) return;
-
-      const onSVScroll = () => {
-        if (isDragging.current) return;
-        const maxScroll = sv.scrollHeight - sv.clientHeight;
-        if (maxScroll <= 0) return;
-        const prog = sv.scrollTop / maxScroll;
-        progressRef.current = prog;
-        gsap.set(thumb, { y: prog * getMaxY() });
-      };
-
-      sv.addEventListener('scroll', onSVScroll, { passive: true });
-      svUnsubscribe = () => sv.removeEventListener('scroll', onSVScroll);
-
-      onSVScroll();
+    // Rastrear scroll de window (Lenis sobre window, no sobre contenedor)
+    const onWindowScroll = () => {
+      if (isDragging.current) return;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (maxScroll <= 0) return;
+      const prog = window.scrollY / maxScroll;
+      progressRef.current = prog;
+      gsap.set(thumb, { y: prog * getMaxY() });
     };
 
-    requestAnimationFrame(buildTracker);
-    window.addEventListener('resize', buildTracker);
+    window.addEventListener('scroll', onWindowScroll, { passive: true });
+    window.addEventListener('resize', onWindowScroll);
 
     const onMouseMove = (e: MouseEvent) => {
       if (!isDragging.current) return;
@@ -83,15 +69,12 @@ export default function CustomScrollbar() {
       progressRef.current = prog;
       gsap.set(thumb, { y: prog * maxY });
 
-      const sv = getScrollViewport();
-      if (!sv) return;
-      const scrollMax = sv.scrollHeight - sv.clientHeight;
-
+      const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
       const lenis = getLenis();
       if (lenis) {
         lenis.scrollTo(prog * scrollMax, { immediate: true });
       } else {
-        sv.scrollTop = prog * scrollMax;
+        window.scrollTo(0, prog * scrollMax);
       }
     };
 
@@ -106,10 +89,10 @@ export default function CustomScrollbar() {
     window.addEventListener('mouseup',   onMouseUp);
 
     return () => {
-      window.removeEventListener('resize',    buildTracker);
+      window.removeEventListener('scroll',    onWindowScroll);
+      window.removeEventListener('resize',    onWindowScroll);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup',   onMouseUp);
-      svUnsubscribe?.();
     };
   }, []);
 
@@ -124,13 +107,11 @@ export default function CustomScrollbar() {
 
   const scrollBy = (direction: 'up' | 'down') => {
     const amount = direction === 'up' ? -ARROW_SCROLL : ARROW_SCROLL;
-    const sv = getScrollViewport();
-    const lenis = getLenis();
+    const lenis  = getLenis();
     if (lenis) {
-      const currentTop = sv?.scrollTop ?? 0;
-      lenis.scrollTo(currentTop + amount);
-    } else if (sv) {
-      sv.scrollTop += amount;
+      lenis.scrollTo(window.scrollY + amount);
+    } else {
+      window.scrollBy({ top: amount, behavior: 'smooth' });
     }
   };
 
@@ -150,11 +131,13 @@ export default function CustomScrollbar() {
 
   return (
     <div
-      className="absolute right-2 z-[9999] pointer-events-none flex flex-col items-center"
+      className="z-[9999] pointer-events-none flex flex-col items-center"
       style={{
-        top   : TOPBAR_H + OUTER_PAD,
-        bottom: BOTTOMBAR_H + OUTER_PAD,
-        width : 14,
+        position: 'fixed',
+        right   : '0.5rem',
+        top     : TOPBAR_H + OUTER_PAD,
+        bottom  : BOTTOMBAR_H + OUTER_PAD,
+        width   : 14,
       }}
       aria-hidden="true"
     >

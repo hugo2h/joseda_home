@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import './globals.css';
 
-import MarqueeBackground from '@/components/MarqueeBackground';
+import MarqueeBackground    from '@/components/MarqueeBackground';
+import SmoothScrollProvider from '@/components/SmoothScrollProvider';
 
 export const metadata: Metadata = {
-  title: 'José David — Educación & IA',
-  description:
-    'Maestro, Ingeniero y formador de docentes. Te ayudo a integrar la IA, mejorar tu competencia digital y optimizar tus clases para que recuperes tu tiempo.',
+  title      : 'José David — Educación & IA',
+  description: 'Maestro, Ingeniero y formador de docentes. Te ayudo a integrar la IA, mejorar tu competencia digital y optimizar tus clases para que recuperes tu tiempo.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -23,7 +23,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <MarqueeBackground />
         </div>
 
-        {children}
+        {/* Motor de scroll global — Lenis sobre window */}
+        <SmoothScrollProvider>
+          {/* Contenedores obligatorios del motor de scroll */}
+          <div className="scroll-viewport">
+            <div className="content-flow">
+              {children}
+            </div>
+          </div>
+        </SmoothScrollProvider>
 
       </body>
     </html>

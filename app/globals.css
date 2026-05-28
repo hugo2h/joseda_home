@@ -54,24 +54,21 @@ body {
 @keyframes sweep { 0%{left:-100%} 100%{left:100%} }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   APP SHELL — full-screen, sin frame OS
+   APP SHELL — wrapper de página (Nav + contenido)
+   Window scroll: el documento se desplaza normalmente, Lenis lo suaviza.
 ══════════════════════════════════════════════════════════════════════════ */
 .app-shell {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  z-index: 2;
+  position: relative;
+  z-index: 2;                /* encima del MarqueeBackground (z-index:0) */
+  min-height: 100vh;
 }
 
+/* scroll-viewport: contenedor semántico sin restricción de overflow.
+   Con window-scroll no necesita overflow-y:scroll ni posición absoluta. */
 .scroll-viewport {
-  position: absolute;
-  inset: 0;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  position: relative;
+  width: 100%;
 }
-.scroll-viewport::-webkit-scrollbar { display: none; }
 
 /* ══════════════════════════════════════════════════════════════════════════
    TOP BAR — Terminal/IDE style

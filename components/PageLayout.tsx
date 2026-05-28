@@ -1,30 +1,24 @@
 'use client';
 
 import type { ReactNode } from 'react';
-
-import SmoothScrollProvider from '@/components/SmoothScrollProvider';
-import Nav, { type NavItem } from '@/components/Nav';
-import CustomScrollbar     from '@/components/CustomScrollbar';
+import Nav,            { type NavItem } from '@/components/Nav';
+import CustomScrollbar from '@/components/CustomScrollbar';
 
 interface PageLayoutProps {
   children   : ReactNode;
   navConfig ?: NavItem[];
 }
 
+/**
+ * PageLayout — wrapper de página (Nav + contenido + scrollbar).
+ * SmoothScrollProvider y scroll-viewport ya viven en app/layout.tsx.
+ */
 export default function PageLayout({ children, navConfig }: PageLayoutProps) {
   return (
-    <div className="app-shell">
-      <SmoothScrollProvider>
-        {/* Navbar flotante — posición fixed, fuera del scroll-viewport */}
-        <Nav navConfig={navConfig} />
-
-        <div className="scroll-viewport">
-          <div className="content-flow">
-            {children}
-          </div>
-        </div>
-      </SmoothScrollProvider>
+    <>
+      <Nav navConfig={navConfig} />
+      <main>{children}</main>
       <CustomScrollbar />
-    </div>
+    </>
   );
 }

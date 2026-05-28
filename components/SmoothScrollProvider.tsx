@@ -5,64 +5,33 @@ import Lenis from 'lenis';
 import gsap, { ScrollTrigger } from '@/lib/gsap-setup';
 import { registerLenisControl, unregisterLenisControl } from '@/lib/lenisControl';
 
+/**
+ * SmoothScrollProvider — Lenis sobre WINDOW (no sobre contenedor).
+ * Sin wrapper / sin scrollerProxy → ScrollTrigger usa el scroll nativo de window.
+ * Este es el patrón canónico Lenis + GSAP que no tiene problemas de timing.
+ */
 export default function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let lenis: Lenis | null = null;
     let lenisRAF: ((time: number) => void) | null = null;
 
-    // Reduced motion: scroll instantáneo (accesibilidad + rendimiento)
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // Móvil: duración más corta para evitar sensación de lag en gama baja
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const isMobile       = window.matchMedia('(max-width: 768px)').matches;
 
-    const CONFIG = {
-      duration    : prefersReduced ? 0 : isMobile ? 0.75 : 1.0,  // era 1.2 — más directo en desktop
-      easing      : (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel : !prefersReduced,
-    } as const;
-
-    function init(scrollTo = 0) {
+    function init() {
       if (lenis) destroy();
-
-      // Móvil: scroll nativo táctil del SO — no necesita Lenis y evita memory leaks en Safari/Chrome Mobile
-      if (window.matchMedia('(max-width: 768px)').matches) return;
-
-      const scrollViewport = document.querySelector<HTMLElement>('.scroll-viewport');
-      const contentFlow    = document.querySelector<HTMLElement>('.content-flow');
-
-      if (!scrollViewport) {
-        console.warn('[SmoothScrollProvider] .scroll-viewport not found — Lenis not initialized');
-        return;
-      }
-
-      if (scrollTo > 0) scrollViewport.scrollTop = scrollTo;
+      if (isMobile || prefersReduced) return;
 
       lenis = new Lenis({
-        wrapper      : scrollViewport,
-        content      : contentFlow ?? undefined,
-        eventsTarget : window,
-        ...CONFIG,
-      } as ConstructorParameters<typeof Lenis>[0]);
+        duration   : 1.0,
+        easing     : (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+      });
 
       (window as unknown as Record<string, unknown>)['lenis'] = lenis;
 
-      ScrollTrigger.scrollerProxy(scrollViewport, {
-        scrollTop(value?: number) {
-          if (typeof value === 'number') scrollViewport.scrollTop = value;
-          return scrollViewport.scrollTop;
-        },
-        getBoundingClientRect() {
-          return {
-            top   : 0,
-            left  : 0,
-            width : window.innerWidth,
-            height: window.innerHeight,
-          };
-        },
-      });
-
+      // Integración canónica Lenis ↔ GSAP ScrollTrigger
       lenis.on('scroll', ScrollTrigger.update);
-
       lenisRAF = (time: number) => lenis!.raf(time * 1000);
       gsap.ticker.add(lenisRAF);
       gsap.ticker.lagSmoothing(0);

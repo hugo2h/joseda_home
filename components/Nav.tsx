@@ -55,16 +55,11 @@ export default function Nav({ navConfig }: { navConfig?: NavItem[] }) {
   const pathname = usePathname();
   const isHome   = pathname === '/';
 
-  // Intensidad del glass según scroll
+  // Intensidad del glass según scroll — window scroll (Lenis sobre window)
   useEffect(() => {
-    const vp = document.querySelector<HTMLElement>('.scroll-viewport');
-    const target = vp ?? window;
-    const onScroll = () => {
-      const top = vp ? vp.scrollTop : window.scrollY;
-      setScrolled(top > 60);
-    };
-    target.addEventListener('scroll', onScroll, { passive: true });
-    return () => target.removeEventListener('scroll', onScroll);
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   // Sección activa via IntersectionObserver
