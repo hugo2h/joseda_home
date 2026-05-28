@@ -2,11 +2,8 @@
 
 import { useEffect } from 'react';
 import Lenis from 'lenis';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import gsap, { ScrollTrigger } from '@/lib/gsap-setup';
 import { registerLenisControl, unregisterLenisControl } from '@/lib/lenisControl';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export default function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {

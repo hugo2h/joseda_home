@@ -1,8 +1,7 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import gsap from '@/lib/gsap-setup';
-import { useIsomorphicLayoutEffect } from '@/lib/useIsomorphicLayoutEffect';
 
 // ─── Datos ────────────────────────────────────────────────────────────────────
 const CURSOS = [
@@ -45,27 +44,37 @@ const CURSOS = [
 export default function Cursos() {
   const containerRef = useRef<HTMLDivElement>(null);   // flex row — N × 100vw
 
-  useIsomorphicLayoutEffect(() => {
+  // useEffect (no useLayoutEffect) para ejecutarse DESPUÉS de SmoothScrollProvider.
+  // requestAnimationFrame garantiza que el scrollerProxy ya esté configurado.
+  useEffect(() => {
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
     if (isMobile || !containerRef.current) return;
 
-    const ctx = gsap.context(() => {
-      const panels = gsap.utils.toArray('.curso-panel');
+    let ctx: ReturnType<typeof gsap.context> | undefined;
 
-      gsap.to(panels, {
-        xPercent: -100 * (panels.length - 1),
-        ease    : 'none',
-        scrollTrigger: {
-          trigger : containerRef.current,
-          pin     : true,
-          scrub   : 1,
-          scroller: '.scroll-viewport',
-          end     : () => '+=' + containerRef.current!.offsetWidth,
-        },
-      });
-    }, containerRef);
+    const rafId = requestAnimationFrame(() => {
+      if (!containerRef.current) return;
+      ctx = gsap.context(() => {
+        const panels = gsap.utils.toArray<HTMLElement>('.curso-panel');
 
-    return () => ctx.revert();
+        gsap.to(panels, {
+          xPercent: -100 * (panels.length - 1),
+          ease    : 'none',
+          scrollTrigger: {
+            trigger : containerRef.current,
+            pin     : true,
+            scrub   : 1,
+            scroller: '.scroll-viewport',
+            end     : () => '+=' + containerRef.current!.offsetWidth,
+          },
+        });
+      }, containerRef);
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      ctx?.revert();
+    };
   }, []);
 
   return (
