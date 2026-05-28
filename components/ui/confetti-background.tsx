@@ -18,7 +18,7 @@ interface Particle {
 
 export default function ConfettiBackground({
   count = 60,
-  color = '56,189,248',   // --accent en RGB
+  color = '255,255,255',   // monocromo: blanco
 }: {
   count?: number;
   color?: string;

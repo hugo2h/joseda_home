@@ -11,8 +11,6 @@ const CURSOS = [
     num  : '01',
     title: 'Cursos Online para Docentes',
     sub  : 'Formación online práctica y actualizada para integrar la Inteligencia Artificial en el aula. Aprende a automatizar tareas, crear recursos y recuperar tu tiempo sin perder calidad educativa.',
-    tags : ['IA en educación', 'automatización', 'recursos digitales'],
-    accent: '#38bdf8',
     cta  : 'Ver cursos',
     photo: '/jd-auditorio.jpg',
   },
@@ -21,8 +19,6 @@ const CURSOS = [
     num  : '02',
     title: 'Formaciones y Mentorías',
     sub  : 'Ponente nacional e internacional para centros educativos, institutos y universidades. Talleres, conferencias y mentorías personalizadas para equipos docentes que quieren liderar el cambio.',
-    tags : ['conferencias', 'talleres', 'mentoría docente'],
-    accent: '#a78bfa',
     cta  : 'Solicitar formación',
     photo: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80',
   },
@@ -31,47 +27,47 @@ const CURSOS = [
     num  : '03',
     title: 'Comunidad Tribu de Profes',
     sub  : 'Una comunidad activa de docentes que comparten recursos, estrategias y herramientas de IA. Aprende en comunidad, avanza más rápido y conecta con otros profes innovadores de toda España.',
-    tags : ['comunidad', 'networking', 'recursos compartidos'],
-    accent: '#34d399',
     cta  : 'Unirse a la tribu',
     photo: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=1200&q=80',
   },
 ] as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Cursos — Acordeón vertical estilo Aristide Benoist (Framer Motion)
+// Cursos — Acordeón vertical minimalista monocromo (B&N)
+// Líneas full-width, border-b zinc-800, título + número. Al abrir: imagen B&N +
+// descripción. Cero color de acento.
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Cursos() {
   const [openId, setOpenId] = useState<number | null>(1);
 
   return (
-    <section id="cursos" style={{ background: 'transparent', padding: '6rem 5vw 7rem' }}>
+    <section id="cursos" style={{ background: 'transparent', padding: 'clamp(6rem, 14vh, 11rem) 6vw' }}>
       {/* ── Cabecera ── */}
-      <div style={{ marginBottom: '3.5rem', maxWidth: '900px' }}>
+      <div style={{ marginBottom: 'clamp(3rem, 8vh, 6rem)' }}>
         <p style={{
-          fontSize     : '0.72rem',
-          letterSpacing: '0.22em',
+          fontFamily   : 'monospace',
+          fontSize     : '0.75rem',
+          letterSpacing: '0.25em',
           textTransform: 'uppercase',
-          color        : 'var(--accent)',
-          marginBottom : '1rem',
+          color        : '#71717a',
+          marginBottom : '1.5rem',
         }}>
-          03 — Cursos
+          03 / Cursos
         </p>
         <h2 style={{
-          fontFamily   : 'var(--serif)',
-          fontSize     : 'clamp(2.5rem, 6vw, 5.5rem)',
-          fontWeight   : 300,
-          letterSpacing: '-0.03em',
+          fontFamily   : 'var(--sans)',
+          fontSize     : 'clamp(2.8rem, 8vw, 7rem)',
+          fontWeight   : 800,
+          letterSpacing: '-0.045em',
           lineHeight   : 0.95,
           color        : '#fff',
         }}>
-          Aprende.{' '}
-          <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Transforma.</em>
+          Aprende. Transforma.
         </h2>
       </div>
 
       {/* ── Acordeón ── */}
-      <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         {CURSOS.map((c) => {
           const isOpen = openId === c.id;
           return (
@@ -80,48 +76,23 @@ export default function Cursos() {
               layout
               onClick={() => setOpenId(isOpen ? null : c.id)}
               style={{
-                borderTop : '1px solid rgba(255,255,255,0.1)',
-                padding   : '1.75rem 0',
-                cursor    : 'pointer',
-                overflow  : 'hidden',
+                borderBottom: '1px solid #27272a',
+                padding     : 'clamp(1.5rem, 3vw, 2.5rem) 0',
+                cursor      : 'pointer',
+                overflow    : 'hidden',
               }}
               transition={{ layout: { duration: 0.5, ease: [0.4, 0, 0.2, 1] } }}
             >
               {/* ── Cabecera del item ── */}
               <motion.div
                 layout="position"
-                style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}
+                style={{ display: 'flex', alignItems: 'baseline', gap: 'clamp(1rem, 3vw, 2.5rem)' }}
               >
-                {/* Miniatura */}
-                <motion.div
-                  layout
-                  style={{
-                    position    : 'relative',
-                    width       : isOpen ? 92 : 64,
-                    height      : isOpen ? 92 : 64,
-                    borderRadius: '0.85rem',
-                    overflow    : 'hidden',
-                    flexShrink  : 0,
-                    border      : `1px solid ${c.accent}40`,
-                  }}
-                  transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                >
-                  <Image
-                    src={c.photo}
-                    alt={c.title}
-                    fill
-                    sizes="92px"
-                    style={{ objectFit: 'cover', filter: 'grayscale(60%) brightness(0.9)' }}
-                  />
-                </motion.div>
-
                 {/* Número */}
                 <span style={{
-                  fontFamily   : 'var(--serif)',
+                  fontFamily   : 'monospace',
                   fontSize     : '0.9rem',
-                  color        : c.accent,
-                  letterSpacing: '0.1em',
-                  width        : '2rem',
+                  color        : '#71717a',
                   flexShrink   : 0,
                 }}>
                   {c.num}
@@ -130,11 +101,11 @@ export default function Cursos() {
                 {/* Título */}
                 <h3 style={{
                   flex         : 1,
-                  fontFamily   : 'var(--serif)',
-                  fontSize     : 'clamp(1.25rem, 3vw, 2.4rem)',
-                  fontWeight   : 300,
-                  letterSpacing: '-0.02em',
-                  color        : isOpen ? '#fff' : 'rgba(255,255,255,0.72)',
+                  fontFamily   : 'var(--sans)',
+                  fontSize     : 'clamp(1.5rem, 4vw, 3.5rem)',
+                  fontWeight   : 600,
+                  letterSpacing: '-0.03em',
+                  color        : isOpen ? '#fff' : '#a1a1aa',
                   lineHeight   : 1.05,
                   transition   : 'color 0.3s',
                 }}>
@@ -146,9 +117,9 @@ export default function Cursos() {
                   animate={{ rotate: isOpen ? 45 : 0 }}
                   transition={{ duration: 0.35 }}
                   style={{
-                    fontSize  : '1.6rem',
+                    fontSize  : '1.8rem',
                     fontWeight: 200,
-                    color     : c.accent,
+                    color     : isOpen ? '#fff' : '#71717a',
                     lineHeight: 1,
                     flexShrink: 0,
                   }}
@@ -168,65 +139,64 @@ export default function Cursos() {
                     transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
                     style={{ overflow: 'hidden' }}
                   >
-                    <div style={{ paddingLeft: 'calc(64px + 1.5rem)', paddingTop: '1.5rem' }}>
-                      {/* Tags */}
-                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-                        {c.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            style={{
-                              padding      : '0.22rem 0.75rem',
-                              borderRadius : '9999px',
-                              background   : 'rgba(255,255,255,0.05)',
-                              border       : `1px solid ${c.accent}35`,
-                              fontSize     : '0.68rem',
-                              color        : c.accent,
-                              letterSpacing: '0.1em',
-                              textTransform: 'uppercase',
-                            }}
-                          >
-                            {tag}
-                          </span>
-                        ))}
+                    <div
+                      className="curso-body"
+                      style={{
+                        display            : 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap                : 'clamp(2rem, 5vw, 4rem)',
+                        alignItems         : 'center',
+                        paddingTop         : 'clamp(2rem, 4vw, 3rem)',
+                      }}
+                    >
+                      {/* Imagen B&N */}
+                      <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 10', overflow: 'hidden' }}>
+                        <Image
+                          src={c.photo}
+                          alt={c.title}
+                          fill
+                          sizes="(max-width: 768px) 90vw, 600px"
+                          style={{ objectFit: 'cover', filter: 'grayscale(100%) contrast(1.05)' }}
+                        />
                       </div>
 
-                      {/* Descripción */}
-                      <p style={{
-                        fontSize    : '0.95rem',
-                        lineHeight  : 1.8,
-                        color       : 'rgba(255,255,255,0.55)',
-                        maxWidth    : '52ch',
-                        marginBottom: '2rem',
-                      }}>
-                        {c.sub}
-                      </p>
+                      {/* Descripción + CTA */}
+                      <div>
+                        <p style={{
+                          fontSize    : 'clamp(1rem, 1.4vw, 1.25rem)',
+                          lineHeight  : 1.7,
+                          color       : '#a1a1aa',
+                          maxWidth    : '46ch',
+                          marginBottom: '2.5rem',
+                        }}>
+                          {c.sub}
+                        </p>
 
-                      {/* CTA */}
-                      <button
-                        type="button"
-                        onClick={(e) => e.stopPropagation()}
-                        style={{
-                          display      : 'inline-flex',
-                          alignItems   : 'center',
-                          gap          : '0.6rem',
-                          padding      : '0.85rem 2rem',
-                          borderRadius : '9999px',
-                          background   : c.accent,
-                          color        : '#0a0a0a',
-                          fontSize     : '0.8rem',
-                          fontWeight   : 600,
-                          letterSpacing: '0.06em',
-                          textTransform: 'uppercase',
-                          border       : 'none',
-                          cursor       : 'pointer',
-                          transition   : 'opacity 0.2s',
-                        }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.85'; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
-                      >
-                        {c.cta}
-                        <span style={{ fontSize: '1rem', lineHeight: 1 }}>→</span>
-                      </button>
+                        <button
+                          type="button"
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            display      : 'inline-flex',
+                            alignItems   : 'center',
+                            gap          : '0.6rem',
+                            padding      : '0.9rem 2.2rem',
+                            background   : '#ffffff',
+                            color        : '#000000',
+                            fontSize     : '0.8rem',
+                            fontWeight   : 600,
+                            letterSpacing: '0.08em',
+                            textTransform: 'uppercase',
+                            border       : 'none',
+                            cursor       : 'pointer',
+                            transition   : 'opacity 0.2s',
+                          }}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.82'; }}
+                          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+                        >
+                          {c.cta}
+                          <span style={{ fontSize: '1rem', lineHeight: 1 }}>→</span>
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 )}
@@ -234,8 +204,6 @@ export default function Cursos() {
             </motion.div>
           );
         })}
-        {/* Línea de cierre */}
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }} />
       </div>
     </section>
   );

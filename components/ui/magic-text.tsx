@@ -4,20 +4,20 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MagicText — revelado palabra a palabra al hacer scroll (Aceternity style)
-// Cada palabra pasa de tenue → brillante según el progreso de scroll.
+// MagicText — revelado palabra a palabra al hacer scroll.
+// Monocromo: cada palabra pasa de zinc-800 (#27272a) → blanco puro.
+// Tipografía gigante, peso black, tracking negativo.
 // ─────────────────────────────────────────────────────────────────────────────
 interface MagicTextProps {
-  text  : string;
-  accent?: string;
+  text: string;
 }
 
-export function MagicText({ text, accent = 'var(--accent)' }: MagicTextProps) {
+export function MagicText({ text }: MagicTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start 0.9', 'start 0.25'],
+    offset: ['start 0.9', 'start 0.2'],
   });
 
   const words = text.split(' ');
@@ -27,20 +27,20 @@ export function MagicText({ text, accent = 'var(--accent)' }: MagicTextProps) {
       ref={containerRef}
       style={{
         display       : 'flex',
-        justifyContent: 'center',
-        padding       : '14vh 6vw',
+        justifyContent: 'flex-start',
+        padding       : 'clamp(8rem, 22vh, 16rem) 6vw',
       }}
     >
       <p
         style={{
           display      : 'flex',
           flexWrap     : 'wrap',
-          maxWidth     : '1100px',
-          fontFamily   : 'var(--serif)',
-          fontSize     : 'clamp(1.8rem, 5vw, 4.25rem)',
-          fontWeight   : 300,
-          lineHeight   : 1.18,
-          letterSpacing: '-0.02em',
+          maxWidth     : '1400px',
+          fontFamily   : 'var(--sans)',
+          fontSize     : 'clamp(2.2rem, 6.5vw, 6rem)',
+          fontWeight   : 800,
+          lineHeight   : 1.05,
+          letterSpacing: '-0.045em',
         }}
       >
         {words.map((word, i) => {
@@ -51,8 +51,6 @@ export function MagicText({ text, accent = 'var(--accent)' }: MagicTextProps) {
               key={`${word}-${i}`}
               progress={scrollYProgress}
               range={[start, end]}
-              accent={accent}
-              highlight={/IA|Inteligencia|Artificial|tiempo|cambio/i.test(word)}
             >
               {word}
             </Word>
@@ -67,29 +65,17 @@ function Word({
   children,
   progress,
   range,
-  accent,
-  highlight,
 }: {
-  children : string;
-  progress : MotionValue<number>;
-  range    : [number, number];
-  accent   : string;
-  highlight: boolean;
+  children: string;
+  progress: MotionValue<number>;
+  range   : [number, number];
 }) {
-  const opacity = useTransform(progress, range, [0, 1]);
-  const baseColor = highlight ? accent : '#ffffff';
+  const color = useTransform(progress, range, ['#27272a', '#ffffff']);
 
   return (
-    <span style={{ position: 'relative', marginRight: '0.28em', marginTop: '0.12em' }}>
-      {/* Sombra tenue de fondo */}
-      <span style={{ position: 'absolute', inset: 0, opacity: 0.12, color: baseColor }}>
-        {children}
-      </span>
-      {/* Palabra que se ilumina */}
-      <motion.span style={{ opacity, color: baseColor }}>
-        {children}
-      </motion.span>
-    </span>
+    <motion.span style={{ marginRight: '0.28em', marginTop: '0.05em', color }}>
+      {children}
+    </motion.span>
   );
 }
 

@@ -144,16 +144,6 @@ export default function HeroJD() {
           }}
         />
 
-        {/* Glow azul de acento — identidad visual */}
-        <div
-          aria-hidden="true"
-          style={{
-            position  : 'absolute',
-            inset     : 0,
-            zIndex    : 1,
-            background: 'radial-gradient(ellipse 65% 55% at 50% 50%, rgba(56,189,248,0.09) 0%, transparent 70%)',
-          }}
-        />
       </div>
 
       {/* ── Bloque de texto centrado ── */}

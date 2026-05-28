@@ -173,7 +173,7 @@ export default function CustomScrollbar() {
             width        : 5,
             height       : THUMB_H,
             borderRadius : 999,
-            background   : 'var(--accent, #38bdf8)',
+            background   : 'rgba(255,255,255,0.85)',
             cursor       : 'grab',
             pointerEvents: 'auto',
           }}

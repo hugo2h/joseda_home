@@ -16,8 +16,8 @@ export default function Home() {
       {/* Hero — vídeo cinematográfico, 100vh */}
       <HeroJD />
 
-      {/* Texto mágico — revelado palabra a palabra al scroll */}
-      <MagicText text="Hola, soy José David. Ayudo a docentes y centros educativos a integrar la Inteligencia Artificial para recuperar su tiempo, mejorar su enseñanza y liderar el cambio." />
+      {/* Texto mágico — revelado palabra a palabra al scroll (monocromo) */}
+      <MagicText text="José David. Maestro. Ingeniero. Formador de docentes." />
 
       {/* Sobre Mí — ContainerScroll 3D + Bento Grid con efecto Spotlight */}
       <AboutJD />

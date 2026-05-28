@@ -6,15 +6,9 @@ import { useIsomorphicLayoutEffect } from '@/lib/useIsomorphicLayoutEffect';
 
 const EMAIL = 'hola@jose-david.com';
 
-const SOCIAL = [
-  { label: 'YouTube',   href: 'https://youtube.com' },
-  { label: 'Instagram', href: 'https://instagram.com' },
-  { label: 'LinkedIn',  href: 'https://linkedin.com' },
-  { label: 'Podcast',   href: '#podcasts' },
-];
-
 // ─────────────────────────────────────────────────────────────────────────────
-// ContactJD — ultra minimalista: título enorme, email gigante reactivo, redes
+// ContactJD — minimalista monocromo: "Hablemos." gigante centrado + mailto
+// subrayado. Cero color de acento.
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ContactJD() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -29,7 +23,7 @@ export default function ContactJD() {
       ([entry]) => {
         if (!entry.isIntersecting) return;
         io.disconnect();
-        gsap.to(targets, { opacity: 1, y: 0, duration: 1, ease: 'power3.out', stagger: 0.12 });
+        gsap.to(targets, { opacity: 1, y: 0, duration: 1, ease: 'power3.out', stagger: 0.15 });
       },
       { rootMargin: '-12% 0px 0px 0px' },
     );
@@ -42,94 +36,60 @@ export default function ContactJD() {
       ref={sectionRef}
       id="contact"
       style={{
-        padding       : 'clamp(6rem, 14vh, 11rem) 5vw',
+        padding       : 'clamp(8rem, 22vh, 16rem) 5vw',
         display       : 'flex',
         flexDirection : 'column',
-        alignItems    : 'flex-start',
+        alignItems    : 'center',
+        textAlign     : 'center',
         background    : 'transparent',
       }}
     >
       {/* Overline */}
       <p data-reveal style={{
-        fontSize     : '0.72rem',
-        letterSpacing: '0.22em',
+        fontFamily   : 'monospace',
+        fontSize     : '0.75rem',
+        letterSpacing: '0.25em',
         textTransform: 'uppercase',
-        color        : 'var(--accent)',
-        marginBottom : '1.5rem',
+        color        : '#71717a',
+        marginBottom : 'clamp(2rem, 5vh, 3.5rem)',
       }}>
-        05 — Contacto
+        05 / Contacto
       </p>
 
-      {/* Título enorme */}
+      {/* Título gigante */}
       <h2 data-reveal style={{
-        fontFamily   : 'var(--serif)',
-        fontSize     : 'clamp(4rem, 16vw, 14rem)',
-        fontWeight   : 300,
-        letterSpacing: '-0.04em',
+        fontFamily   : 'var(--sans)',
+        fontSize     : 'clamp(4.5rem, 18vw, 16rem)',
+        fontWeight   : 800,
+        letterSpacing: '-0.05em',
         lineHeight   : 0.9,
         color        : '#fff',
-        marginBottom : 'clamp(2.5rem, 6vw, 5rem)',
+        marginBottom : 'clamp(2.5rem, 6vw, 4.5rem)',
       }}>
-        Hablemos<span style={{ color: 'var(--accent)' }}>.</span>
+        Hablemos.
       </h2>
 
-      {/* Email gigante */}
+      {/* Email subrayado */}
       <a
         data-reveal
         href={`mailto:${EMAIL}?subject=${encodeURIComponent('Consulta desde jose-david.com')}`}
         style={{
-          fontFamily    : 'var(--serif)',
-          fontSize      : 'clamp(1.6rem, 6vw, 4.5rem)',
-          fontWeight    : 300,
-          letterSpacing : '-0.02em',
-          color         : 'rgba(255,255,255,0.6)',
-          textDecoration: 'none',
-          display       : 'inline-block',
-          transition    : 'color 0.3s, transform 0.3s',
-          wordBreak     : 'break-word',
+          fontFamily     : 'var(--sans)',
+          fontSize       : 'clamp(1.25rem, 4vw, 2.75rem)',
+          fontWeight     : 400,
+          letterSpacing  : '-0.02em',
+          color          : '#ffffff',
+          textDecoration : 'underline',
+          textUnderlineOffset: '0.18em',
+          textDecorationThickness: '1px',
+          wordBreak      : 'break-word',
+          transition     : 'color 0.3s',
         }}
-        onMouseEnter={(e) => {
-          const a = e.currentTarget as HTMLAnchorElement;
-          a.style.color = '#fff';
-          a.style.transform = 'translateX(0.5rem)';
-        }}
-        onMouseLeave={(e) => {
-          const a = e.currentTarget as HTMLAnchorElement;
-          a.style.color = 'rgba(255,255,255,0.6)';
-          a.style.transform = 'translateX(0)';
-        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#a1a1aa'; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#ffffff'; }}
       >
-        {EMAIL}&nbsp;→
+        {EMAIL}
       </a>
-
-      {/* Redes sociales */}
-      <div data-reveal style={{
-        display   : 'flex',
-        gap       : '2rem',
-        flexWrap  : 'wrap',
-        marginTop : 'clamp(3rem, 8vw, 6rem)',
-      }}>
-        {SOCIAL.map(({ label, href }) => (
-          <a
-            key={label}
-            href={href}
-            target={href.startsWith('http') ? '_blank' : undefined}
-            rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-            style={{
-              fontSize     : '0.8rem',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color        : 'rgba(255,255,255,0.4)',
-              textDecoration: 'none',
-              transition   : 'color 0.2s',
-            }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--accent)'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.4)'; }}
-          >
-            {label}
-          </a>
-        ))}
-      </div>
     </section>
   );
 }
