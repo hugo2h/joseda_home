@@ -82,6 +82,7 @@ export default function HeroJD() {
     >
       {/* ── Wrapper animado por GSAP (scale zoom-out cinematográfico) ── */}
       <div
+        className="hero-bg-wrap"
         ref={bgWrapRef}
         style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden' }}
       >
@@ -93,15 +94,7 @@ export default function HeroJD() {
           playsInline
           src="/videos/hero.mp4.mp4"
           className="hero-bg-video"
-          style={{
-            width         : '100%',
-            height        : '100%',
-            objectFit     : 'cover',
-            objectPosition: '50% 70%',
-            position      : 'absolute',
-            inset         : 0,
-            zIndex        : 0,
-          }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
 
         {/* Overlay oscuro — legibilidad del texto */}
