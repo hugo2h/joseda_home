@@ -1,280 +1,237 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
-import Image from 'next/image';
+import { useRef } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useIsomorphicLayoutEffect } from '@/lib/useIsomorphicLayoutEffect';
 
-gsap.registerPlugin(ScrollTrigger);
-
 // ─────────────────────────────────────────────────────────────────────────────
-// Props — todos opcionales con valores por defecto
+// HeroJD — plano cinematográfico con vídeo + blur text reveal (Aristide style)
 // ─────────────────────────────────────────────────────────────────────────────
-interface HeroProps {
-  label?:       string;
-  line1Normal?: string;
-  line1Accent?: string;
-  line2Normal?: string;
-  line2Accent?: string;
-  sub?:         string;
-  stamp?:       string;
-}
+export default function HeroJD() {
+  const labelRef    = useRef<HTMLParagraphElement>(null);
+  const titleRef    = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLHeadingElement>(null);
+  const ctaRef      = useRef<HTMLDivElement>(null);
 
-// Proximity hover
-const LIFT_RADIUS = 95;
-const MAX_LIFT    = -7;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// HeroJD
-// ─────────────────────────────────────────────────────────────────────────────
-export default function HeroJD({
-  label       = '01 — Inicio',
-  line1Normal = 'Transforma tu forma de ',
-  line1Accent = 'enseñar',
-  line2Normal = 'con Inteligencia ',
-  line2Accent = 'Artificial.',
-  sub         = 'Soy José David. Maestro, Ingeniero y formador de docentes. Te ayudo a integrar la IA, mejorar tu competencia digital y optimizar tus clases para que recuperes tu tiempo.',
-  stamp       = 'José David — Educación & IA',
-}: HeroProps = {}) {
-
-  const TOTAL      = line1Normal.length + line1Accent.length + line2Normal.length + line2Accent.length;
-  const sectionRef = useRef<HTMLElement>(null);
-  const labelRef   = useRef<HTMLParagraphElement>(null);
-  const line1Ref   = useRef<HTMLSpanElement>(null);
-  const line2Ref   = useRef<HTMLSpanElement>(null);
-  const subRef     = useRef<HTMLParagraphElement>(null);
-  const innerRef   = useRef<HTMLDivElement>(null);
-  const charRefs   = useRef<(HTMLSpanElement | null)[]>(Array.from({ length: TOTAL }, () => null));
-
+  // Blur text reveal secuencial
   useIsomorphicLayoutEffect(() => {
-    if (!sectionRef.current) return;
-    const sv       = document.querySelector<HTMLElement>('.scroll-viewport');
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-
     const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        delay   : 0.4,
+        defaults: { ease: 'power3.out' },
+      });
 
-      // ── Entrance animation ────────────────────────────────────────────────
-      // En móvil: duraciones más cortas para no bloquear la interacción
-      const dur = isMobile ? 0.65 : 1.0;
-      const tl  = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-      // Fondo: zoom-out cinematográfico (scale 1.05 → 1, opacity 0 → 1)
-      const bgWrap = sectionRef.current?.querySelector<HTMLElement>('.hero-bg-wrap');
-      if (bgWrap) {
-        tl.from(bgWrap, {
-          scale   : 1.05,
-          opacity : 0,
-          duration: isMobile ? 0.7 : 1.2,
-          ease    : 'power2.out',
-        }, 0);
-      }
-
-      tl.from(labelRef.current, { y: 20, opacity: 0, duration: dur * 0.8 }, isMobile ? 0.15 : 0.3)
-        .from([line1Ref.current, line2Ref.current], { y: '110%', duration: dur, stagger: 0.1 }, isMobile ? 0.25 : 0.45)
-        .from(subRef.current,  { y: 18, opacity: 0, duration: dur * 0.9, ease: 'power2.out' }, isMobile ? 0.6 : 0.9);
-
-      // ── Scroll pin + text parallax (SOLO DESKTOP) ─────────────────────────
-      // En móvil el pin provoca un "atasco" largo antes de avanzar → se desactiva.
-      // El Hero simplemente scrollea con normalidad en pantallas pequeñas.
-      if (!isMobile && sv && innerRef.current) {
-        const wraps        = Array.from(innerRef.current.querySelectorAll('.reveal-wrap'));
-        const textElements = [labelRef.current, subRef.current, ...wraps].filter(Boolean);
-
-        gsap.timeline({
-          scrollTrigger: {
-            trigger      : sectionRef.current,
-            scroller     : sv,
-            start        : 'top top',
-            end          : '+=70%',
-            pin          : true,
-            pinSpacing   : true,
-            pinType      : 'transform',
-            anticipatePin: 1,
-            scrub        : 1.5,
-          },
-        }).fromTo(
-          textElements,
-          { y: 0, opacity: 1, scale: 1, immediateRender: false },
-          {
-            y              : -8,
-            opacity        : 0,
-            scale          : 1.06,
-            ease           : 'power1.in',
-            stagger        : { each: 0.16, from: 'start' },
-            transformOrigin: 'center center',
-          },
-        );
-      }
-
-    }, sectionRef);
-
-    return () => {
-      ctx.revert();
-      ScrollTrigger.refresh();
-    };
-  }, []);
-
-  // ── Character proximity hover wave ──────────────────────────────────────
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLHeadingElement>) => {
-    charRefs.current.forEach((el) => {
-      if (!el) return;
-      const r    = el.getBoundingClientRect();
-      const dist = Math.hypot(
-        e.clientX - (r.left + r.width  / 2),
-        e.clientY - (r.top  + r.height / 2),
-      );
-      if (dist < LIFT_RADIUS) {
-        const t = 1 - dist / LIFT_RADIUS;
-        gsap.to(el, { y: MAX_LIFT * t * t, duration: 0.18, ease: 'power2.out', overwrite: 'auto' });
-      } else {
-        gsap.to(el, { y: 0, duration: 0.7, ease: 'elastic.out(1.1,0.45)', overwrite: 'auto' });
-      }
+      tl.from(titleRef.current, {
+        filter  : 'blur(24px)',
+        opacity : 0,
+        y       : 30,
+        duration: 1.6,
+      })
+      .from(subtitleRef.current, {
+        filter  : 'blur(12px)',
+        opacity : 0,
+        y       : 20,
+        duration: 1.2,
+      }, '-=0.9')
+      .from(labelRef.current, {
+        opacity : 0,
+        y       : 14,
+        duration: 0.8,
+      }, '-=0.8')
+      .from(ctaRef.current, {
+        opacity : 0,
+        y       : 14,
+        duration: 0.8,
+      }, '-=0.55');
     });
+
+    return () => ctx.revert();
   }, []);
 
-  const handleMouseLeave = useCallback(() => {
-    charRefs.current.forEach((el) => {
-      if (el) gsap.to(el, { y: 0, duration: 0.8, ease: 'elastic.out(1,0.4)', overwrite: 'auto' });
-    });
-  }, []);
+  const scrollTo = (href: string) => {
+    const el = document.querySelector<HTMLElement>(href);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
 
-  // ── Per-character <span> builder ─────────────────────────────────────────
-  function chars(text: string, startIdx: number, isEm = false) {
-    const result: React.ReactNode[] = [];
-    let i = 0;
-    while (i < text.length) {
-      if (text[i] === ' ') {
-        const idx = startIdx + i;
-        result.push(
-          //   = non-breaking space: nunca colapsa en display:inline-block
-          <span key={idx} ref={(el) => { charRefs.current[idx] = el; }} className="hero-char hero-char--space" aria-hidden="true">
-            {' '}
-          </span>,
-        );
-        i++;
-      } else {
-        const wordStart = i;
-        while (i < text.length && text[i] !== ' ') i++;
-        const wordSpans = text.slice(wordStart, i).split('').map((ch, j) => {
-          const idx = startIdx + wordStart + j;
-          return (
-            <span
-              key={idx}
-              ref={(el) => { charRefs.current[idx] = el; }}
-              className="hero-char"
-              data-em={isEm ? 'true' : undefined}
-              style={isEm ? { fontStyle: 'italic' } : undefined}
-            >
-              {ch}
-            </span>
-          );
-        });
-        result.push(
-          <span
-            key={`w${wordStart}`}
-            className={
-              isEm
-                ? 'inline-block whitespace-nowrap hover:text-white transition-colors duration-300 cursor-default'
-                : undefined
-            }
-            style={
-              isEm
-                ? { color: 'var(--accent, #38bdf8)' }
-                : { display: 'inline-block', whiteSpace: 'nowrap' }
-            }
-          >
-            {wordSpans}
-          </span>,
-        );
-      }
-    }
-    return result;
-  }
-
-  // ── JSX ──────────────────────────────────────────────────────────────────
   return (
-    <section className="hero" id="inicio" ref={sectionRef}>
-
-      {/* ── Foto de fondo optimizada con gradiente ajustado para no tapar en móvil ── */}
-      <div
-        className="absolute inset-0 w-full h-full pointer-events-none z-0"
+    <section
+      id="inicio"
+      style={{
+        position      : 'relative',
+        width         : '100%',
+        height        : '100vh',
+        overflow      : 'hidden',
+        display       : 'flex',
+        flexDirection : 'column',
+        alignItems    : 'center',
+        justifyContent: 'center',
+      }}
+    >
+      {/* ── Vídeo de fondo ── */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        src="/videos/hero.mp4.mp4"
         style={{
-          maskImage        : 'linear-gradient(to bottom, black 70%, transparent 100%)',
-          WebkitMaskImage  : 'linear-gradient(to bottom, black 70%, transparent 100%)',
+          position      : 'absolute',
+          inset         : 0,
+          width         : '100%',
+          height        : '100%',
+          objectFit     : 'cover',
+          objectPosition: '50% 70%',
+          filter        : 'brightness(0.75)',
+          zIndex        : 0,
+        }}
+      />
+
+      {/* ── Gradiente inferior para legibilidad del texto ── */}
+      <div
+        aria-hidden="true"
+        style={{
+          position  : 'absolute',
+          inset     : 0,
+          zIndex    : 1,
+          background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.1) 100%)',
+        }}
+      />
+
+      {/* ── Bloque de texto centrado ── */}
+      <div
+        style={{
+          position  : 'relative',
+          zIndex    : 2,
+          textAlign : 'center',
+          padding   : '0 1.5rem',
+          maxWidth  : '960px',
+          width     : '100%',
         }}
       >
-        <Image
-          src="/images/hero-bg.jpg"
-          alt="José David"
-          fill
-          priority={true}
-          sizes="(max-width: 768px) 100vw, 100vw"
-          className="object-cover object-[50%_80%] md:object-[50%_20%] saturate-[1.1] brightness-[1.05] hero-bg-img"
-        />
-        {/* Overlay oscuro con degradado diagonal — legibilidad premium */}
-        <div
-          aria-hidden="true"
+        {/* Label */}
+        <p
+          ref={labelRef}
           style={{
-            position  : 'absolute',
-            inset     : 0,
-            background: 'linear-gradient(135deg, rgba(5,5,5,0.82) 0%, rgba(5,5,5,0.52) 48%, rgba(5,5,5,0.78) 100%)',
+            fontSize     : '0.72rem',
+            letterSpacing: '0.25em',
+            textTransform: 'uppercase',
+            color        : 'rgba(255,255,255,0.45)',
+            marginBottom : '1.25rem',
+            fontFamily   : 'var(--sans)',
           }}
-        />
-        {/* Glow de acento centrado */}
-        <div
-          aria-hidden="true"
-          style={{
-            position  : 'absolute',
-            inset     : 0,
-            background: 'radial-gradient(ellipse 65% 55% at 50% 50%, rgba(56,189,248,0.09) 0%, transparent 70%)',
-          }}
-        />
-      </div>
-
-      {/* ── Bloque de texto — z:10 ── */}
-      <div className="hero-inner relative z-10 w-full flex flex-col justify-center h-full px-6 md:px-12" ref={innerRef}>
-        <p className="hero-label" ref={labelRef}>{label}</p>
-
-        <h1
-          className="hero-headline font-display font-light"
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
         >
-          {/* Línea 1 */}
-          <span className="reveal-wrap">
-            <span className="reveal-inner" ref={line1Ref}>
-              {chars(line1Normal, 0)}
-              {chars(line1Accent, line1Normal.length, true)}
-            </span>
-          </span>
+          01 — Inicio
+        </p>
 
-          {/* Línea 2 */}
-          <span className="reveal-wrap">
-            <span className="reveal-inner" ref={line2Ref}>
-              {chars(line2Normal, line1Normal.length + line1Accent.length)}
-              {chars(line2Accent, line1Normal.length + line1Accent.length + line2Normal.length)}
-            </span>
-          </span>
+        {/* Título principal — gigante */}
+        <h1
+          ref={titleRef}
+          style={{
+            fontSize     : 'clamp(3.5rem, 13vw, 10rem)',
+            fontWeight   : 200,
+            letterSpacing: '-0.03em',
+            lineHeight   : 0.9,
+            color        : '#ffffff',
+            marginBottom : '1.5rem',
+            fontFamily   : 'var(--serif, serif)',
+          }}
+        >
+          JOSÉ DAVID
         </h1>
 
-        <p className="hero-sub" ref={subRef}>{sub}</p>
+        {/* Subtítulo */}
+        <h2
+          ref={subtitleRef}
+          style={{
+            fontSize     : 'clamp(0.9rem, 2.2vw, 1.35rem)',
+            fontWeight   : 300,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color        : 'rgba(255,255,255,0.65)',
+            marginBottom : '2.75rem',
+            fontFamily   : 'var(--sans)',
+          }}
+        >
+          Educación &amp; Inteligencia Artificial
+        </h2>
+
+        {/* CTAs */}
+        <div
+          ref={ctaRef}
+          style={{ display: 'flex', gap: '0.85rem', justifyContent: 'center', flexWrap: 'wrap' }}
+        >
+          <button
+            type="button"
+            onClick={() => scrollTo('#cursos')}
+            style={{
+              padding       : '0.85rem 2.2rem',
+              borderRadius  : '9999px',
+              background    : '#ffffff',
+              color         : '#0a0a0a',
+              fontSize      : '0.83rem',
+              fontWeight    : 600,
+              letterSpacing : '0.05em',
+              border        : 'none',
+              cursor        : 'pointer',
+              textTransform : 'uppercase',
+              transition    : 'opacity 0.2s, transform 0.15s',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.88'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+          >
+            Descubrir cursos
+          </button>
+
+          <button
+            type="button"
+            onClick={() => scrollTo('#contact')}
+            style={{
+              padding       : '0.85rem 2.2rem',
+              borderRadius  : '9999px',
+              background    : 'rgba(255,255,255,0.1)',
+              color         : '#ffffff',
+              fontSize      : '0.83rem',
+              fontWeight    : 400,
+              letterSpacing : '0.05em',
+              border        : '1px solid rgba(255,255,255,0.22)',
+              cursor        : 'pointer',
+              textTransform : 'uppercase',
+              transition    : 'background 0.2s',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.18)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.1)'; }}
+          >
+            Contratar&nbsp;→
+          </button>
+        </div>
       </div>
 
-      {/* ── Indicadores ── */}
-      <div className="scroll-indicator">
-        <div className="scroll-line" />
-        <span style={{
-          fontSize     : '0.68rem',
-          letterSpacing: '0.18em',
-          textTransform: 'uppercase',
-          color        : 'var(--muted)',
-        }}>
+      {/* ── Indicador de scroll ── */}
+      <div
+        style={{
+          position      : 'absolute',
+          bottom        : '2.25rem',
+          left          : '50%',
+          transform     : 'translateX(-50%)',
+          zIndex        : 2,
+          display       : 'flex',
+          flexDirection : 'column',
+          alignItems    : 'center',
+          gap           : '0.5rem',
+        }}
+      >
+        <div className="scroll-line" style={{ height: '48px' }} />
+        <span
+          style={{
+            fontSize     : '0.62rem',
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            color        : 'rgba(255,255,255,0.3)',
+          }}
+        >
           Scroll
         </span>
       </div>
-      <span className="hero-stamp">{stamp}</span>
-
     </section>
   );
 }

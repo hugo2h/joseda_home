@@ -1,271 +1,320 @@
 'use client';
 
 import { useRef } from 'react';
+import type { ReactNode } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Draggable } from 'gsap/Draggable';
 import { useIsomorphicLayoutEffect } from '@/lib/useIsomorphicLayoutEffect';
 
-gsap.registerPlugin(ScrollTrigger, Draggable);
+gsap.registerPlugin(ScrollTrigger);
 
-// ─── Contenido de las ventanas ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// BentoCard — tarjeta con efecto spotlight (radial-gradient sigue al ratón)
+// ─────────────────────────────────────────────────────────────────────────────
+function BentoCard({
+  children,
+  style = {},
+  className = '',
+}: {
+  children : ReactNode;
+  style    ?: React.CSSProperties;
+  className?: string;
+}) {
+  const cardRef  = useRef<HTMLDivElement>(null);
+  const spotRef  = useRef<HTMLDivElement>(null);
 
-const WIN_PERFIL = (
-  <div>
-    <p style={{ marginBottom: '0.75rem' }}>
-      <span className="syn-blue">Maestro de Primaria</span> con mención en{' '}
-      <span className="syn-green">Psicopedagogía</span> e{' '}
-      <span className="syn-yellow">Ingeniero de Telecomunicación</span>.
-    </p>
-    <p>
-      Combino la <span className="syn-green">pedagogía</span> y la{' '}
-      <span className="syn-blue">tecnología</span> para transformar la educación
-      con Inteligencia Artificial.
-    </p>
-  </div>
-);
+  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current || !spotRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x    = e.clientX - rect.left;
+    const y    = e.clientY - rect.top;
+    spotRef.current.style.opacity    = '1';
+    spotRef.current.style.background =
+      `radial-gradient(400px circle at ${x}px ${y}px, rgba(56,189,248,0.14), transparent 40%)`;
+  };
 
-const WIN_HITOS = (
-  <ol className="os-lines">
-    <li><span className="os-ln">1</span>Premio Innovación Educativa 🏆</li>
-    <li><span className="os-ln">2</span>100K suscriptores YouTube — Botón de Plata 🎖</li>
-    <li><span className="os-ln">3</span>+17M personas ayudadas con contenido</li>
-    <li><span className="os-ln">4</span>Google Certified Innovator &amp; Trainer</li>
-  </ol>
-);
+  const onMouseLeave = () => {
+    if (spotRef.current) spotRef.current.style.opacity = '0';
+  };
 
-const WIN_REDES = (
-  <ol className="os-lines">
-    <li>
-      <span className="os-ln">1</span>
-      <a href="https://www.youtube.com/@josedavidprofe" className="os-link" target="_blank" rel="noopener noreferrer">
-        YouTube — @josedavidprofe ↗
-      </a>
-    </li>
-    <li>
-      <span className="os-ln">2</span>
-      <a href="https://www.instagram.com/josedavidprofe" className="os-link" target="_blank" rel="noopener noreferrer">
-        Instagram — @josedavidprofe ↗
-      </a>
-    </li>
-    <li>
-      <span className="os-ln">3</span>
-      <a href="https://www.linkedin.com/in/josedavidprofe" className="os-link" target="_blank" rel="noopener noreferrer">
-        LinkedIn ↗
-      </a>
-    </li>
-    <li>
-      <span className="os-ln">4</span>
-      <a href="#podcasts" className="os-link">
-        Podcast — Tribu de Profes ↗
-      </a>
-    </li>
-  </ol>
-);
-
-// ─── Registro de ventanas ──────────────────────────────────────────────────
-const WINDOWS: Array<{
-  id      : string;
-  title   : string;
-  content : React.ReactNode;
-  isPhoto?: boolean;
-}> = [
-  { id: 'mi-perfil',   title: 'mi-perfil.md',   content: WIN_PERFIL  },
-  { id: 'hitos',       title: 'hitos.log',       content: WIN_HITOS   },
-  { id: 'foto',        title: 'jose-david.jpg',  content: null, isPhoto: true },
-  { id: 'redes',       title: 'redes-sociales',  content: WIN_REDES   },
-];
-
-// ─── Posiciones iniciales ──────────────────────────────────────────────────
-const NAV = 'var(--nav-sw, 60px)';
-const INIT_POS = [
-  { top: '20px',  left: `calc(${NAV} + 2%)` },
-  { top: '60px',  left: `calc(${NAV} + 42%)` },
-  { top: '290px', left: `calc(${NAV} + 60%)` },
-  { top: '280px', left: `calc(${NAV} + 4%)` },
-];
-
-// ─── Título ────────────────────────────────────────────────────────────────
-const TITLE_WORDS = [
-  { text: 'Educación',  accent: false },
-  { text: 'con',        accent: false },
-  { text: 'impacto.',   accent: true  },
-];
-
-const BTN_LABEL = 'sobre mí →';
-
-function WaveButton() {
   return (
-    <div className="about-os-cta-wrap">
-      <a href="#about" className="about-os-cta" aria-label="Saber más sobre José David">
-        {BTN_LABEL.split('').map((ch, i) => (
-          <span
-            key={i}
-            className="wave-char"
-            aria-hidden="true"
-            style={{ animationDelay: `${i * 0.045}s` }}
-          >
-            {ch === ' ' ? ' ' : ch}
-          </span>
-        ))}
-      </a>
+    <div
+      ref={cardRef}
+      className={`bento-card ${className}`}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      style={{
+        position  : 'relative',
+        background: 'rgba(255,255,255,0.035)',
+        border    : '1px solid rgba(255,255,255,0.08)',
+        borderRadius: '1.5rem',
+        overflow  : 'hidden',
+        padding   : '2rem',
+        ...style,
+      }}
+    >
+      {/* Spotlight layer */}
+      <div
+        ref={spotRef}
+        aria-hidden="true"
+        style={{
+          position    : 'absolute',
+          inset       : 0,
+          opacity     : 0,
+          pointerEvents: 'none',
+          transition  : 'opacity 0.35s ease',
+          zIndex      : 0,
+          borderRadius: 'inherit',
+        }}
+      />
+      {/* Content on top of spotlight */}
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        {children}
+      </div>
     </div>
   );
 }
 
-// ─── Componente ────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Logos tecnología
+// ─────────────────────────────────────────────────────────────────────────────
+const TECH_LOGOS = [
+  { name: 'Google for Education', icon: '🎓' },
+  { name: 'Google Certified',     icon: '✅' },
+  { name: 'YouTube',              icon: '▶️'  },
+  { name: 'ChatGPT / OpenAI',     icon: '🤖' },
+  { name: 'Microsoft Education',  icon: '🪟' },
+  { name: 'Canva Education',      icon: '🎨' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AboutJD — Bento Grid asimétrico
+// ─────────────────────────────────────────────────────────────────────────────
 export default function AboutJD() {
   const sectionRef = useRef<HTMLElement>(null);
-  const titleRef   = useRef<HTMLHeadingElement>(null);
-  const winRefs    = useRef<(HTMLDivElement | null)[]>([]);
-  const zCount     = useRef(10);
 
+  // Entrada en viewport
   useIsomorphicLayoutEffect(() => {
     if (!sectionRef.current) return;
+    const cards = sectionRef.current.querySelectorAll<HTMLElement>('.bento-card');
+    gsap.set(cards, { opacity: 0, y: 40 });
 
-    const scrollViewport = document.querySelector<HTMLElement>('.scroll-viewport');
-
-    const ctx = gsap.context(() => {
-
-      gsap.from('.about-word-inner', {
-        y        : '115%',
-        duration : 0.8,
-        stagger  : 0.07,
-        ease     : 'power3.out',
-        scrollTrigger: {
-          trigger : titleRef.current,
-          scroller: scrollViewport,
-          start   : 'top 82%',
-          once    : true,
-        },
-      });
-
-      const windowEls = winRefs.current.filter((el): el is HTMLDivElement => el !== null);
-
-      gsap.fromTo(
-        windowEls,
-        { scale: 0.6, opacity: 0, transformOrigin: 'center center' },
-        {
-          scale          : 1,
-          opacity        : 1,
-          transformOrigin: 'center center',
-          duration       : 1.1,
-          ease           : 'power3.out',
-          stagger        : 0.15,
-          scrollTrigger  : {
-            trigger : sectionRef.current,
-            scroller: scrollViewport,
-            start   : 'top 70%',
-            once    : true,
-          },
-          onComplete() {
-            gsap.set(windowEls, { clearProps: 'transform,transformOrigin,scale,opacity' });
-          },
-        }
-      );
-
-    }, sectionRef);
-
-    const draggables = winRefs.current
-      .filter((el): el is HTMLDivElement => el !== null)
-      .flatMap((el) =>
-        Draggable.create(el, {
-          type                    : 'top,left',
-          edgeResistance          : 0.65,
-          allowNativeTouchScrolling: true,
-          onPress() {
-            zCount.current += 1;
-            (this.target as HTMLElement).style.zIndex = String(zCount.current);
-          },
-          onDragStart() { (this.target as HTMLElement).style.cursor = 'grabbing'; },
-          onDragEnd()   { (this.target as HTMLElement).style.cursor = ''; },
-        })
-      );
-
-    return () => {
-      ctx.revert();
-      ScrollTrigger.refresh();
-      draggables.forEach((d) => d.kill());
-    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        gsap.to(cards, {
+          opacity : 1,
+          y       : 0,
+          duration: 0.85,
+          ease    : 'power3.out',
+          stagger : 0.1,
+        });
+      },
+      { rootMargin: '-10% 0px 0px 0px' },
+    );
+    observer.observe(sectionRef.current);
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <section className="about-os" id="about" ref={sectionRef}>
+    <section ref={sectionRef} id="about" style={{ padding: '7rem 5vw', background: 'transparent' }}>
 
-      <div className="about-os-header">
-        <p className="about-os-overline">02 — Sobre Mí</p>
-
-        <h2
-          className="about-os-title"
-          ref={titleRef}
-          aria-label="Educación con impacto."
-        >
-          {TITLE_WORDS.map(({ text, accent }, i) => (
-            <span key={i} className="about-word-wrap" aria-hidden="true">
-              {accent
-                ? <em className="about-word-inner">{text}</em>
-                : <span className="about-word-inner">{text}</span>}
-            </span>
-          ))}
+      {/* Cabecera */}
+      <div style={{ marginBottom: '3.5rem' }}>
+        <p style={{
+          fontSize     : '0.72rem',
+          letterSpacing: '0.22em',
+          textTransform: 'uppercase',
+          color        : 'var(--accent)',
+          marginBottom : '1rem',
+        }}>
+          02 — Sobre Mí
+        </p>
+        <h2 style={{
+          fontFamily   : 'var(--serif)',
+          fontSize     : 'clamp(2.2rem, 5vw, 4.5rem)',
+          fontWeight   : 300,
+          letterSpacing: '-0.03em',
+          lineHeight   : 1,
+          color        : '#fff',
+        }}>
+          Maestro. Ingeniero.<br /><em style={{ color: 'var(--accent)', fontStyle: 'italic' }}>Formador.</em>
         </h2>
       </div>
 
-      <div className="about-os-stage">
-        {WINDOWS.map(({ id, title, content, isPhoto }, i) => (
-          <div
-            key={id}
-            ref={(el) => { winRefs.current[i] = el; }}
-            className={`os-window os-window--${id}`}
-            style={{
-              top   : INIT_POS[i].top,
-              left  : INIT_POS[i].left,
-              zIndex: 10 + i,
-            }}
-          >
-            <div className="os-glass" aria-hidden="true" />
+      {/* ── Bento Grid ── */}
+      <div style={{
+        display            : 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gridAutoRows       : 'auto',
+        gap                : '1rem',
+      }}
+        className="bento-grid"
+      >
 
-            <div className="os-titlebar">
-              <span className="os-wintitle">{title}</span>
-              <div className="os-dots" aria-hidden="true">
-                {/* Minimize (decorativo) */}
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <line x1="1.5" y1="6" x2="10.5" y2="6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-                {/* Maximize (decorativo) */}
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <rect x="1.5" y="1.5" width="9" height="9" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-                </svg>
-                {/* Close (decorativo) */}
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                  <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-              </div>
-            </div>
-
-            <div className="os-body">
-              {isPhoto ? (
-                <div className="os-photo-wrap">
-                  <Image
-                    src="/jd-stage.jpg"
-                    alt="José David dando una ponencia ante un gran auditorio"
-                    fill
-                    sizes="(max-width: 768px) 70vw, 280px"
-                    style={{ objectFit: 'cover', objectPosition: 'center top' }}
-                    priority={false}
-                  />
+        {/* Tarjeta 1 — Biografía + foto (col-span-2) */}
+        <BentoCard
+          style={{ gridColumn: 'span 2', minHeight: '340px', display: 'flex', gap: '2rem', alignItems: 'center' }}
+        >
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{
+              fontSize    : '0.72rem',
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color       : 'var(--muted)',
+              marginBottom: '1rem',
+            }}>
+              Quién soy
+            </p>
+            <p style={{ fontSize: '1.05rem', lineHeight: 1.75, color: 'rgba(255,255,255,0.82)', marginBottom: '1rem' }}>
+              <strong style={{ color: '#fff', fontWeight: 500 }}>Maestro de Primaria</strong> con mención en
+              Psicopedagogía e <strong style={{ color: '#fff', fontWeight: 500 }}>Ingeniero de Telecomunicación</strong>.
+            </p>
+            <p style={{ fontSize: '0.92rem', lineHeight: 1.75, color: 'rgba(255,255,255,0.58)' }}>
+              Combino pedagogía y tecnología para transformar la educación con Inteligencia Artificial.
+              Más de <strong style={{ color: 'var(--accent)', fontWeight: 500 }}>17 millones de personas</strong> han mejorado
+              su práctica docente gracias a mis recursos.
+            </p>
+            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+              {[
+                ['17M+', 'Personas alcanzadas'],
+                ['100K+', 'Suscriptores YouTube'],
+                ['8+', 'Años de experiencia'],
+              ].map(([n, label]) => (
+                <div key={label}>
+                  <div style={{ fontSize: '1.6rem', fontWeight: 200, color: '#fff', lineHeight: 1, fontFamily: 'var(--serif)' }}>{n}</div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--muted)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '0.25rem' }}>{label}</div>
                 </div>
-              ) : (
-                content
-              )}
+              ))}
             </div>
           </div>
-        ))}
+
+          {/* Foto */}
+          <div style={{ flexShrink: 0, width: '160px', height: '200px', borderRadius: '0.75rem', overflow: 'hidden', position: 'relative' }}>
+            <Image
+              src="/images/jose-david-contacto.jpg"
+              alt="José David Pérez Ibáñez"
+              fill
+              sizes="160px"
+              style={{ objectFit: 'cover', objectPosition: 'center 10%' }}
+            />
+          </div>
+        </BentoCard>
+
+        {/* Tarjeta 2 — YouTube (col-span-1) */}
+        <BentoCard style={{ minHeight: '160px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ fontSize: '2.5rem', lineHeight: 1 }}>▶️</div>
+          <div>
+            <div style={{
+              fontSize    : 'clamp(2rem, 4vw, 3rem)',
+              fontWeight  : 200,
+              color       : '#fff',
+              lineHeight  : 1,
+              fontFamily  : 'var(--serif)',
+            }}>
+              100K+
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--muted)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '0.4rem' }}>
+              Suscriptores YouTube
+            </div>
+            <div style={{ marginTop: '0.5rem' }}>
+              <span style={{
+                display      : 'inline-block',
+                padding      : '0.2rem 0.65rem',
+                borderRadius : '9999px',
+                background   : 'rgba(255,255,255,0.07)',
+                border       : '1px solid rgba(255,255,255,0.12)',
+                fontSize     : '0.68rem',
+                color        : 'rgba(255,255,255,0.55)',
+                letterSpacing: '0.06em',
+              }}>
+                Botón de Plata 🎖
+              </span>
+            </div>
+          </div>
+        </BentoCard>
+
+        {/* Tarjeta 3 — Premio (col-span-1) */}
+        <BentoCard style={{ minHeight: '160px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ fontSize: '2.2rem', lineHeight: 1 }}>🏆</div>
+          <div>
+            <div style={{
+              fontSize    : '1.1rem',
+              fontWeight  : 500,
+              color       : '#fff',
+              lineHeight  : 1.3,
+              marginBottom: '0.4rem',
+            }}>
+              Premio Innovación Educativa
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Referente nacional en EdTech
+            </div>
+          </div>
+        </BentoCard>
+
+        {/* Tarjeta 4 — Google Certified (col-span-1) */}
+        <BentoCard style={{ minHeight: '160px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ fontSize: '2rem', lineHeight: 1 }}>✅</div>
+          <div>
+            <div style={{ fontSize: '1rem', fontWeight: 500, color: '#fff', lineHeight: 1.3, marginBottom: '0.4rem' }}>
+              Google Certified<br />Innovator & Trainer
+            </div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--accent)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Google for Education
+            </div>
+          </div>
+        </BentoCard>
+
+        {/* Tarjeta 5 — Logos tecnologías (col-span-2) */}
+        <BentoCard style={{ gridColumn: 'span 2' }}>
+          <p style={{
+            fontSize     : '0.7rem',
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color        : 'var(--muted)',
+            marginBottom : '1.25rem',
+          }}>
+            Tecnologías & plataformas
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+            {TECH_LOGOS.map(({ name, icon }) => (
+              <div
+                key={name}
+                style={{
+                  display     : 'flex',
+                  alignItems  : 'center',
+                  gap         : '0.5rem',
+                  padding     : '0.45rem 1rem',
+                  borderRadius: '9999px',
+                  background  : 'rgba(255,255,255,0.05)',
+                  border      : '1px solid rgba(255,255,255,0.09)',
+                  fontSize    : '0.82rem',
+                  color       : 'rgba(255,255,255,0.7)',
+                  transition  : 'background 0.2s, color 0.2s',
+                  cursor      : 'default',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.background = 'rgba(56,189,248,0.12)';
+                  (e.currentTarget as HTMLDivElement).style.color      = '#fff';
+                  (e.currentTarget as HTMLDivElement).style.border     = '1px solid rgba(56,189,248,0.25)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.05)';
+                  (e.currentTarget as HTMLDivElement).style.color      = 'rgba(255,255,255,0.7)';
+                  (e.currentTarget as HTMLDivElement).style.border     = '1px solid rgba(255,255,255,0.09)';
+                }}
+              >
+                <span>{icon}</span>
+                <span>{name}</span>
+              </div>
+            ))}
+          </div>
+        </BentoCard>
+
       </div>
-
-      <WaveButton />
-
     </section>
   );
 }

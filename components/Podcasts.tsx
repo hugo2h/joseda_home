@@ -1,305 +1,230 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import Image from 'next/image';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useRef } from 'react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useIsomorphicLayoutEffect } from '@/lib/useIsomorphicLayoutEffect';
 
-// ─── Podcasts ──────────────────────────────────────────────────────────────
+gsap.registerPlugin(ScrollTrigger);
+
+// ─── Datos ────────────────────────────────────────────────────────────────────
 const PODCASTS = [
   {
     id     : 'tribu-de-profes',
+    num    : '01',
     name   : 'Tribu de Profes',
     summary: 'El podcast para docentes que quieren transformar su práctica educativa con IA y tecnología.',
-    sector : 'Educación / IA / Comunidad docente',
-    bg     : '#0c2340',
+    sector : 'Educación · IA · Comunidad docente',
+    color  : 'rgba(56,189,248,0.12)',
+    accent : '#38bdf8',
   },
   {
     id     : 'vamos-a-clase',
+    num    : '02',
     name   : '¡Vamos a clase!',
     summary: 'Recursos, estrategias y herramientas prácticas para el día a día en el aula.',
-    sector : 'Educación / Recursos didácticos',
-    bg     : '#0a3030',
+    sector : 'Educación · Recursos didácticos',
+    color  : 'rgba(52,211,153,0.1)',
+    accent : '#34d399',
   },
   {
     id     : 'google-edu',
+    num    : '03',
     name   : 'Google Edu Podcast',
     summary: 'Conversaciones sobre tecnología educativa, Google Workspace y transformación digital en centros escolares.',
-    sector : 'EdTech / Google / Innovación educativa',
-    bg     : '#1a1030',
+    sector : 'EdTech · Google · Innovación educativa',
+    color  : 'rgba(251,191,36,0.1)',
+    accent : '#fbbf24',
   },
   {
     id     : 'leocuentos',
+    num    : '04',
     name   : 'LEOcuentos',
     summary: 'Cuentos y relatos para fomentar el amor por la lectura en los más pequeños.',
-    sector : 'Literatura infantil / Lectura / Primaria',
-    bg     : '#200a10',
+    sector : 'Literatura infantil · Lectura · Primaria',
+    color  : 'rgba(244,114,182,0.1)',
+    accent : '#f472b6',
   },
 ];
 
-// ─── Slide geometry ────────────────────────────────────────────────────────
-const SLIDE_SIZE = 400;
-
-// ─── PRow ──────────────────────────────────────────────────────────────────
-interface PRowProps {
-  podcast     : typeof PODCASTS[number];
-  index       : number;
-  onMouseEnter: () => void;
-  svRoot      : React.RefObject<Element | null>;
-  reduceMotion: boolean;
-}
-
-function PRow({ podcast, index, onMouseEnter, svRoot, reduceMotion }: PRowProps) {
-  return (
-    <motion.div
-      className="p-row"
-      onMouseEnter={onMouseEnter}
-      style={{ cursor: 'default' }}
-      role="listitem"
-      initial={reduceMotion ? false : { opacity: 0, y: 20 }}
-      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-      transition={{ duration: 0.60, ease: 'easeOut', delay: index * 0.10 }}
-      viewport={{
-        once  : true,
-        margin: '-50px',
-        root  : svRoot as React.RefObject<Element>,
-      }}
-    >
-      <span className="p-name">{podcast.name}</span>
-      <div className="p-row-meta">
-        <span className="p-sector">{podcast.sector}</span>
-        <span className="p-summary">{podcast.summary}</span>
-      </div>
-    </motion.div>
-  );
-}
-
-// ─── Componente ────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Podcasts — Horizontal Reveal (estilo Aristide Benoist)
+// ─────────────────────────────────────────────────────────────────────────────
 export default function Podcasts() {
-  const reduceMotion    = useReducedMotion() ?? false;
-  const titleRef        = useRef<HTMLHeadingElement>(null);
-  const modalRef        = useRef<HTMLDivElement>(null);
-  const trackRef        = useRef<HTMLDivElement>(null);
-  // Scroll viewport para Framer Motion whileInView
-  const scrollViewportRef = useRef<Element | null>(null);
-
-  const xModal  = useRef<((v: number) => void) | null>(null);
-  const yModal  = useRef<((v: number) => void) | null>(null);
-  const yTrack  = useRef<((v: number) => void) | null>(null);
-
-  useEffect(() => {
-    scrollViewportRef.current = document.querySelector('.scroll-viewport');
-  }, []);
+  const sectionRef   = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);   // flex row con los paneles
 
   useIsomorphicLayoutEffect(() => {
-    let titleObserver: IntersectionObserver | null = null;
-
-    const titleEl = titleRef.current;
-    if (titleEl) {
-      const lines = Array.from(titleEl.querySelectorAll<HTMLElement>('.reveal-inner'));
-      if (lines.length > 0) {
-        gsap.set(lines, { y: '110%' });
-
-        titleObserver = new IntersectionObserver(
-          ([entry]) => {
-            if (!entry.isIntersecting) return;
-            titleObserver?.disconnect();
-            titleObserver = null;
-            gsap.to(lines, { y: '0%', duration: 1.15, stagger: 0.13, ease: 'expo.out' });
-          },
-          { rootMargin: '-18% 0px 0px 0px' }
-        );
-        titleObserver.observe(titleEl);
-      }
-    }
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (isMobile || !sectionRef.current || !containerRef.current) return;
 
     const ctx = gsap.context(() => {
-      const modalEl = modalRef.current;
-      const trackEl = trackRef.current;
+      const panels = gsap.utils.toArray<HTMLElement>('.podcast-panel');
 
-      if (modalEl) {
-        gsap.set(modalEl, { xPercent: -50, yPercent: -52, scale: 0, opacity: 0 });
-        xModal.current = gsap.quickTo(modalEl, 'x', { duration: 0.52, ease: 'power2.out' });
-        yModal.current = gsap.quickTo(modalEl, 'y', { duration: 0.52, ease: 'power2.out' });
-      }
+      gsap.to(panels, {
+        xPercent: -100 * (panels.length - 1),
+        ease    : 'none',
+        scrollTrigger: {
+          trigger : sectionRef.current,
+          pin     : true,
+          scrub   : 1,
+          scroller: '.scroll-viewport',
+          end     : () => '+=' + containerRef.current!.offsetWidth,
+        },
+      });
+    }, sectionRef);
 
-      if (trackEl) {
-        yTrack.current = gsap.quickTo(trackEl, 'y', { duration: 0.70, ease: 'expo.out' });
-      }
-    });
-
-    return () => {
-      titleObserver?.disconnect();
-      titleObserver = null;
-      ctx.revert();
-      xModal.current = null;
-      yModal.current = null;
-      yTrack.current = null;
-    };
+    return () => ctx.revert();
   }, []);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    let mx = e.clientX;
-    let my = e.clientY;
-
-    const shell = document.querySelector<HTMLElement>('.app-shell');
-    if (shell) {
-      const r = shell.getBoundingClientRect();
-      const cssW = window.innerWidth - 16;
-      const scale = r.width / cssW;
-
-      if (scale < 0.999) {
-        mx = (e.clientX - r.left) / scale;
-        my = (e.clientY - r.top)  / scale;
-      }
-    }
-
-    xModal.current?.(mx);
-    yModal.current?.(my);
-  };
-
-  const handleListEnter = () => {
-    gsap.to(modalRef.current, { scale: 1, opacity: 1, duration: 0.50, ease: 'expo.out' });
-  };
-
-  const handleListLeave = () => {
-    gsap.to(modalRef.current, { scale: 0, opacity: 0, duration: 0.28, ease: 'power3.in' });
-  };
-
-  const handleSlideChange = (index: number) => {
-    yTrack.current?.(-(index * SLIDE_SIZE));
-  };
-
   return (
-    <section
-      className="portfolio"
-      id="podcasts"
-      onMouseMove={handleMouseMove}
-      style={{ position: 'relative' }}
-    >
+    <section ref={sectionRef} id="podcasts" style={{ background: 'transparent', overflow: 'hidden' }}>
 
-      {/* ── Fondo fotográfico de podcasts ── */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden' }}>
-        <Image
-          src="/images/podcast-bg.jpg"
-          alt=""
-          fill
-          sizes="100vw"
-          style={{ objectFit: 'cover', objectPosition: 'center 45%' }}
-        />
-        {/* Overlay oscuro con tinte profundo */}
-        <div
-          aria-hidden="true"
-          style={{
-            position  : 'absolute',
-            inset     : 0,
-            background: 'linear-gradient(to bottom, rgba(5,5,5,0.88) 0%, rgba(5,5,5,0.78) 40%, rgba(5,5,5,0.92) 100%)',
-          }}
-        />
-        {/* Degradado superior para unir con la sección anterior */}
-        <div
-          aria-hidden="true"
-          style={{
-            position  : 'absolute',
-            top       : 0,
-            left      : 0,
-            right     : 0,
-            height    : '120px',
-            background: 'linear-gradient(to bottom, var(--bg, #050505), transparent)',
-          }}
-        />
-      </div>
-
-      <div className="portfolio-header" style={{ position: 'relative', zIndex: 1 }}>
+      {/* ── Cabecera ── */}
+      <div style={{
+        padding        : '5rem 5vw 3rem',
+        display        : 'flex',
+        alignItems     : 'flex-end',
+        justifyContent : 'space-between',
+        gap            : '2rem',
+        borderTop      : '1px solid rgba(255,255,255,0.08)',
+        borderBottom   : '1px solid rgba(255,255,255,0.08)',
+      }}>
         <div>
-          <p className="portfolio-overline">04 — Podcasts</p>
-          <h2 className="portfolio-title" ref={titleRef}>
-            <span className="reveal-wrap"><span className="reveal-inner">Aprende</span></span>
-            <span className="reveal-wrap"><span className="reveal-inner"><em>escuchando</em></span></span>
+          <p style={{
+            fontSize     : '0.72rem',
+            letterSpacing: '0.22em',
+            textTransform: 'uppercase',
+            color        : 'var(--accent)',
+            marginBottom : '1rem',
+          }}>
+            04 — Podcasts
+          </p>
+          <h2 style={{
+            fontFamily   : 'var(--serif)',
+            fontSize     : 'clamp(2.5rem, 6vw, 6rem)',
+            fontWeight   : 300,
+            letterSpacing: '-0.03em',
+            lineHeight   : 0.95,
+            color        : '#fff',
+          }}>
+            Voces que<br /><em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>inspiran.</em>
           </h2>
         </div>
-        <p className="portfolio-sub">
-          Podcasts sobre educación, inteligencia artificial y recursos para docentes.
-          Disponibles en Spotify, iVoox y Apple Podcasts.
+        <p style={{ maxWidth: '320px', fontSize: '0.88rem', lineHeight: 1.75, color: 'var(--muted)', flexShrink: 0 }}>
+          Podcasts de educación e IA para docentes que quieren hacer la diferencia.
         </p>
       </div>
 
+      {/* ── Paneles horizontales ── */}
       <div
-        className="portfolio-list"
-        onMouseEnter={handleListEnter}
-        onMouseLeave={handleListLeave}
-        role="list"
-        style={{ position: 'relative', zIndex: 1 }}
+        ref={containerRef}
+        style={{
+          display   : 'flex',
+          // En desktop: ancho total para el pin. En móvil: columna.
+          width     : `${PODCASTS.length * 100}vw`,
+          height    : '70vh',
+        }}
+        className="podcasts-container"
       >
-        {PODCASTS.map((p, i) => (
-          <PRow
+        {PODCASTS.map((p) => (
+          <div
             key={p.id}
-            podcast={p}
-            index={i}
-            onMouseEnter={() => handleSlideChange(i)}
-            svRoot={scrollViewportRef}
-            reduceMotion={reduceMotion}
-          />
-        ))}
-      </div>
-
-      {/* Modal flotante */}
-      <div
-        ref={modalRef}
-        className="pm-modal fixed top-0 left-0 overflow-hidden pointer-events-none z-[600]"
-        style={{ width: SLIDE_SIZE, height: SLIDE_SIZE }}
-      >
-        <div ref={trackRef} className="flex flex-col" style={{ willChange: 'transform' }}>
-          {PODCASTS.map((p, i) => (
-            <div
-              key={i}
-              className="flex-shrink-0 flex items-center justify-center"
-              style={{
-                width: SLIDE_SIZE,
-                height: SLIDE_SIZE,
-                backgroundColor: p.bg,
-              }}
-            >
-              {/* Placeholder — ícono de micrófono + nombre */}
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '1rem',
-                color: 'rgba(255,255,255,0.7)',
-              }}>
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--accent, #38bdf8)', opacity: 0.7 }}>
-                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                  <line x1="12" y1="19" x2="12" y2="23"/>
-                  <line x1="8" y1="23" x2="16" y2="23"/>
-                </svg>
-                <span style={{
-                  fontFamily: 'monospace',
-                  fontSize: '11px',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  color: 'rgba(255,255,255,0.5)',
-                  textAlign: 'center',
-                  padding: '0 2rem',
-                }}>
-                  {p.name}
-                </span>
-              </div>
+            className="podcast-panel"
+            style={{
+              width         : '100vw',
+              height        : '100%',
+              flexShrink    : 0,
+              display       : 'flex',
+              flexDirection : 'column',
+              justifyContent: 'flex-end',
+              padding       : '5vw',
+              position      : 'relative',
+              background    : p.color,
+              borderRight   : '1px solid rgba(255,255,255,0.05)',
+              boxSizing     : 'border-box',
+            }}
+          >
+            {/* Número */}
+            <div style={{
+              position    : 'absolute',
+              top         : '2.5rem',
+              left        : '5vw',
+              fontSize    : 'clamp(5rem, 18vw, 14rem)',
+              fontWeight  : 100,
+              color       : 'rgba(255,255,255,0.04)',
+              lineHeight  : 1,
+              fontFamily  : 'var(--serif)',
+              userSelect  : 'none',
+              pointerEvents: 'none',
+            }}>
+              {p.num}
             </div>
-          ))}
-        </div>
 
-        {/* Botón escuchar */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80px] h-[80px] rounded-full z-[999] flex items-center justify-center"
-          style={{ background: 'var(--accent, #38bdf8)' }}
-        >
-          <span className="text-white text-[12px] font-medium tracking-tight select-none font-sans text-center leading-tight px-2">
-            Escuchar
-          </span>
-        </div>
+            {/* Contenido */}
+            <div style={{ position: 'relative', zIndex: 1, maxWidth: '560px' }}>
+              <div style={{
+                display      : 'inline-block',
+                padding      : '0.22rem 0.75rem',
+                borderRadius : '9999px',
+                background   : 'rgba(255,255,255,0.07)',
+                border       : `1px solid ${p.accent}40`,
+                fontSize     : '0.7rem',
+                color        : p.accent,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                marginBottom : '1.5rem',
+              }}>
+                {p.sector}
+              </div>
 
+              <h3 style={{
+                fontFamily   : 'var(--serif)',
+                fontSize     : 'clamp(2rem, 4vw, 4rem)',
+                fontWeight   : 300,
+                letterSpacing: '-0.02em',
+                color        : '#ffffff',
+                marginBottom : '1rem',
+                lineHeight   : 1,
+              }}>
+                {p.name}
+              </h3>
+
+              <p style={{
+                fontSize  : '0.92rem',
+                lineHeight: 1.75,
+                color     : 'rgba(255,255,255,0.55)',
+                maxWidth  : '44ch',
+              }}>
+                {p.summary}
+              </p>
+
+              <button
+                type="button"
+                style={{
+                  marginTop     : '2rem',
+                  display       : 'inline-flex',
+                  alignItems    : 'center',
+                  gap           : '0.5rem',
+                  padding       : '0.65rem 1.5rem',
+                  borderRadius  : '9999px',
+                  background    : 'rgba(255,255,255,0.08)',
+                  border        : `1px solid ${p.accent}60`,
+                  color         : p.accent,
+                  fontSize      : '0.78rem',
+                  letterSpacing : '0.08em',
+                  textTransform : 'uppercase',
+                  cursor        : 'pointer',
+                  transition    : 'background 0.2s, transform 0.15s',
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${p.accent}20`; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)'; }}
+              >
+                Escuchar&nbsp;→
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
     </section>

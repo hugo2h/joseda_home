@@ -31,3 +31,7 @@ yarn-error.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Archivos pesados (vídeos + zips de imágenes — se sirven desde hosting, no desde git)
+public/videos/*.mp4
+public/images/*.zip

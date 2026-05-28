@@ -54,15 +54,11 @@ body {
 @keyframes sweep { 0%{left:-100%} 100%{left:100%} }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   APP SHELL — ventana OS fija, con margen de 8 px por lado
+   APP SHELL — full-screen, sin frame OS
 ══════════════════════════════════════════════════════════════════════════ */
 .app-shell {
   position: fixed;
-  top:    var(--frame);
-  left:   var(--frame);
-  right:  var(--frame);
-  bottom: var(--frame);
-  border-radius: var(--shell-radius);
+  inset: 0;
   overflow: hidden;
   z-index: 2;
 }
@@ -245,7 +241,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 0 1.5rem 0 calc(var(--nav-sw, 60px) + 1.5rem);
+  padding: 0 2rem;      /* Sin offset de sidebar — diseño full-screen */
   max-width: 88rem;
   margin-left: auto;
   margin-right: auto;
@@ -1232,5 +1228,45 @@ body {
 @keyframes pulse-dot {
   0%, 100% { opacity: 0.50; transform: scale(1);    }
   50%       { opacity: 1.00; transform: scale(1.35); }
+}
+
+@keyframes scrollPulse {
+  0%   { opacity: 0; transform: scaleY(0); transform-origin: top; }
+  50%  { opacity: 1; }
+  100% { opacity: 0; transform: scaleY(1); transform-origin: top; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BENTO GRID — responsive
+═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .bento-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .bento-card[style*="grid-column: span 2"],
+  .bento-card[style*="gridColumn: span 2"] {
+    grid-column: span 1 !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HORIZONTAL PANELS — móvil: apilados verticalmente, sin pin GSAP
+═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .podcasts-container,
+  .cursos-container {
+    width           : 100% !important;
+    height          : auto !important;
+    flex-direction  : column !important;
+  }
+  .podcast-panel,
+  .curso-panel {
+    width   : 100% !important;
+    height  : auto !important;
+    min-height: 60vh;
+    padding : 3rem 6vw 3.5rem !important;
+    border-right : none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
 }
 
