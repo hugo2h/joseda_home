@@ -1,10 +1,13 @@
 'use client';
 
 import { useRef } from 'react';
-import gsap from 'gsap';
+import * as gsapModule from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useIsomorphicLayoutEffect } from '@/lib/useIsomorphicLayoutEffect';
 
+// Importación robusta — funciona con CJS (gsapModule.gsap) y ESM (gsapModule)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const gsap = ((gsapModule as any).gsap ?? gsapModule) as typeof import('gsap').gsap;
 gsap.registerPlugin(ScrollTrigger);
 
 // ─── Datos ────────────────────────────────────────────────────────────────────
@@ -57,6 +60,11 @@ export default function Podcasts() {
   useIsomorphicLayoutEffect(() => {
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
     if (isMobile || !containerRef.current) return;
+
+    if (!gsap || typeof gsap.context !== 'function') {
+      console.error('GSAP no se ha cargado correctamente');
+      return;
+    }
 
     const ctx = gsap.context(() => {
       const panels = gsap.utils.toArray('.podcast-panel');
