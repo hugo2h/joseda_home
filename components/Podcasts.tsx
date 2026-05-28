@@ -10,85 +10,87 @@ gsap.registerPlugin(ScrollTrigger);
 // ─── Datos ────────────────────────────────────────────────────────────────────
 const PODCASTS = [
   {
-    id     : 'tribu-de-profes',
-    num    : '01',
-    name   : 'Tribu de Profes',
+    id    : 'tribu-de-profes',
+    num   : '01',
+    name  : 'Tribu de Profes',
     summary: 'El podcast para docentes que quieren transformar su práctica educativa con IA y tecnología.',
-    sector : 'Educación · IA · Comunidad docente',
-    color  : 'rgba(56,189,248,0.12)',
-    accent : '#38bdf8',
+    sector: 'Educación · IA · Comunidad docente',
+    color : 'rgba(56,189,248,0.10)',
+    accent: '#38bdf8',
   },
   {
-    id     : 'vamos-a-clase',
-    num    : '02',
-    name   : '¡Vamos a clase!',
+    id    : 'vamos-a-clase',
+    num   : '02',
+    name  : '¡Vamos a clase!',
     summary: 'Recursos, estrategias y herramientas prácticas para el día a día en el aula.',
-    sector : 'Educación · Recursos didácticos',
-    color  : 'rgba(52,211,153,0.1)',
-    accent : '#34d399',
+    sector: 'Educación · Recursos didácticos',
+    color : 'rgba(52,211,153,0.10)',
+    accent: '#34d399',
   },
   {
-    id     : 'google-edu',
-    num    : '03',
-    name   : 'Google Edu Podcast',
+    id    : 'google-edu',
+    num   : '03',
+    name  : 'Google Edu Podcast',
     summary: 'Conversaciones sobre tecnología educativa, Google Workspace y transformación digital en centros escolares.',
-    sector : 'EdTech · Google · Innovación educativa',
-    color  : 'rgba(251,191,36,0.1)',
-    accent : '#fbbf24',
+    sector: 'EdTech · Google · Innovación educativa',
+    color : 'rgba(251,191,36,0.10)',
+    accent: '#fbbf24',
   },
   {
-    id     : 'leocuentos',
-    num    : '04',
-    name   : 'LEOcuentos',
+    id    : 'leocuentos',
+    num   : '04',
+    name  : 'LEOcuentos',
     summary: 'Cuentos y relatos para fomentar el amor por la lectura en los más pequeños.',
-    sector : 'Literatura infantil · Lectura · Primaria',
-    color  : 'rgba(244,114,182,0.1)',
-    accent : '#f472b6',
+    sector: 'Literatura infantil · Lectura · Primaria',
+    color : 'rgba(244,114,182,0.10)',
+    accent: '#f472b6',
   },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Podcasts — Horizontal Reveal (estilo Aristide Benoist)
+// Podcasts — Horizontal Reveal (Aristide Benoist style)
+// containerRef apunta al flex-row (N×100vw) → offsetWidth = N×vw = end correcto
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Podcasts() {
-  const sectionRef   = useRef<HTMLElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);   // flex row con los paneles
+  const containerRef = useRef<HTMLDivElement>(null);   // flex row — N × 100vw
 
   useIsomorphicLayoutEffect(() => {
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    if (isMobile || !sectionRef.current || !containerRef.current) return;
+    if (isMobile || !containerRef.current) return;
 
     const ctx = gsap.context(() => {
-      const panels = gsap.utils.toArray<HTMLElement>('.podcast-panel');
+      const panels = gsap.utils.toArray('.podcast-panel');
 
       gsap.to(panels, {
         xPercent: -100 * (panels.length - 1),
         ease    : 'none',
         scrollTrigger: {
-          trigger : sectionRef.current,
+          trigger : containerRef.current,
           pin     : true,
           scrub   : 1,
           scroller: '.scroll-viewport',
           end     : () => '+=' + containerRef.current!.offsetWidth,
         },
       });
-    }, sectionRef);
+    }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={sectionRef} id="podcasts" style={{ background: 'transparent', overflow: 'hidden' }}>
-
+    <section
+      id="podcasts"
+      style={{ background: 'transparent', overflow: 'hidden' }}
+    >
       {/* ── Cabecera ── */}
       <div style={{
-        padding        : '5rem 5vw 3rem',
-        display        : 'flex',
-        alignItems     : 'flex-end',
-        justifyContent : 'space-between',
-        gap            : '2rem',
-        borderTop      : '1px solid rgba(255,255,255,0.08)',
-        borderBottom   : '1px solid rgba(255,255,255,0.08)',
+        padding       : '5rem 5vw 3rem',
+        display       : 'flex',
+        alignItems    : 'flex-end',
+        justifyContent: 'space-between',
+        gap           : '2rem',
+        borderTop     : '1px solid rgba(255,255,255,0.08)',
+        borderBottom  : '1px solid rgba(255,255,255,0.08)',
       }}>
         <div>
           <p style={{
@@ -108,22 +110,28 @@ export default function Podcasts() {
             lineHeight   : 0.95,
             color        : '#fff',
           }}>
-            Voces que<br /><em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>inspiran.</em>
+            Voces que<br />
+            <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>inspiran.</em>
           </h2>
         </div>
-        <p style={{ maxWidth: '320px', fontSize: '0.88rem', lineHeight: 1.75, color: 'var(--muted)', flexShrink: 0 }}>
+        <p style={{
+          maxWidth : '320px',
+          fontSize : '0.88rem',
+          lineHeight: 1.75,
+          color    : 'var(--muted)',
+          flexShrink: 0,
+        }}>
           Podcasts de educación e IA para docentes que quieren hacer la diferencia.
         </p>
       </div>
 
-      {/* ── Paneles horizontales ── */}
+      {/* ── Flex row — trigger + pin de GSAP ── */}
       <div
         ref={containerRef}
         style={{
-          display   : 'flex',
-          // En desktop: ancho total para el pin. En móvil: columna.
-          width     : `${PODCASTS.length * 100}vw`,
-          height    : '70vh',
+          display : 'flex',
+          width   : `${PODCASTS.length * 100}vw`,   // N × 100vw → offsetWidth correcto para `end`
+          height  : '70vh',
         }}
         className="podcasts-container"
       >
@@ -145,17 +153,17 @@ export default function Podcasts() {
               boxSizing     : 'border-box',
             }}
           >
-            {/* Número */}
+            {/* Número decorativo */}
             <div style={{
-              position    : 'absolute',
-              top         : '2.5rem',
-              left        : '5vw',
-              fontSize    : 'clamp(5rem, 18vw, 14rem)',
-              fontWeight  : 100,
-              color       : 'rgba(255,255,255,0.04)',
-              lineHeight  : 1,
-              fontFamily  : 'var(--serif)',
-              userSelect  : 'none',
+              position     : 'absolute',
+              top          : '2.5rem',
+              left         : '5vw',
+              fontSize     : 'clamp(5rem, 18vw, 14rem)',
+              fontWeight   : 100,
+              color        : 'rgba(255,255,255,0.04)',
+              lineHeight   : 1,
+              fontFamily   : 'var(--serif)',
+              userSelect   : 'none',
               pointerEvents: 'none',
             }}>
               {p.num}
@@ -202,20 +210,20 @@ export default function Podcasts() {
               <button
                 type="button"
                 style={{
-                  marginTop     : '2rem',
-                  display       : 'inline-flex',
-                  alignItems    : 'center',
-                  gap           : '0.5rem',
-                  padding       : '0.65rem 1.5rem',
-                  borderRadius  : '9999px',
-                  background    : 'rgba(255,255,255,0.08)',
-                  border        : `1px solid ${p.accent}60`,
-                  color         : p.accent,
-                  fontSize      : '0.78rem',
-                  letterSpacing : '0.08em',
-                  textTransform : 'uppercase',
-                  cursor        : 'pointer',
-                  transition    : 'background 0.2s, transform 0.15s',
+                  marginTop    : '2rem',
+                  display      : 'inline-flex',
+                  alignItems   : 'center',
+                  gap          : '0.5rem',
+                  padding      : '0.65rem 1.5rem',
+                  borderRadius : '9999px',
+                  background   : 'rgba(255,255,255,0.08)',
+                  border       : `1px solid ${p.accent}60`,
+                  color        : p.accent,
+                  fontSize     : '0.78rem',
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  cursor       : 'pointer',
+                  transition   : 'background 0.2s',
                 }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${p.accent}20`; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)'; }}
@@ -226,7 +234,6 @@ export default function Podcasts() {
           </div>
         ))}
       </div>
-
     </section>
   );
 }
