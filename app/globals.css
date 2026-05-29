@@ -1,285 +1,147 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-@import url('https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700,800,900&display=swap');
+/* ══════════════════════════════════════════════════════════════════════════
+   Tipografía — Geist (headers/body) + Geist Mono (eyebrows)
+══════════════════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   PALETA ESTRICTAMENTE MONOCROMÁTICA
-   Fondo negro puro · blanco puro · grises zinc. Cero acentos de color.
-   --accent queda en blanco para que cualquier referencia residual renderice
-   en monocromo en vez de azul.
+   DESIGN TOKENS (§2.3 del documento maestro)
+   Base editorial negra + acento azul. "Color moments" en secciones 03 y 06.
 ══════════════════════════════════════════════════════════════════════════ */
 :root {
-  --bg:     #000000;
-  --bg2:    #000000;
-  --text:   #ffffff;
-  --muted:  #71717a;            /* zinc-500 */
-  --accent: #ffffff;            /* monocromo: blanco */
-  --border: rgba(255, 255, 255, 0.10);
-  --serif:  'Inter', ui-sans-serif, system-ui, sans-serif;
-  --sans:   'Inter', system-ui, sans-serif;
+  --bg-primary    : #0A0A0A;   /* fondo principal */
+  --bg-deep       : #000000;   /* manifiesto */
+  --bg-invert     : #1E3A8A;   /* boletín EDU+IA, azul cobalto */
+  --bg-card       : #141414;   /* tarjetas */
+  --text-primary  : #FFFFFF;
+  --text-secondary: #A1A1AA;
+  --accent-blue   : #3B82F6;   /* azul de eyebrows y links */
+  --accent-blue-soft: #60A5FA;
+  --border-subtle : rgba(255, 255, 255, 0.08);
 
-  /* Focos de luz ambiente — desactivados (monocromo) */
-  --lightColorA: transparent;
-  --lightColorB: transparent;
-  --lightColorC: transparent;
+  /* Gradiente "color moment" (secciones 03 y 06) — ruptura visual vibrante */
+  --grad-moment: linear-gradient(
+    135deg,
+    #1E3A8A 0%,
+    #4338CA 26%,
+    #7C3AED 46%,
+    #BE185D 68%,
+    #EA580C 100%
+  );
 
-  /* Chrome layout */
-  --nav-sw:      0px;
-  --nav-bh:      0px;
-  --frame:        0px;
-  --shell-radius: 0px;
+  --sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, monospace;
+
+  --header-h: 64px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
   overflow-x: clip;
-  background: var(--bg);
-  scrollbar-width: none;
+  background: var(--bg-primary);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
-html::-webkit-scrollbar { display: none; }
 
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-family: var(--sans);
   font-weight: 400;
+  line-height: 1.5;
   overflow-x: clip;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-::selection { background: #ffffff; color: #000000; }
+::selection { background: var(--accent-blue); color: #ffffff; }
 
-/* ── Sweep animation ── */
-@keyframes sweep { 0%{left:-100%} 100%{left:100%} }
+a { color: inherit; text-decoration: none; }
 
-/* ══════════════════════════════════════════════════════════════════════════
-   APP SHELL — wrapper de página
-══════════════════════════════════════════════════════════════════════════ */
-.app-shell {
+/* Foco accesible visible en todos los interactivos (§2.7) */
+:where(a, button, input, textarea, select):focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Eyebrow de sección: "01 — INICIO" (§2.2) ── */
+.eyebrow {
+  font-family   : var(--mono);
+  font-size     : 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color         : var(--accent-blue);
+}
+
+/* ── Contenedor de ancho máximo ── */
+.container {
+  width      : 100%;
+  max-width  : 1280px;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 4rem);
+}
+
+/* ── Sección base: mobile-first con svh, nunca 100vh (§2.6) ── */
+.section {
   position: relative;
-  z-index: 2;
-  min-height: 100vh;
-}
-
-.scroll-viewport {
-  position: relative;
-  width: 100%;
-}
-
-.content-flow {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-}
-
-/* ══════════════════════════════════════════════════════════════════════════
-   HERO — fondo a pantalla completa
-══════════════════════════════════════════════════════════════════════════ */
-.hero-bg-wrap {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  z-index: 0;
-}
-.hero-bg-video,
-.hero-bg-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 40%;
-}
-@media (max-width: 768px) {
-  .hero-bg-img { object-position: center bottom !important; }
-}
-@media (max-width: 480px) {
-  .hero-bg-img { object-position: 70% 100% !important; }
-}
-
-/* Línea indicadora de scroll (monocroma) */
-.scroll-line {
-  width: 48px; height: 1px;
-  background: rgba(255,255,255,0.4);
-  position: relative; overflow: hidden;
-}
-.scroll-line::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 100%; height: 100%;
-  background: #ffffff;
-  animation: sweep 2s ease infinite;
+  padding-block: clamp(4rem, 12vh, 8rem);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   MARQUEE BACKGROUND (texto decorativo blanco muy tenue)
+   LOGO MARQUEE (§6 guía técnica)
 ══════════════════════════════════════════════════════════════════════════ */
-@keyframes mq-scroll {
-  from { transform: translate3d(0, -9%, 0); }
-  to   { transform: translate3d(-50%, -9%, 0); }
+@keyframes marquee-left  { from { transform: translateX(0);     } to { transform: translateX(-50%); } }
+@keyframes marquee-right { from { transform: translateX(-50%); } to { transform: translateX(0);     } }
+
+.marquee {
+  display      : flex;
+  overflow     : hidden;
+  user-select  : none;
+  width        : 100%;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
-.mq-bg {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-}
-.mq-row {
+.marquee__track {
+  display    : flex;
   flex-shrink: 0;
-  display: flex;
-  white-space: nowrap;
-  font-family: var(--sans);
-  font-size: 48vw;
-  font-weight: 900;
-  line-height: 0.82;
-  letter-spacing: -0.02em;
-  user-select: none;
-  pointer-events: none;
-  color: rgba(255,255,255,0.035);
-  will-change: transform;
-  animation: mq-scroll 120s linear infinite;
+  gap        : clamp(24px, 4vw, 56px);
+  padding-right: clamp(24px, 4vw, 56px);
+  align-items: center;
+  min-width  : max-content;
+  animation  : marquee-left linear infinite;
+  animation-duration: var(--marquee-duration, 60s);
+  will-change : transform;
+}
+.marquee[data-dir="right"] .marquee__track { animation-name: marquee-right; }
+@media (hover: hover) {
+  .marquee:hover .marquee__track { animation-play-state: paused; }
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   CUSTOM SCROLLBAR
+   ANIMACIÓN reveal on-scroll (sutil)
 ══════════════════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
-  .cscroll-btn,
-  .cscroll-track,
-  .cscroll-thumb { display: none !important; }
-  .mq-row { animation-play-state: paused; }
-  .mq-bg  { display: none !important; }
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   ABOUT JD — Cosmos / tablero de polaroids arrastrables
-══════════════════════════════════════════════════════════════════════════ */
-.about-intro {
-  position      : absolute;
-  top           : 0;
-  left          : 0;
-  right         : 0;
-  z-index       : 20;
-  display       : flex;
-  flex-direction: column;
-  align-items   : center;
-  text-align    : center;
-  padding       : clamp(3.5rem, 9vh, 7rem) 6vw 0;
-  pointer-events: none;
-}
-
-/* Panel de texto del relato — derecha del protagonista, centrado verticalmente */
-/* Protagonista está a la izquierda (~25%), texto empieza al 56% */
-.about-story {
-  position      : absolute;
-  left          : 56%;
-  right         : 4vw;
-  top           : 0;
-  bottom        : 0;
-  z-index       : 50;
-  display       : flex;
-  flex-direction: column;
-  justify-content: center;
-  pointer-events: none;
-}
-
-@media (max-width: 900px) {
-  .about-story {
-    left  : 6vw;
-    right : 6vw;
-    top   : auto;
-    bottom: 6vh;
-    height: auto;
-    align-items: center;
-    text-align : center;
-  }
-}
-
-/* Línea-guía de progreso del relato — borde izquierdo del escenario */
-.about-rail {
-  position      : absolute;
-  left          : 3.5vw;
-  top           : 30%;
-  height        : 40%;
-  width         : 2px;
-  background    : rgba(255, 255, 255, 0.12);
-  z-index       : 50;
-  pointer-events: none;
-}
-.about-rail__fill {
-  position        : absolute;
-  inset           : 0;
-  background      : #ffffff;
-  transform-origin: top center;
-}
-
-@media (max-width: 768px) {
-  .about-story {
-    left      : 6vw;
-    right     : 6vw;
-    top       : auto;
-    bottom    : 8vh;
-    height    : auto;
-    text-align: center;
-    align-items: center;
-  }
-  .about-rail { display: none; }
-}
-
-/* ══════════════════════════════════════════════════════════════════════════
-   SPACE VOID — vignette de profundidad global ("vacío espacial")
-══════════════════════════════════════════════════════════════════════════ */
-.space-void {
-  position      : fixed;
-  inset         : 0;
-  z-index       : 40;
-  pointer-events: none;
-  background    : radial-gradient(
-    ellipse at center,
-    rgba(0, 0, 0, 0) 38%,
-    rgba(0, 0, 0, 0.35) 78%,
-    rgba(0, 0, 0, 0.78) 100%
-  );
-}
-
-/* ══════════════════════════════════════════════════════════════════════════
-   CURSOR PERSONALIZADO — ocultar cursor nativo en punteros finos
-══════════════════════════════════════════════════════════════════════════ */
-@media (pointer: fine) {
-  * { cursor: none !important; }
-}
-
-/* ══════════════════════════════════════════════════════════════════════════
-   RESPONSIVE — apilar splits/grids en móvil
-══════════════════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
-  .about-split,
-  .curso-body,
-  .podcast-body {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════════════════
-   REDUCED MOTION
+   REDUCED MOTION (§2.7)
 ══════════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   *, *::before, *::after {
-    animation-duration        : 0.01ms !important;
-    animation-iteration-count : 1      !important;
-    transition-duration       : 0.01ms !important;
-    scroll-behavior           : auto   !important;
+    animation-duration  : 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration : 0.01ms !important;
   }
-  .mq-row     { animation: none !important; will-change: auto; }
-  .scroll-line { animation: none !important; }
+  .marquee__track { animation: none !important; }
 }

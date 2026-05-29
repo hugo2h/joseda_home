@@ -1,43 +1,25 @@
-'use client';
-
-import HeroJD    from '@/components/HeroJD';
-import PageLayout from '@/components/PageLayout';
-import AboutJD   from '@/components/AboutJD';
-import Cursos    from '@/components/Cursos';
-import Podcasts  from '@/components/Podcasts';
-import ContactJD from '@/components/ContactJD';
-import { MagicText } from '@/components/ui/magic-text';
-import StackSection from '@/components/ui/stack-section';
-import CinematicFooter from '@/components/ui/motion-footer';
+import Hero         from '@/components/home/Hero';
+import TrustedBy    from '@/components/home/TrustedBy';
+import AboutTeaser  from '@/components/home/AboutTeaser';
+import Manifesto    from '@/components/home/Manifesto';
+import HowIHelp     from '@/components/home/HowIHelp';
+import Newsletter   from '@/components/home/Newsletter';
+import Testimonials from '@/components/home/Testimonials';
+import News         from '@/components/home/News';
+import FinalCTA     from '@/components/home/FinalCTA';
 
 export default function Home() {
   return (
-    <PageLayout>
-
-      {/* Hero — vídeo cinematográfico, 100vh */}
-      <HeroJD />
-
-      {/* Texto mágico — revelado palabra a palabra al scroll (monocromo) */}
-      <MagicText text="José David. Maestro. Ingeniero. Formador de docentes." />
-
-      {/* Sobre Mí — Scroll Storytelling inmersivo (retrato sticky + texto) */}
-      <AboutJD />
-
-      {/* Cursos + Podcasts — galería acordeón horizontal con stacking 3D */}
-      <StackSection>
-        <Cursos />
-      </StackSection>
-
-      <StackSection>
-        <Podcasts />
-      </StackSection>
-
-      {/* Contacto — ultra minimalista */}
-      <ContactJD />
-
-      {/* Footer cinemático */}
-      <CinematicFooter />
-
-    </PageLayout>
+    <>
+      <Hero />
+      <TrustedBy />
+      <AboutTeaser />
+      <Manifesto />
+      <HowIHelp />
+      <Newsletter />
+      <Testimonials />
+      <News />
+      <FinalCTA />
+    </>
   );
 }
