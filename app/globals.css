@@ -178,11 +178,12 @@ body {
   pointer-events: none;
 }
 
-/* Panel de texto del relato — lado derecho, centrado verticalmente */
+/* Panel de texto del relato — derecha del protagonista, centrado verticalmente */
+/* Protagonista está a la izquierda (~25%), texto empieza al 56% */
 .about-story {
   position      : absolute;
-  left          : 54%;
-  right         : 6vw;
+  left          : 56%;
+  right         : 4vw;
   top           : 0;
   bottom        : 0;
   z-index       : 50;
@@ -190,6 +191,18 @@ body {
   flex-direction: column;
   justify-content: center;
   pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .about-story {
+    left  : 6vw;
+    right : 6vw;
+    top   : auto;
+    bottom: 6vh;
+    height: auto;
+    align-items: center;
+    text-align : center;
+  }
 }
 
 /* Línea-guía de progreso del relato — borde izquierdo del escenario */
