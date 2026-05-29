@@ -75,24 +75,27 @@ export default function ExpandableGallery({ items }: { items: GalleryItem[] }) {
               minWidth  : 0,
               width     : isMobile ? '100%' : undefined,
               flexShrink: 0,
+              willChange: 'transform, flex-basis',   // anima en GPU, no en CPU
             }}
           >
             {/* ── Imagen de fondo B&N ──
-                 Inactiva: cover (recorte permitido en franja fina).
-                 Activa: contain anclado arriba → la foto completa (escenario +
-                 José David entero) nunca se recorta; banda inferior libre. */}
+                 object-fit: cover en ambos estados → cubre TODO el contenedor
+                 sin dejar espacios vacíos. En activo se ancla arriba
+                 (object-position: center top) para preservar el rostro. */}
             <Image
               src={item.image}
               alt={item.title}
               fill
-              sizes="100vw"
+              quality={100}
+              sizes="(max-width: 768px) 100vw, 50vw"
               style={{
-                objectFit     : isActive ? 'contain' : 'cover',
+                objectFit     : 'cover',
                 objectPosition: isActive ? 'center top' : 'center',
                 filter        : isActive
                   ? 'grayscale(100%) brightness(0.92)'
                   : 'grayscale(100%) brightness(0.32)',
                 transition    : 'filter 0.7s ease',
+                willChange    : 'filter',
               }}
             />
 

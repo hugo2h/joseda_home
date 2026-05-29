@@ -1,29 +1,28 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { memo, useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import {
   motion,
-  useMotionValue,
+  useScroll,
   useTransform,
+  useMotionValueEvent,
   type MotionValue,
 } from 'framer-motion';
-import gsap, { ScrollTrigger } from '@/lib/gsap-setup';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AboutJD — Experiencia de storytelling "Cosmos".
 //
-//  Fase 1 (flotación)  · Las fotos "caen" al centro con rotaciones aleatorias y
-//                        pueden arrastrarse libremente (drag + snap-to-origin).
-//  Fase 2 (snap a grid)· Al hacer scroll, GSAP ScrollTrigger ancla la sección y
-//                        las fotos se recolocan en una cuadrícula tipo Instagram.
-//  Fase 3 (relato)     · Cada foto se convierte en protagonista (se agranda y
-//                        centra) mientras el resto se atenúa/desenfoca y aparece
-//                        su bloque de texto con un fade-in.
+//  Fase A (flotación) · Las fotos caen al centro con rotaciones aleatorias y se
+//                       pueden arrastrar libremente (drag + dragConstraints).
+//  Fase B (relato)    · `useScroll` de Framer dirige el progreso: las fotos hacen
+//                       SNAP a una cuadrícula 3×2 (tipo perfil de Instagram) y,
+//                       una a una, pasan a protagonista mientras el texto aparece
+//                       palabra a palabra (stagger). El resto se atenúa/desenfoca.
 //
-//  Motor: GSAP ScrollTrigger (pin + scrub) alimenta un MotionValue `progress`
-//  que dirige todas las transformaciones de Framer Motion. Integrado con el
-//  Lenis existente (SmoothScrollProvider ya enlaza Lenis ↔ ScrollTrigger).
+//  Rendimiento: sticky CSS (sin pin JS) + `will-change: transform` en las capas
+//  animadas (GPU). next/image con `sizes` + `quality={100}`. La carta visual va
+//  envuelta en React.memo para que el scroll del relato no la re-renderice.
 //  Estrictamente B&N.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -33,25 +32,23 @@ interface Photo {
   kicker : string;
   caption: string;
   story  : string;
-  gx: number; gy: number;            // celda en la cuadrícula (% del escenario)
-  sx: number; sy: number; srot: number; // dispersión inicial (% + rotación)
+  gx: number; gy: number;                 // celda de la cuadrícula (% escenario)
+  sx: number; sy: number; srot: number;   // dispersión inicial (% + rotación)
 }
 
-// Protagonista: destino común al que viaja la foto activa.
 const PROTA = { x: 33, y: 50, scale: 1.72 };
 
-// Marcadores de progreso (0 → 1) de la línea de tiempo.
-const SNAP_START  = 0.14;   // empieza a ordenarse
-const SNAP_END    = 0.30;   // cuadrícula formada
-const STORY_START = 0.34;   // primer protagonista
-const STORY_END   = 0.96;   // último protagonista resuelto
+const SNAP_START  = 0.14;
+const SNAP_END    = 0.30;
+const STORY_START = 0.34;
+const STORY_END   = 0.96;
 
 const PHOTOS: Photo[] = [
   { id: 'inicios',   image: '/images/pasado-1.jpg',            kicker: 'Capítulo 01', caption: 'Los inicios',            story: 'Empecé en un aula pequeña, convencido de que enseñar también es diseñar el futuro.', gx: 22, gy: 36, sx: 30, sy: 40, srot: -8 },
   { id: 'rural',     image: '/images/pasado-2.jpg',            kicker: 'Capítulo 02', caption: 'Maestro rural',          story: 'Del aula de un pueblo a una comunidad de docentes de toda España.',                  gx: 36, gy: 36, sx: 55, sy: 28, srot:  6 },
-  { id: 'escenario', image: '/jd-ponente.jpg',                 kicker: 'Capítulo 03', caption: 'Sobre el escenario',     story: 'Ponente nacional e internacional en educación e Inteligencia Artificial.',           gx: 50, gy: 36, sx: 44, sy: 64, srot: -5 },
+  { id: 'escenario', image: '/images/ponencia-1.jpg',          kicker: 'Capítulo 03', caption: 'Sobre el escenario',     story: 'Ponente nacional e internacional en educación e Inteligencia Artificial.',           gx: 50, gy: 36, sx: 44, sy: 64, srot: -5 },
   { id: 'impacto',   image: '/images/ponencia-8.jpg',          kicker: 'Capítulo 04', caption: '17 millones de impacto', story: 'Mis contenidos y recursos han llegado a millones de docentes y familias.',           gx: 22, gy: 64, sx: 63, sy: 50, srot:  7 },
-  { id: 'formacion', image: '/jd-formacion.jpg',               kicker: 'Capítulo 05', caption: 'Formando docentes',      story: 'Talleres y mentorías para equipos que quieren liderar el cambio en sus aulas.',      gx: 36, gy: 64, sx: 38, sy: 30, srot:  4 },
+  { id: 'formacion', image: '/images/ponencia-5.jpg',          kicker: 'Capítulo 05', caption: 'Formando docentes',      story: 'Talleres y mentorías para equipos que quieren liderar el cambio en sus aulas.',      gx: 36, gy: 64, sx: 38, sy: 30, srot:  4 },
   { id: 'google',    image: '/images/jose-david-contacto.jpg', kicker: 'Capítulo 06', caption: 'Reconocimiento Google',  story: 'Google Certified Innovator & Trainer. Tecnología con propósito.',                     gx: 50, gy: 64, sx: 52, sy: 68, srot: -6 },
 ];
 
@@ -64,10 +61,13 @@ export default function AboutJD() {
   const [entered, setEntered] = useState(false);
   const [stage, setStage]     = useState({ w: 1280, h: 800 });
 
-  // Progreso 0→1 dirigido por GSAP ScrollTrigger (scrub).
-  const progress = useMotionValue(0);
+  // Progreso 0→1 dirigido por el scroll suave (Lenis mueve el window).
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  });
 
-  // ── Entrada: dispara la animación de "caída" al ver la sección ──
+  // Entrada: dispara la "caída" al ver la sección.
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
@@ -79,7 +79,7 @@ export default function AboutJD() {
     return () => io.disconnect();
   }, []);
 
-  // ── Medir el escenario (100vw × 100vh) para calcular offsets en px ──
+  // Medir el escenario (100vw × 100vh) para offsets en px.
   useEffect(() => {
     const measure = () => setStage({ w: window.innerWidth, h: window.innerHeight });
     measure();
@@ -87,36 +87,8 @@ export default function AboutJD() {
     return () => window.removeEventListener('resize', measure);
   }, []);
 
-  // ── GSAP ScrollTrigger: ancla el escenario y dirige `progress` ──
-  useEffect(() => {
-    const section = sectionRef.current;
-    const stageEl = stageRef.current;
-    if (!section || !stageEl) return;
-
-    const st = ScrollTrigger.create({
-      trigger : section,
-      start   : 'top top',
-      end     : 'bottom bottom',
-      pin     : stageEl,
-      pinSpacing: false,
-      scrub   : 1,
-      onUpdate: (self) => progress.set(self.progress),
-    });
-
-    const refresh = () => ScrollTrigger.refresh();
-    window.addEventListener('resize', refresh);
-    requestAnimationFrame(refresh);
-
-    return () => {
-      window.removeEventListener('resize', refresh);
-      st.kill();
-    };
-  }, [progress]);
-
-  // Intro: se desvanece al empezar a ordenar las fotos.
-  const introOpacity = useTransform(progress, [0, 0.1, 0.16], [1, 1, 0]);
-  // Guía de progreso (línea) que avanza durante el relato.
-  const railScale = useTransform(progress, [STORY_START, STORY_END], [0, 1]);
+  const introOpacity = useTransform(scrollYProgress, [0, 0.1, 0.16], [1, 1, 0]);
+  const railScale    = useTransform(scrollYProgress, [STORY_START, STORY_END], [0, 1]);
 
   return (
     <section
@@ -124,10 +96,10 @@ export default function AboutJD() {
       id="about"
       style={{ position: 'relative', height: '640vh', background: '#000000' }}
     >
-      {/* ── Escenario anclado (pin GSAP) ── */}
+      {/* Escenario fijo (sticky CSS — sin pin JS, máximo rendimiento) */}
       <div
         ref={stageRef}
-        style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}
+        style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden' }}
       >
         {/* Intro */}
         <motion.div style={{ opacity: introOpacity }} className="about-intro">
@@ -156,15 +128,16 @@ export default function AboutJD() {
             photo={photo}
             index={i}
             total={PHOTOS.length}
-            progress={progress}
+            progress={scrollYProgress}
             stage={stage}
             entered={entered}
+            constraintsRef={stageRef}
           />
         ))}
 
-        {/* Capa de texto (storytelling) */}
+        {/* Capa de texto (storytelling con stagger) */}
         {PHOTOS.map((photo, i) => (
-          <StoryText key={photo.id} photo={photo} index={i} total={PHOTOS.length} progress={progress} />
+          <StoryText key={photo.id} photo={photo} index={i} total={PHOTOS.length} progress={scrollYProgress} />
         ))}
 
         {/* Línea-guía de progreso del relato */}
@@ -176,27 +149,54 @@ export default function AboutJD() {
   );
 }
 
+// ─── Carta visual (memoizada: depende solo de `photo`, no del scroll) ──────────
+const PhotoCard = memo(function PhotoCard({ photo }: { photo: Photo }) {
+  return (
+    <div style={{ transform: 'translate(-50%, -50%)', width: 'clamp(110px, 12vw, 178px)' }}>
+      <div style={{ background: '#fff', padding: '0.6rem 0.6rem 1.9rem', boxShadow: '0 24px 55px rgba(0,0,0,0.65)' }}>
+        <div style={{ position: 'relative', width: '100%', aspectRatio: '4 / 5' }}>
+          <Image
+            src={photo.image}
+            alt={photo.caption}
+            fill
+            quality={100}
+            sizes="(max-width: 768px) 100vw, 50vw"
+            draggable={false}
+            style={{ objectFit: 'cover', filter: 'grayscale(100%)', pointerEvents: 'none' }}
+          />
+        </div>
+        <p style={{
+          fontFamily: 'monospace', fontSize: '0.62rem', letterSpacing: '0.04em',
+          color: '#111', textAlign: 'center', marginTop: '0.55rem',
+        }}>
+          {photo.caption}
+        </p>
+      </div>
+    </div>
+  );
+});
+
 // ─── Foto: caída + drag + snap-to-grid + protagonista ──────────────────────────
 function PhotoLayer({
-  photo, index, total, progress, stage, entered,
+  photo, index, total, progress, stage, entered, constraintsRef,
 }: {
-  photo   : Photo;
-  index   : number;
-  total   : number;
-  progress: MotionValue<number>;
-  stage   : { w: number; h: number };
-  entered : boolean;
+  photo         : Photo;
+  index         : number;
+  total         : number;
+  progress      : MotionValue<number>;
+  stage         : { w: number; h: number };
+  entered       : boolean;
+  constraintsRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const seg = (STORY_END - STORY_START) / total;
   const s0  = STORY_START + index * seg;
   const s1  = s0 + seg;
   const f   = seg * 0.3;
 
-  // Offsets (px) desde la celda de la cuadrícula (base CSS) a dispersión/protagonista.
-  const dxS = ((photo.sx  - photo.gx) / 100) * stage.w;
-  const dyS = ((photo.sy  - photo.gy) / 100) * stage.h;
-  const dxP = ((PROTA.x   - photo.gx) / 100) * stage.w;
-  const dyP = ((PROTA.y   - photo.gy) / 100) * stage.h;
+  const dxS = ((photo.sx - photo.gx) / 100) * stage.w;
+  const dyS = ((photo.sy - photo.gy) / 100) * stage.h;
+  const dxP = ((PROTA.x  - photo.gx) / 100) * stage.w;
+  const dyP = ((PROTA.y  - photo.gy) / 100) * stage.h;
 
   const x = useTransform(progress,
     [0, SNAP_START, SNAP_END, s0, s0 + f, s1 - f, s1, 1],
@@ -215,22 +215,22 @@ function PhotoLayer({
     [1, 1, 0.16, 0.16, 1, 1, 0.16, 0.16]);
   const blurPx = useTransform(progress,
     [0, SNAP_END, STORY_START, s0, s0 + f, s1 - f, s1, 1],
-    [0, 0, 3, 3, 0, 0, 3, 3]);
+    [0, 0, 2, 2, 0, 0, 2, 2]);
   const filter  = useTransform(blurPx, (b) => `grayscale(100%) blur(${b}px)`);
   const zIndex  = useTransform(progress, [s0, (s0 + s1) / 2, s1], [2, 40, 2]);
 
   return (
-    // Base: celda de la cuadrícula (left/top %). Aquí va la entrada "caída".
     <motion.div
       initial={{ opacity: 0, y: 120 }}
       animate={entered ? { opacity: 1, y: 0 } : {}}
       transition={{ delay: 0.1 + index * 0.1, type: 'spring', stiffness: 90, damping: 14 }}
       style={{ position: 'absolute', left: `${photo.gx}%`, top: `${photo.gy}%`, zIndex }}
     >
-      {/* Drag: arrastre libre con retorno elástico al sitio */}
+      {/* Drag libre con retorno elástico al sitio */}
       <motion.div
         data-cursor="drag"
         drag
+        dragConstraints={constraintsRef}
         dragSnapToOrigin
         dragElastic={0.18}
         dragMomentum={false}
@@ -239,36 +239,25 @@ function PhotoLayer({
         whileDrag={{ scale: 1.06, zIndex: 60 }}
         style={{ cursor: 'grab' }}
       >
-        {/* Animación de scroll (snap / protagonista) */}
-        <motion.div style={{ x, y, rotate, scale, opacity, filter, willChange: 'transform' }}>
-          {/* Carta polaroid — centrada sobre el punto de la celda */}
-          <div style={{ transform: 'translate(-50%, -50%)', width: 'clamp(110px, 12vw, 178px)' }}>
-            <div style={{ background: '#fff', padding: '0.6rem 0.6rem 1.9rem', boxShadow: '0 24px 55px rgba(0,0,0,0.65)' }}>
-              <div style={{ position: 'relative', width: '100%', aspectRatio: '4 / 5' }}>
-                <Image
-                  src={photo.image}
-                  alt={photo.caption}
-                  fill
-                  sizes="180px"
-                  draggable={false}
-                  style={{ objectFit: 'cover', filter: 'grayscale(100%)', pointerEvents: 'none' }}
-                />
-              </div>
-              <p style={{
-                fontFamily: 'monospace', fontSize: '0.62rem', letterSpacing: '0.04em',
-                color: '#111', textAlign: 'center', marginTop: '0.55rem',
-              }}>
-                {photo.caption}
-              </p>
-            </div>
-          </div>
+        {/* Animación de scroll (snap / protagonista) — en GPU */}
+        <motion.div style={{ x, y, rotate, scale, opacity, filter, willChange: 'transform, filter' }}>
+          <PhotoCard photo={photo} />
         </motion.div>
       </motion.div>
     </motion.div>
   );
 }
 
-// ─── Texto del relato (fade-in junto a la foto protagonista) ───────────────────
+// ─── Texto del relato (fade-in + stagger palabra a palabra) ────────────────────
+const wordsContainer = {
+  hidden: {},
+  show  : { transition: { staggerChildren: 0.045 } },
+};
+const wordVariant = {
+  hidden: { opacity: 0, y: 14 },
+  show  : { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] as const } },
+};
+
 function StoryText({
   photo, index, total, progress,
 }: {
@@ -285,6 +274,15 @@ function StoryText({
   const opacity = useTransform(progress, [s0, s0 + f, s1 - f, s1], [0, 1, 1, 0]);
   const y       = useTransform(progress, [s0, s1], [44, -44]);
 
+  // Activo cuando el progreso entra en el segmento → dispara el stagger.
+  const [active, setActive] = useState(false);
+  useMotionValueEvent(progress, 'change', (v) => {
+    const isIn = v >= s0 && v <= s1;
+    setActive((prev) => (prev === isIn ? prev : isIn));
+  });
+
+  const words = photo.story.split(' ');
+
   return (
     <motion.div className="about-story" style={{ opacity, y }}>
       <span style={{
@@ -300,12 +298,21 @@ function StoryText({
       }}>
         {photo.caption}
       </h3>
-      <p style={{
-        fontSize: 'clamp(1rem, 1.5vw, 1.3rem)', lineHeight: 1.6,
-        color: 'rgba(255,255,255,0.78)', maxWidth: '34ch',
-      }}>
-        {photo.story}
-      </p>
+      <motion.p
+        variants={wordsContainer}
+        initial="hidden"
+        animate={active ? 'show' : 'hidden'}
+        style={{
+          fontSize: 'clamp(1rem, 1.5vw, 1.3rem)', lineHeight: 1.6,
+          color: 'rgba(255,255,255,0.78)', maxWidth: '34ch',
+        }}
+      >
+        {words.map((w, i) => (
+          <motion.span key={i} variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.28em' }}>
+            {w}
+          </motion.span>
+        ))}
+      </motion.p>
     </motion.div>
   );
 }
