@@ -6,60 +6,59 @@ import {
   motion,
   useScroll,
   useTransform,
-  useMotionValueEvent,
   type MotionValue,
 } from 'framer-motion';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// AboutJD — "Cosmos" full-viewport storytelling
+// AboutJD — "Cosmos" parallax drift
 //
-//  Fase A  · 6 fotos GRANDES dispersas por TODO el viewport (no esquina).
-//            Drag libre. Entrada con animación de "caída" escalonada.
-//  Fase B  · Las fotos caen y hacen snap a una cuadrícula 3×2 que ocupa
-//            TODA la pantalla (efecto galería full-screen, no widget).
-//  Fase C  · Una foto a la vez se convierte en protagonista (izquierda,
-//            escala real) mientras el texto del relato aparece a la derecha
-//            palabra a palabra.
+//  Las fotos NO se ordenan en una rejilla. Flotan dispersas por TODO el viewport
+//  y DERIVAN hacia arriba a velocidades distintas según su profundidad (parallax)
+//  mientras haces scroll — sensación de flotar por el espacio.
 //
-//  Rendimiento: sticky CSS · will-change: transform · opacity (sin blur).
-//  Fotos: clamp(220px, 28vw, 420px) — sin marco polaroid, full-bleed.
+//  · Cada tarjeta tiene `depth` (0.3 lejos/lento … 1.4 cerca/rápido) que controla
+//    velocidad de deriva, escala base, opacidad y z-index.
+//  · Marcos blancos tipo foto impresa, fondo negro puro.
+//  · Titulares centrados que hacen crossfade conforme avanza el relato.
+//  · Drag libre en escritorio (desactivado en táctil para no romper el scroll).
+//
+//  Rendimiento: sticky CSS · will-change: transform · transforms numéricos en px
+//  (interpolación barata) · React.memo en la tarjeta visual. CERO blur.
 // ─────────────────────────────────────────────────────────────────────────────
 
-interface Photo {
-  id: string; image: string; kicker: string; caption: string; story: string;
-  sx: number; sy: number; srot: number;
+interface Card {
+  id   : string;
+  image: string;
+  x    : number;   // % horizontal del centro de la tarjeta
+  y    : number;   // % vertical del centro (posición inicial)
+  w    : number;   // ancho en vw
+  depth: number;   // multiplicador de parallax / escala / z
+  rot  : number;   // rotación base (deg)
+  op   : number;   // opacidad base (profundidad atmosférica)
+  ar   : string;   // aspect-ratio CSS
 }
 
-// ── Cuadrícula 3×2 a PANTALLA COMPLETA ──────────────────────────────────────
-// Columnas: izquierda (16.5%), centro (50%), derecha (83.5%)
-// Filas: superior (23%), inferior (67%)
-const GRID_COLS = [16.5, 50, 83.5];
-const GRID_ROWS = [23, 67];
-
-const PHOTOS: Photo[] = [
-  { id: 'inicios',   image: '/images/pasado-1.jpg',            kicker: 'Capítulo 01', caption: 'Los inicios',            story: 'Empecé en un aula pequeña, convencido de que enseñar también es diseñar el futuro.',  sx:  8, sy: 10, srot:  -9 },
-  { id: 'rural',     image: '/images/pasado-2.jpg',            kicker: 'Capítulo 02', caption: 'Maestro rural',          story: 'Del aula de un pueblo a una comunidad de docentes de toda España.',                   sx: 55, sy:  6, srot:   6 },
-  { id: 'escenario', image: '/images/ponencia-1.jpg',          kicker: 'Capítulo 03', caption: 'Sobre el escenario',     story: 'Ponente nacional e internacional en educación e Inteligencia Artificial.',            sx: 84, sy: 14, srot:  -5 },
-  { id: 'impacto',   image: '/images/ponencia-8.jpg',          kicker: 'Capítulo 04', caption: '17 millones de impacto', story: 'Mis contenidos y recursos han llegado a millones de docentes y familias.',            sx:  9, sy: 62, srot:   7 },
-  { id: 'formacion', image: '/images/ponencia-5.jpg',          kicker: 'Capítulo 05', caption: 'Formando docentes',      story: 'Talleres y mentorías para equipos que quieren liderar el cambio en sus aulas.',       sx: 46, sy: 72, srot:  -3 },
-  { id: 'google',    image: '/images/jose-david-contacto.jpg', kicker: 'Capítulo 06', caption: 'Reconocimiento Google',  story: 'Google Certified Innovator & Trainer. Tecnología con propósito.',                      sx: 80, sy: 76, srot:   5 },
+// Constelación dispersa por todo el viewport con variedad de profundidad.
+const CARDS: Card[] = [
+  { id: 'c1', image: '/images/pasado-1.jpg',            x: 13, y: 21, w: 12, depth: 0.50, rot:  -7, op: 0.62, ar: '4 / 5' },
+  { id: 'c2', image: '/images/ponencia-1.jpg',          x: 85, y: 17, w: 15, depth: 0.80, rot:   6, op: 0.86, ar: '3 / 2' },
+  { id: 'c3', image: '/images/pasado-2.jpg',            x: 25, y: 76, w: 11, depth: 1.10, rot:   5, op: 0.95, ar: '4 / 5' },
+  { id: 'c4', image: '/images/ponencia-8.jpg',          x: 72, y: 80, w: 17, depth: 0.95, rot:  -5, op: 0.90, ar: '3 / 2' },
+  { id: 'c5', image: '/images/ponencia-5.jpg',          x: 49, y: 58, w: 20, depth: 1.40, rot:   2, op: 1.00, ar: '4 / 5' },
+  { id: 'c6', image: '/images/jose-david-contacto.jpg', x: 93, y: 60, w:  9, depth: 0.35, rot:   9, op: 0.50, ar: '4 / 5' },
+  { id: 'c7', image: '/images/pasado-3.jpg',            x:  6, y: 60, w:  9, depth: 0.40, rot: -10, op: 0.55, ar: '3 / 4' },
+  { id: 'c8', image: '/images/ponencia-10.jpg',         x: 63, y: 25, w: 10, depth: 0.55, rot:   4, op: 0.70, ar: '3 / 2' },
+  { id: 'c9', image: '/images/ponencia-3.jpg',          x: 37, y: 13, w:  8, depth: 0.45, rot:  -4, op: 0.60, ar: '4 / 5' },
 ];
 
-const GRID_POS = PHOTOS.map((_, i) => ({
-  gx: GRID_COLS[i % 3],
-  gy: GRID_ROWS[Math.floor(i / 3)],
-}));
-
-// Protagonista: lado izquierdo del viewport, escala real (1.0).
-// Las fotos ya son grandes — no hace falta escalar más.
-const PROTA = { x: 25, y: 44, scale: 1.05 };
-
-// Ventanas de snap escalonadas (foto por foto)
-const snapStart = (i: number) => 0.13 + i * 0.04;
-const snapEnd   = (i: number) => snapStart(i) + 0.08;
-
-const STORY_START = 0.44;
-const STORY_END   = 0.97;
+// Hitos del relato (titulares centrados con crossfade).
+interface Beat { kicker: string; title: string[]; body: string; }
+const BEATS: Beat[] = [
+  { kicker: '02 — Sobre mí',    title: ['Una vida', 'en fotos.'],          body: 'Maestro, ingeniero y formador de docentes. Enseñar, para mí, es diseñar el futuro.' },
+  { kicker: 'Trayectoria',      title: ['Del aula rural', 'al escenario.'], body: 'De la clase de un pueblo a una comunidad de docentes de toda España.' },
+  { kicker: 'Impacto',          title: ['17 millones', 'de personas.'],     body: 'Mis contenidos y recursos han llegado a millones de docentes y familias.' },
+  { kicker: 'Reconocimiento',   title: ['Google Innovator', '& Trainer.'],  body: 'Ponente nacional e internacional en educación e Inteligencia Artificial.' },
+];
 
 const stopLenis  = () => (window as unknown as { lenis?: { stop?:  () => void } }).lenis?.stop?.();
 const startLenis = () => (window as unknown as { lenis?: { start?: () => void } }).lenis?.start?.();
@@ -68,8 +67,8 @@ const startLenis = () => (window as unknown as { lenis?: { start?: () => void } 
 export default function AboutJD() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef   = useRef<HTMLDivElement>(null);
-  const [entered, setEntered] = useState(false);
-  const [stage, setStage]     = useState({ w: 1440, h: 900 });
+  const [vh, setVh]         = useState(900);
+  const [canDrag, setCanDrag] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -77,318 +76,233 @@ export default function AboutJD() {
   });
 
   useEffect(() => {
-    const io = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setEntered(true); io.disconnect(); } },
-      { threshold: 0.08 },
-    );
-    if (sectionRef.current) io.observe(sectionRef.current);
-    return () => io.disconnect();
+    const measure = () => setVh(window.innerHeight);
+    measure();
+    setCanDrag(window.matchMedia('(pointer: fine)').matches);
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
   }, []);
-
-  useEffect(() => {
-    const m = () => setStage({ w: window.innerWidth, h: window.innerHeight });
-    m();
-    window.addEventListener('resize', m);
-    return () => window.removeEventListener('resize', m);
-  }, []);
-
-  const introOpacity  = useTransform(scrollYProgress, [0, 0.08, 0.14], [1, 1, 0]);
-  const gridOpacity   = useTransform(scrollYProgress, [0.12, 0.30], [0, 1]);
-  const railScale     = useTransform(scrollYProgress, [STORY_START, STORY_END], [0, 1]);
 
   return (
     <section
       ref={sectionRef}
       id="about"
-      style={{ position: 'relative', height: '800vh', background: '#000000' }}
+      style={{ position: 'relative', height: '480vh', background: '#000000' }}
     >
       <div
         ref={stageRef}
         style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden' }}
       >
-        {/* ① Texto de intro */}
-        <motion.div style={{ opacity: introOpacity }} className="about-intro">
-          <p style={{ fontFamily: 'monospace', fontSize: '0.75rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: '#71717a', marginBottom: '0.9rem' }}>
-            02 / Sobre mí
-          </p>
-          <h2 style={{ fontFamily: 'var(--sans)', fontSize: 'clamp(2.5rem, 7vw, 6rem)', fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 0.95, color: '#fff', marginBottom: '1.1rem' }}>
-            Una vida en fotos.
-          </h2>
-          <p style={{ fontFamily: 'monospace', fontSize: '0.78rem', letterSpacing: '0.1em', color: '#52525b' }}>
-            Arrastra · haz scroll para la historia
-          </p>
-        </motion.div>
-
-        {/* ② Contornos del grid (pantalla completa) */}
-        <motion.div
-          aria-hidden="true"
-          style={{ position: 'absolute', inset: 0, opacity: gridOpacity, pointerEvents: 'none' }}
-        >
-          {GRID_POS.map((pos, i) => (
-            <GridOutline key={i} gx={pos.gx} gy={pos.gy} />
-          ))}
-        </motion.div>
-
-        {/* ③ Fotos grandes dispersas → grid → protagonista */}
-        {PHOTOS.map((photo, i) => (
-          <PhotoLayer
-            key={photo.id}
-            photo={photo}
-            index={i}
-            total={PHOTOS.length}
-            gridPos={GRID_POS[i]}
+        {/* ① Constelación de fotos a la deriva */}
+        {CARDS.map((card) => (
+          <ParallaxCard
+            key={card.id}
+            card={card}
+            vh={vh}
+            canDrag={canDrag}
             progress={scrollYProgress}
-            stage={stage}
-            entered={entered}
             constraintsRef={stageRef}
           />
         ))}
 
-        {/* ④ Texto del relato */}
-        {PHOTOS.map((photo, i) => (
-          <StoryText
-            key={photo.id}
-            photo={photo}
-            index={i}
-            total={PHOTOS.length}
-            progress={scrollYProgress}
-          />
-        ))}
+        {/* ② Velo radial central para legibilidad del titular */}
+        <div
+          aria-hidden="true"
+          style={{
+            position      : 'absolute',
+            inset         : 0,
+            zIndex        : 30,
+            pointerEvents : 'none',
+            background    : 'radial-gradient(60vw 52vh at 50% 44%, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.30) 45%, rgba(0,0,0,0) 75%)',
+          }}
+        />
 
-        {/* ⑤ Barra de progreso */}
-        <div className="about-rail" aria-hidden="true">
-          <motion.div className="about-rail__fill" style={{ scaleY: railScale }} />
+        {/* ③ Titulares del relato (crossfade) */}
+        <div
+          style={{
+            position      : 'absolute',
+            inset         : 0,
+            zIndex        : 40,
+            display       : 'flex',
+            flexDirection : 'column',
+            alignItems    : 'center',
+            justifyContent: 'center',
+            textAlign     : 'center',
+            pointerEvents : 'none',
+            padding       : '0 6vw',
+          }}
+        >
+          {BEATS.map((beat, i) => (
+            <BeatText key={i} beat={beat} index={i} total={BEATS.length} progress={scrollYProgress} />
+          ))}
+        </div>
+
+        {/* ④ Pista inferior */}
+        <div
+          style={{
+            position     : 'absolute',
+            left         : 0, right: 0, bottom: '3.5vh',
+            zIndex       : 41,
+            textAlign    : 'center',
+            fontFamily   : 'monospace',
+            fontSize     : '0.7rem',
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color        : '#52525b',
+            pointerEvents: 'none',
+          }}
+        >
+          {canDrag ? 'Arrastra las fotos · scroll para la historia' : 'Scroll para la historia'}
         </div>
       </div>
     </section>
   );
 }
 
-// ─── Contorno de celda del grid ───────────────────────────────────────────────
-// Dimensiones aproximadas del polaroid: width × (ancho*1.25 + 48px strip)
-// ≈ 3 : 4 con el strip extra de la franja inferior.
-const GridOutline = memo(function GridOutline({ gx, gy }: { gx: number; gy: number }) {
-  return (
-    <div
-      style={{
-        position      : 'absolute',
-        left          : `${gx}%`,
-        top           : `${gy}%`,
-        transform     : 'translate(-50%, -50%)',
-        width         : 'clamp(170px, 19vw, 290px)',
-        aspectRatio   : '3 / 4',
-        border        : '1px solid rgba(255,255,255,0.08)',
-        background    : 'rgba(255,255,255,0.02)',
-      }}
-    />
-  );
-});
-
-// ─── Foto: caída + drag + snap a grid + protagonista ─────────────────────────
-function PhotoLayer({
-  photo, index, total, gridPos, progress, stage, entered, constraintsRef,
+// ─── Tarjeta con deriva parallax + drag ───────────────────────────────────────
+function ParallaxCard({
+  card, vh, canDrag, progress, constraintsRef,
 }: {
-  photo         : Photo;
-  index         : number;
-  total         : number;
-  gridPos       : { gx: number; gy: number };
+  card          : Card;
+  vh            : number;
+  canDrag       : boolean;
   progress      : MotionValue<number>;
-  stage         : { w: number; h: number };
-  entered       : boolean;
   constraintsRef: React.RefObject<HTMLDivElement | null>;
 }) {
-  const seg = (STORY_END - STORY_START) / total;
-  const s0  = STORY_START + index * seg;
-  const s1  = s0 + seg;
-  const f   = seg * 0.28;
-  const ss  = snapStart(index);
-  const se  = snapEnd(index);
+  // Deriva vertical: las cercanas (depth alto) suben más → parallax de profundidad.
+  const travel = -card.depth * 0.42 * vh;
+  const y      = useTransform(progress, [0, 1], [0, travel]);
+  // Rotación a la deriva, sutil y dependiente de la profundidad.
+  const rotate = useTransform(progress, [0, 1], [card.rot, card.rot + (card.depth - 0.7) * 7]);
 
-  const dxS = ((photo.sx  - gridPos.gx) / 100) * stage.w;
-  const dyS = ((photo.sy  - gridPos.gy) / 100) * stage.h;
-  const dxP = ((PROTA.x   - gridPos.gx) / 100) * stage.w;
-  const dyP = ((PROTA.y   - gridPos.gy) / 100) * stage.h;
-
-  const x = useTransform(progress,
-    [0,   ss,  se, s0,  s0 + f, s1 - f, s1, 1],
-    [dxS, dxS,  0,  0,    dxP,    dxP,  0,  0]);
-  const y = useTransform(progress,
-    [0,   ss,  se, s0,  s0 + f, s1 - f, s1, 1],
-    [dyS, dyS,  0,  0,    dyP,    dyP,  0,  0]);
-  const rotate = useTransform(progress,
-    [0,          ss,          se, 1],
-    [photo.srot, photo.srot,   0, 0]);
-  const scale = useTransform(progress,
-    [0,  se, s0,  s0 + f,     s1 - f,     s1, 1],
-    [1,   1,  1, PROTA.scale, PROTA.scale,  1,  1]);
-
-  // Inactiva: opacity 0.18 (dramático contraste vs protagonista).
-  const opacity = useTransform(progress,
-    [0,  se, s0 - 0.02, s0,  s0 + f, s1 - f, s1,  1],
-    [1,   1,       0.18, 0.18,     1,       1, 0.18, 0.18]);
-
-  const zIndex = useTransform(progress, [s0, (s0 + s1) / 2, s1], [2, 50, 2]);
+  const zIndex = Math.round(card.depth * 10);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 120 }}
-      animate={entered ? { opacity: 1, y: 0 } : {}}
-      transition={{ delay: 0.08 + index * 0.1, type: 'spring', stiffness: 75, damping: 14 }}
-      style={{ position: 'absolute', left: `${gridPos.gx}%`, top: `${gridPos.gy}%`, zIndex }}
-    >
+    <div style={{ position: 'absolute', left: `${card.x}%`, top: `${card.y}%`, zIndex }}>
       <motion.div
         data-cursor="drag"
-        drag
+        drag={canDrag}
         dragConstraints={constraintsRef}
         dragSnapToOrigin
-        dragElastic={0.12}
+        dragElastic={0.14}
         dragMomentum={false}
         onDragStart={stopLenis}
         onDragEnd={startLenis}
-        whileDrag={{ scale: 1.06, zIndex: 60 }}
-        style={{ cursor: 'grab' }}
+        whileDrag={{ scale: 1.07, zIndex: 60 }}
+        style={{ cursor: canDrag ? 'grab' : 'default' }}
       >
-        <motion.div style={{ x, y, rotate, scale, opacity, willChange: 'transform, opacity' }}>
-          <PhotoCard photo={photo} />
+        <motion.div style={{ y, rotate, willChange: 'transform' }}>
+          <Frame card={card} />
         </motion.div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
 
-// ─── Foto: marco polaroid (fondo blanco, borde superior/lateral fino, franja inferior para pie) ──
-const PhotoCard = memo(function PhotoCard({ photo }: { photo: Photo }) {
+// ─── Marco blanco tipo foto impresa ───────────────────────────────────────────
+const Frame = memo(function Frame({ card }: { card: Card }) {
   return (
     <div
       style={{
-        transform  : 'translate(-50%, -50%)',
-        width      : 'clamp(170px, 19vw, 290px)',
-        willChange : 'transform',
-        background : '#ffffff',
-        padding    : '10px 10px 38px',
-        boxShadow  : '0 36px 90px rgba(0,0,0,0.95), 0 8px 24px rgba(0,0,0,0.55)',
+        transform : 'translate(-50%, -50%)',
+        width     : `clamp(90px, ${card.w}vw, ${Math.round(card.w * 17)}px)`,
+        opacity   : card.op,
+        background: '#ffffff',
+        padding   : '7px',
+        boxShadow : '0 34px 80px rgba(0,0,0,0.92), 0 8px 22px rgba(0,0,0,0.55)',
+        willChange: 'transform',
       }}
     >
       <div
         style={{
-          position  : 'relative',
-          width     : '100%',
-          aspectRatio: '4 / 5',
-          overflow  : 'hidden',
-          background: '#d4d4d4',
+          position   : 'relative',
+          width      : '100%',
+          aspectRatio: card.ar,
+          overflow   : 'hidden',
+          background : '#d4d4d4',
         }}
       >
         <Image
-          src={photo.image}
-          alt={photo.caption}
+          src={card.image}
+          alt=""
           fill
           quality={100}
-          sizes="(max-width: 768px) 100vw, 26vw"
+          sizes="(max-width: 768px) 40vw, 22vw"
           draggable={false}
           style={{
             objectFit     : 'cover',
-            objectPosition: 'center 20%',
-            filter        : 'grayscale(100%) contrast(1.08)',
+            objectPosition: 'center 25%',
+            filter        : 'grayscale(100%) contrast(1.06)',
             pointerEvents : 'none',
           }}
         />
       </div>
-      {/* Pie de foto — franja blanca inferior estilo polaroid */}
-      <p style={{
-        fontFamily   : 'monospace',
-        fontSize     : '0.56rem',
-        letterSpacing: '0.16em',
-        textTransform: 'uppercase',
-        color        : '#7a7a7a',
-        textAlign    : 'center',
-        marginTop    : '10px',
-        lineHeight   : 1.2,
-        userSelect   : 'none',
-        overflow     : 'hidden',
-        whiteSpace   : 'nowrap',
-        textOverflow : 'ellipsis',
-      }}>
-        {photo.caption}
-      </p>
     </div>
   );
 });
 
-// ─── Texto del relato: stagger palabra a palabra ──────────────────────────────
-const wordsContainer = {
-  hidden: {},
-  show  : { transition: { staggerChildren: 0.046 } },
-};
-const wordVariant = {
-  hidden: { opacity: 0, y: 16 },
-  show  : { opacity: 1, y: 0, transition: { duration: 0.38, ease: [0.4, 0, 0.2, 1] as const } },
-};
-
-function StoryText({
-  photo, index, total, progress,
+// ─── Titular del relato (crossfade + leve deriva vertical) ────────────────────
+function BeatText({
+  beat, index, total, progress,
 }: {
-  photo   : Photo;
+  beat    : Beat;
   index   : number;
   total   : number;
   progress: MotionValue<number>;
 }) {
-  const seg = (STORY_END - STORY_START) / total;
-  const s0  = STORY_START + index * seg;
-  const s1  = s0 + seg;
-  const f   = seg * 0.26;
+  const seg  = 1 / total;
+  const s0   = index * seg;
+  const s1   = s0 + seg;
+  const fade = seg * 0.26;
 
-  const opacity = useTransform(progress, [s0, s0 + f, s1 - f, s1], [0, 1, 1, 0]);
-  const y       = useTransform(progress, [s0, s1], [36, -36]);
-
-  const [active, setActive] = useState(false);
-  useMotionValueEvent(progress, 'change', (v) => {
-    const isIn = v >= s0 && v <= s1;
-    setActive((prev) => (prev === isIn ? prev : isIn));
-  });
-
-  const words = photo.story.split(' ');
+  const opacity = useTransform(progress, [s0, s0 + fade, s1 - fade, s1], [0, 1, 1, 0]);
+  const y       = useTransform(progress, [s0, s1], [40, -40]);
 
   return (
-    <motion.div className="about-story" style={{ opacity, y }}>
+    <motion.div
+      style={{
+        position : 'absolute',
+        opacity,
+        y,
+        maxWidth : '46ch',
+        textShadow: '0 2px 40px rgba(0,0,0,0.9)',
+      }}
+    >
       <span style={{
-        display: 'block', fontFamily: 'monospace', fontSize: '0.72rem',
-        letterSpacing: '0.22em', textTransform: 'uppercase', color: '#a1a1aa',
-        marginBottom: '0.7rem',
+        display      : 'block',
+        fontFamily   : 'monospace',
+        fontSize     : '0.72rem',
+        letterSpacing: '0.24em',
+        textTransform: 'uppercase',
+        color        : '#a1a1aa',
+        marginBottom : '1.1rem',
       }}>
-        {photo.kicker}
+        {beat.kicker}
       </span>
-      <h3 style={{
+
+      <h2 style={{
         fontFamily   : 'var(--sans)',
-        fontSize     : 'clamp(2rem, 4.5vw, 4.5rem)',
+        fontSize     : 'clamp(2.6rem, 7vw, 6.5rem)',
         fontWeight   : 800,
-        letterSpacing: '-0.04em',
-        lineHeight   : 1,
-        color        : '#fff',
-        margin       : '0 0 1.2rem',
+        letterSpacing: '-0.045em',
+        lineHeight   : 0.92,
+        color        : '#ffffff',
+        margin       : 0,
       }}>
-        {photo.caption}
-      </h3>
-      <motion.p
-        variants={wordsContainer}
-        initial="hidden"
-        animate={active ? 'show' : 'hidden'}
-        style={{
-          fontSize : 'clamp(1rem, 1.4vw, 1.25rem)',
-          lineHeight: 1.65,
-          color    : 'rgba(255,255,255,0.78)',
-          maxWidth : '30ch',
-        }}
-      >
-        {words.map((w, i) => (
-          <motion.span
-            key={i}
-            variants={wordVariant}
-            style={{ display: 'inline-block', marginRight: '0.3em' }}
-          >
-            {w}
-          </motion.span>
+        {beat.title.map((line, i) => (
+          <span key={i} style={{ display: 'block' }}>{line}</span>
         ))}
-      </motion.p>
+      </h2>
+
+      <p style={{
+        margin    : '1.4rem auto 0',
+        maxWidth  : '34ch',
+        fontSize  : 'clamp(1rem, 1.4vw, 1.25rem)',
+        lineHeight: 1.6,
+        color     : 'rgba(255,255,255,0.80)',
+      }}>
+        {beat.body}
+      </p>
     </motion.div>
   );
 }
