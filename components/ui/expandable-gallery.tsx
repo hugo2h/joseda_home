@@ -57,7 +57,7 @@ export default function ExpandableGallery({ items }: { items: GalleryItem[] }) {
             }
           : {
               flexGrow  : isActive ? 1 : 0,
-              flexBasis : isActive ? '0%' : collapsed ? '0px' : '13vw',
+              flexBasis : isActive ? '0%' : collapsed ? '0px' : '18vw',
               opacity   : collapsed ? 0 : 1,
             };
 
@@ -77,29 +77,35 @@ export default function ExpandableGallery({ items }: { items: GalleryItem[] }) {
               flexShrink: 0,
             }}
           >
-            {/* ── Imagen de fondo B&N ── */}
+            {/* ── Imagen de fondo B&N ──
+                 Inactiva: cover (recorte permitido en franja fina).
+                 Activa: contain anclado arriba → la foto completa (escenario +
+                 José David entero) nunca se recorta; banda inferior libre. */}
             <Image
               src={item.image}
               alt={item.title}
               fill
               sizes="100vw"
               style={{
-                objectFit : 'cover',
-                filter    : isActive
-                  ? 'grayscale(100%) brightness(0.6)'
+                objectFit     : isActive ? 'contain' : 'cover',
+                objectPosition: isActive ? 'center top' : 'center',
+                filter        : isActive
+                  ? 'grayscale(100%) brightness(0.92)'
                   : 'grayscale(100%) brightness(0.32)',
-                transition: 'filter 0.7s ease',
+                transition    : 'filter 0.7s ease',
               }}
             />
 
-            {/* ── Velo ── */}
+            {/* ── Velo ──
+                 Activo: oscurece solo la banda inferior para el texto, dejando
+                 el punto focal (parte superior) totalmente visible. */}
             <div
               aria-hidden="true"
               style={{
                 position  : 'absolute',
                 inset     : 0,
                 background: isActive
-                  ? 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.45) 100%)'
+                  ? 'linear-gradient(to top, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.55) 24%, rgba(0,0,0,0) 48%)'
                   : 'rgba(0,0,0,0.25)',
                 transition: 'background 0.7s ease',
               }}

@@ -162,6 +162,60 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
+   ABOUT JD — Cosmos / tablero de polaroids arrastrables
+══════════════════════════════════════════════════════════════════════════ */
+.about-intro {
+  position      : absolute;
+  top           : 0;
+  left          : 0;
+  right         : 0;
+  z-index       : 20;
+  display       : flex;
+  flex-direction: column;
+  align-items   : center;
+  text-align    : center;
+  padding       : clamp(3.5rem, 9vh, 7rem) 6vw 0;
+  pointer-events: none;
+}
+
+.about-focus {
+  /* layout base inline; aquí solo overrides responsivos */
+}
+
+@media (max-width: 768px) {
+  .about-focus {
+    flex-direction: column !important;
+    gap           : 1.75rem !important;
+    text-align    : center;
+    overflow-y    : auto;
+  }
+  .about-focus h3 { margin: 0.75rem 0 0.75rem !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SPACE VOID — vignette de profundidad global ("vacío espacial")
+══════════════════════════════════════════════════════════════════════════ */
+.space-void {
+  position      : fixed;
+  inset         : 0;
+  z-index       : 40;
+  pointer-events: none;
+  background    : radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 38%,
+    rgba(0, 0, 0, 0.35) 78%,
+    rgba(0, 0, 0, 0.78) 100%
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CURSOR PERSONALIZADO — ocultar cursor nativo en punteros finos
+══════════════════════════════════════════════════════════════════════════ */
+@media (pointer: fine) {
+  * { cursor: none !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
    RESPONSIVE — apilar splits/grids en móvil
 ══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {

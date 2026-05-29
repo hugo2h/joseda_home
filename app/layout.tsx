@@ -4,6 +4,7 @@ import './globals.css';
 import MarqueeBackground    from '@/components/MarqueeBackground';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
 import ConfettiBackground   from '@/components/ui/confetti-background';
+import CustomCursor         from '@/components/ui/custom-cursor';
 
 export const metadata: Metadata = {
   title      : 'José David — Educación & IA',
@@ -26,6 +27,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Campo de partículas 3D sutil — fijo, detrás del scroll-viewport */}
         <ConfettiBackground />
+
+        {/* Vignette "vacío espacial" — profundidad global, fija sobre todo */}
+        <div className="space-void" aria-hidden="true" />
+
+        {/* Cursor personalizado (cambia a "Drag" sobre las fotos) */}
+        <CustomCursor />
 
         {/* Motor de scroll global — Lenis sobre window */}
         <SmoothScrollProvider>
