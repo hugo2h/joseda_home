@@ -35,14 +35,20 @@ export default function ExpandableGallery({ items }: { items: GalleryItem[] }) {
 
   const anyActive = active !== null;
 
+  // ── MÓVIL: pila de tarjetas completas (imagen + texto + CTA siempre visibles) ──
+  if (isMobile) {
+    return <MobileStack items={items} />;
+  }
+
+  // ── ESCRITORIO: acordeón horizontal expandible ──
   return (
     <div
       style={{
         display       : 'flex',
-        flexDirection : isMobile ? 'column' : 'row',
+        flexDirection : 'row',
         justifyContent: 'center',
-        gap           : isMobile ? '0.5rem' : '0.75rem',
-        height        : isMobile ? 'auto' : 'min(70vh, 660px)',
+        gap           : '0.75rem',
+        height        : 'min(70vh, 660px)',
         width         : '100%',
       }}
     >
@@ -287,6 +293,122 @@ export default function ExpandableGallery({ items }: { items: GalleryItem[] }) {
           </motion.div>
         );
       })}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MobileStack — pila vertical de tarjetas completas para móvil.
+// Imagen + subtítulo + título + descripción + CTA, todo visible sin interacción.
+// ─────────────────────────────────────────────────────────────────────────────
+function MobileStack({ items }: { items: GalleryItem[] }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem', width: '100%' }}>
+      {items.map((item) => (
+        <article
+          key={item.id}
+          style={{
+            position : 'relative',
+            overflow : 'hidden',
+            border   : '1px solid rgba(255,255,255,0.10)',
+            background: '#0a0a0a',
+          }}
+        >
+          {/* ── Imagen ── */}
+          <div style={{ position: 'relative', width: '100%', aspectRatio: '3 / 2', overflow: 'hidden' }}>
+            <Image
+              src={item.image}
+              alt={item.title}
+              fill
+              quality={90}
+              sizes="100vw"
+              style={{
+                objectFit     : 'cover',
+                objectPosition: 'center 25%',
+                filter        : 'grayscale(100%)',
+              }}
+            />
+            <span style={{
+              position  : 'absolute',
+              top       : '1rem',
+              left      : '1rem',
+              fontFamily: 'monospace',
+              fontSize  : '0.72rem',
+              letterSpacing: '0.15em',
+              color     : '#ffffff',
+              textShadow: '0 1px 10px rgba(0,0,0,0.85)',
+            }}>
+              {item.num}
+            </span>
+            {/* Fundido inferior para empalmar con el bloque de texto */}
+            <div
+              aria-hidden="true"
+              style={{
+                position  : 'absolute',
+                inset     : 0,
+                background: 'linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0) 40%)',
+              }}
+            />
+          </div>
+
+          {/* ── Texto ── */}
+          <div style={{ padding: '1.1rem 1.4rem 1.7rem' }}>
+            <span style={{
+              display      : 'block',
+              fontFamily   : 'monospace',
+              fontSize     : '0.7rem',
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color        : '#a1a1aa',
+              marginBottom : '0.7rem',
+            }}>
+              {item.subtitle}
+            </span>
+
+            <h3 style={{
+              fontFamily   : 'var(--sans)',
+              fontSize     : 'clamp(1.6rem, 7vw, 2.3rem)',
+              fontWeight   : 800,
+              letterSpacing: '-0.03em',
+              lineHeight   : 1,
+              color        : '#ffffff',
+              marginBottom : '0.9rem',
+            }}>
+              {item.title}
+            </h3>
+
+            <p style={{
+              fontSize    : '1rem',
+              lineHeight  : 1.6,
+              color       : 'rgba(255,255,255,0.72)',
+              marginBottom: '1.5rem',
+            }}>
+              {item.description}
+            </p>
+
+            <button
+              type="button"
+              style={{
+                display      : 'inline-flex',
+                alignItems   : 'center',
+                gap          : '0.5rem',
+                padding      : '0.85rem 1.9rem',
+                background   : '#ffffff',
+                color        : '#000000',
+                fontSize     : '0.78rem',
+                fontWeight   : 600,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                border       : 'none',
+                cursor       : 'pointer',
+              }}
+            >
+              {item.cta}
+              <span style={{ fontSize: '1rem', lineHeight: 1 }}>→</span>
+            </button>
+          </div>
+        </article>
+      ))}
     </div>
   );
 }

@@ -11,7 +11,7 @@ const PODCASTS: GalleryItem[] = [
     subtitle   : 'Educación · IA',
     description: 'El podcast para docentes que quieren transformar su práctica educativa con IA y tecnología.',
     cta        : 'Escuchar',
-    image      : '/jd-stage.jpg',
+    image      : '/images/jd-stage.jpg',
   },
   {
     id         : 'vamos-a-clase',
