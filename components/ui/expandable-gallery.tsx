@@ -87,10 +87,11 @@ export default function ExpandableGallery({ items }: { items: GalleryItem[] }) {
               alt={item.title}
               fill
               quality={100}
+              priority={isActive}
               sizes="(max-width: 768px) 100vw, 50vw"
               style={{
                 objectFit     : 'cover',
-                objectPosition: isActive ? 'center top' : 'center',
+                objectPosition: isActive ? 'center 20%' : 'center',
                 filter        : isActive
                   ? 'grayscale(100%) brightness(0.92)'
                   : 'grayscale(100%) brightness(0.32)',
