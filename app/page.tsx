@@ -7,6 +7,7 @@ import Cursos    from '@/components/Cursos';
 import Podcasts  from '@/components/Podcasts';
 import ContactJD from '@/components/ContactJD';
 import { MagicText } from '@/components/ui/magic-text';
+import StackSection from '@/components/ui/stack-section';
 import CinematicFooter from '@/components/ui/motion-footer';
 
 export default function Home() {
@@ -19,14 +20,17 @@ export default function Home() {
       {/* Texto mágico — revelado palabra a palabra al scroll (monocromo) */}
       <MagicText text="José David. Maestro. Ingeniero. Formador de docentes." />
 
-      {/* Sobre Mí — ContainerScroll 3D + Bento Grid con efecto Spotlight */}
+      {/* Sobre Mí — Scroll Storytelling inmersivo (retrato sticky + texto) */}
       <AboutJD />
 
-      {/* Cursos — Acordeón vertical (Aristide Benoist style) */}
-      <Cursos />
+      {/* Cursos + Podcasts — galería acordeón horizontal con stacking 3D */}
+      <StackSection>
+        <Cursos />
+      </StackSection>
 
-      {/* Podcasts — Acordeón vertical */}
-      <Podcasts />
+      <StackSection>
+        <Podcasts />
+      </StackSection>
 
       {/* Contacto — ultra minimalista */}
       <ContactJD />

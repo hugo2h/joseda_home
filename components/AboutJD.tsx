@@ -2,141 +2,178 @@
 
 import { useRef } from 'react';
 import Image from 'next/image';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// AboutJD — Editorial Split 50/50 (monocromo)
-// Izquierda: párrafo blanco gigante. Derecha: imagen B&N alta con parallax.
-// Abajo: estadísticas en una línea horizontal, separadas por barras, monospace.
+// AboutJD — Scroll Storytelling lineal (estilo Apple).
+// Retrato fijo (sticky) en el centro; los bloques de texto entran y salen con
+// fade mientras se hace scroll, creando un viaje narrativo inmersivo. B&N.
 // ─────────────────────────────────────────────────────────────────────────────
-const STATS: [string, string][] = [
-  ['17M+',  'Personas alcanzadas'],
-  ['100K+', 'Suscriptores'],
-  ['8+',    'Años de experiencia'],
+const STORY: { kicker: string; title: string; text: string }[] = [
+  {
+    kicker: '02 / Sobre mí',
+    title : 'De maestro rural a ingeniero',
+    text  : 'Empecé en un aula pequeña, convencido de que enseñar también es diseñar el futuro. Esa convicción me llevó a unir la pedagogía con la ingeniería.',
+  },
+  {
+    kicker: 'Impacto',
+    title : 'Más de 17 millones de impacto',
+    text  : 'Mis recursos, formaciones y contenidos han llegado a millones de docentes y familias, transformando la forma en que se enseña con tecnología.',
+  },
+  {
+    kicker: 'Propósito',
+    title : 'Tecnología con propósito',
+    text  : 'Ayudo a docentes a integrar la Inteligencia Artificial para recuperar su tiempo, mejorar su enseñanza y liderar el cambio en las aulas.',
+  },
 ];
 
 export default function AboutJD() {
   const sectionRef = useRef<HTMLElement>(null);
-  const imageRef   = useRef<HTMLDivElement>(null);
 
-  // Parallax sutil sobre la imagen
   const { scrollYProgress } = useScroll({
-    target: imageRef,
-    offset: ['start end', 'end start'],
+    target: sectionRef,
+    offset: ['start start', 'end end'],
   });
-  const y = useTransform(scrollYProgress, [0, 1], ['-8%', '8%']);
+
+  // Sutil zoom del retrato durante todo el recorrido
+  const imgScale = useTransform(scrollYProgress, [0, 1], [1.05, 1.18]);
 
   return (
     <section
       ref={sectionRef}
       id="about"
       style={{
-        padding   : 'clamp(6rem, 16vh, 12rem) 6vw',
-        background: 'transparent',
+        position: 'relative',
+        height  : `${STORY.length * 100}vh`,
+        background: '#000000',
       }}
     >
-      {/* Overline */}
-      <p style={{
-        fontFamily   : 'monospace',
-        fontSize     : '0.75rem',
-        letterSpacing: '0.25em',
-        textTransform: 'uppercase',
-        color        : '#71717a',
-        marginBottom : 'clamp(3rem, 8vh, 6rem)',
+      {/* ── Retrato fijo centrado ── */}
+      <div style={{
+        position      : 'sticky',
+        top           : 0,
+        height        : '100vh',
+        overflow      : 'hidden',
+        display       : 'flex',
+        alignItems    : 'center',
+        justifyContent: 'center',
       }}>
-        02 / Sobre mí
-      </p>
+        <motion.div style={{ position: 'absolute', inset: 0, scale: imgScale }}>
+          <Image
+            src="/images/jose-david-contacto.jpg"
+            alt="José David Pérez Ibáñez"
+            fill
+            sizes="100vw"
+            priority
+            style={{
+              objectFit     : 'cover',
+              objectPosition: 'center 18%',
+              filter        : 'grayscale(100%) contrast(1.05) brightness(0.55)',
+            }}
+          />
+        </motion.div>
 
-      {/* ── Split 50/50 ── */}
-      <div
-        className="about-split"
-        style={{
-          display            : 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap                : 'clamp(2rem, 6vw, 6rem)',
-          alignItems         : 'center',
-        }}
-      >
-        {/* Izquierda — párrafo gigante blanco */}
-        <div>
-          <p style={{
-            fontFamily   : 'var(--sans)',
-            fontSize     : 'clamp(1.75rem, 3.2vw, 3rem)',
-            fontWeight   : 500,
-            lineHeight   : 1.25,
-            letterSpacing: '-0.03em',
-            color        : '#ffffff',
-          }}>
-            Combino pedagogía y tecnología para transformar la educación.
-            Ayudo a docentes a integrar la IA, recuperar su tiempo y liderar
-            el cambio en las aulas.
-          </p>
-        </div>
+        {/* Velo para legibilidad */}
+        <div aria-hidden="true" style={{
+          position  : 'absolute',
+          inset     : 0,
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.75) 100%)',
+        }} />
 
-        {/* Derecha — imagen alta B&N con parallax */}
-        <div
-          ref={imageRef}
-          style={{
-            position    : 'relative',
-            width       : '100%',
-            aspectRatio : '3 / 4',
-            overflow    : 'hidden',
-          }}
-        >
-          <motion.div style={{ position: 'absolute', inset: '-10% 0', y }}>
-            <Image
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1400&q=80"
-              alt="Retrato de José David"
-              fill
-              sizes="(max-width: 768px) 90vw, 600px"
-              style={{
-                objectFit     : 'cover',
-                objectPosition: 'center top',
-                filter        : 'grayscale(100%) contrast(1.05)',
-              }}
-            />
-          </motion.div>
-        </div>
-      </div>
-
-      {/* ── Estadísticas en una línea, separadas por barras, monospace ── */}
-      <div
-        className="about-stats"
-        style={{
-          marginTop    : 'clamp(4rem, 10vh, 8rem)',
-          display      : 'flex',
-          flexWrap     : 'wrap',
-          alignItems   : 'baseline',
-          gap          : 'clamp(1rem, 3vw, 2.5rem)',
-          fontFamily   : 'monospace',
-        }}
-      >
-        {STATS.map(([num, label], i) => (
-          <div key={label} style={{ display: 'flex', alignItems: 'baseline', gap: 'clamp(1rem, 3vw, 2.5rem)' }}>
-            <span style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
+        {/* ── Bloques narrativos superpuestos ── */}
+        <div style={{
+          position  : 'relative',
+          zIndex    : 1,
+          width     : '100%',
+          maxWidth  : '1100px',
+          padding   : '0 6vw',
+          textAlign : 'center',
+        }}>
+          {STORY.map((block, i) => (
+            <StoryBlock
+              key={block.title}
+              progress={scrollYProgress}
+              index={i}
+              total={STORY.length}
+            >
               <span style={{
-                fontSize     : 'clamp(1.5rem, 3vw, 2.5rem)',
-                fontWeight   : 600,
-                color        : '#ffffff',
-                letterSpacing: '-0.02em',
-              }}>
-                {num}
-              </span>
-              <span style={{
-                fontSize     : '0.72rem',
-                letterSpacing: '0.12em',
+                fontFamily   : 'monospace',
+                fontSize     : '0.75rem',
+                letterSpacing: '0.25em',
                 textTransform: 'uppercase',
-                color        : '#71717a',
+                color        : '#a1a1aa',
               }}>
-                {label}
+                {block.kicker}
               </span>
-            </span>
-            {i < STATS.length - 1 && (
-              <span style={{ color: '#3f3f46', fontSize: 'clamp(1.5rem, 3vw, 2.5rem)', fontWeight: 200 }}>/</span>
-            )}
-          </div>
-        ))}
+              <h2 style={{
+                fontFamily   : 'var(--sans)',
+                fontSize     : 'clamp(2.5rem, 8vw, 7rem)',
+                fontWeight   : 800,
+                letterSpacing: '-0.045em',
+                lineHeight   : 0.98,
+                color        : '#ffffff',
+                margin       : '1.25rem 0 1.5rem',
+              }}>
+                {block.title}
+              </h2>
+              <p style={{
+                fontSize  : 'clamp(1.05rem, 2vw, 1.5rem)',
+                lineHeight: 1.6,
+                color     : 'rgba(255,255,255,0.8)',
+                maxWidth  : '40ch',
+                margin    : '0 auto',
+              }}>
+                {block.text}
+              </p>
+            </StoryBlock>
+          ))}
+        </div>
       </div>
     </section>
+  );
+}
+
+// ─── Bloque que aparece y desaparece según el progreso de scroll ───────────────
+function StoryBlock({
+  children,
+  progress,
+  index,
+  total,
+}: {
+  children: React.ReactNode;
+  progress: MotionValue<number>;
+  index   : number;
+  total   : number;
+}) {
+  const seg   = 1 / total;
+  const start = index * seg;
+  const end   = start + seg;
+  const fade  = seg * 0.28;
+
+  const opacity = useTransform(
+    progress,
+    [start, start + fade, end - fade, end],
+    [0, 1, 1, 0],
+  );
+  const y = useTransform(
+    progress,
+    [start, start + fade, end - fade, end],
+    [60, 0, 0, -60],
+  );
+
+  return (
+    <div
+      style={{
+        position : 'absolute',
+        left     : 0,
+        right    : 0,
+        top      : '50%',
+        transform: 'translateY(-50%)',
+      }}
+    >
+      <motion.div style={{ opacity, y }}>
+        {children}
+      </motion.div>
+    </div>
   );
 }
