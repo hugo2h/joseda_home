@@ -165,6 +165,8 @@ export default function AboutJD() {
 }
 
 // ─── Contorno de celda del grid ───────────────────────────────────────────────
+// Dimensiones aproximadas del polaroid: width × (ancho*1.25 + 48px strip)
+// ≈ 3 : 4 con el strip extra de la franja inferior.
 const GridOutline = memo(function GridOutline({ gx, gy }: { gx: number; gy: number }) {
   return (
     <div
@@ -173,11 +175,10 @@ const GridOutline = memo(function GridOutline({ gx, gy }: { gx: number; gy: numb
         left          : `${gx}%`,
         top           : `${gy}%`,
         transform     : 'translate(-50%, -50%)',
-        width         : 'clamp(220px, 28vw, 420px)',
-        aspectRatio   : '4 / 5',
-        border        : '1px solid rgba(255,255,255,0.12)',
-        background    : 'rgba(255,255,255,0.03)',
-        borderRadius  : '2px',
+        width         : 'clamp(170px, 19vw, 290px)',
+        aspectRatio   : '3 / 4',
+        border        : '1px solid rgba(255,255,255,0.08)',
+        background    : 'rgba(255,255,255,0.02)',
       }}
     />
   );
@@ -255,14 +256,17 @@ function PhotoLayer({
   );
 }
 
-// ─── Foto: imagen grande, sin marco polaroid (full-bleed Cosmos style) ────────
+// ─── Foto: marco polaroid (fondo blanco, borde superior/lateral fino, franja inferior para pie) ──
 const PhotoCard = memo(function PhotoCard({ photo }: { photo: Photo }) {
   return (
     <div
       style={{
-        transform    : 'translate(-50%, -50%)',
-        width        : 'clamp(220px, 28vw, 420px)',
-        willChange   : 'transform',
+        transform  : 'translate(-50%, -50%)',
+        width      : 'clamp(170px, 19vw, 290px)',
+        willChange : 'transform',
+        background : '#ffffff',
+        padding    : '10px 10px 38px',
+        boxShadow  : '0 36px 90px rgba(0,0,0,0.95), 0 8px 24px rgba(0,0,0,0.55)',
       }}
     >
       <div
@@ -271,7 +275,7 @@ const PhotoCard = memo(function PhotoCard({ photo }: { photo: Photo }) {
           width     : '100%',
           aspectRatio: '4 / 5',
           overflow  : 'hidden',
-          boxShadow : '0 28px 70px rgba(0,0,0,0.80)',
+          background: '#d4d4d4',
         }}
       >
         <Image
@@ -279,16 +283,33 @@ const PhotoCard = memo(function PhotoCard({ photo }: { photo: Photo }) {
           alt={photo.caption}
           fill
           quality={100}
-          sizes="(max-width: 768px) 100vw, 30vw"
+          sizes="(max-width: 768px) 100vw, 26vw"
           draggable={false}
           style={{
             objectFit     : 'cover',
             objectPosition: 'center 20%',
-            filter        : 'grayscale(100%)',
+            filter        : 'grayscale(100%) contrast(1.08)',
             pointerEvents : 'none',
           }}
         />
       </div>
+      {/* Pie de foto — franja blanca inferior estilo polaroid */}
+      <p style={{
+        fontFamily   : 'monospace',
+        fontSize     : '0.56rem',
+        letterSpacing: '0.16em',
+        textTransform: 'uppercase',
+        color        : '#7a7a7a',
+        textAlign    : 'center',
+        marginTop    : '10px',
+        lineHeight   : 1.2,
+        userSelect   : 'none',
+        overflow     : 'hidden',
+        whiteSpace   : 'nowrap',
+        textOverflow : 'ellipsis',
+      }}>
+        {photo.caption}
+      </p>
     </div>
   );
 });
