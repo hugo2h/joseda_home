@@ -178,18 +178,49 @@ body {
   pointer-events: none;
 }
 
-.about-focus {
-  /* layout base inline; aquí solo overrides responsivos */
+/* Panel de texto del relato — lado derecho, centrado verticalmente */
+.about-story {
+  position      : absolute;
+  left          : 54%;
+  right         : 6vw;
+  top           : 0;
+  bottom        : 0;
+  z-index       : 50;
+  display       : flex;
+  flex-direction: column;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Línea-guía de progreso del relato — borde izquierdo del escenario */
+.about-rail {
+  position      : absolute;
+  left          : 3.5vw;
+  top           : 30%;
+  height        : 40%;
+  width         : 2px;
+  background    : rgba(255, 255, 255, 0.12);
+  z-index       : 50;
+  pointer-events: none;
+}
+.about-rail__fill {
+  position        : absolute;
+  inset           : 0;
+  background      : #ffffff;
+  transform-origin: top center;
 }
 
 @media (max-width: 768px) {
-  .about-focus {
-    flex-direction: column !important;
-    gap           : 1.75rem !important;
-    text-align    : center;
-    overflow-y    : auto;
+  .about-story {
+    left      : 6vw;
+    right     : 6vw;
+    top       : auto;
+    bottom    : 8vh;
+    height    : auto;
+    text-align: center;
+    align-items: center;
   }
-  .about-focus h3 { margin: 0.75rem 0 0.75rem !important; }
+  .about-rail { display: none; }
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
