@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import SectionEyebrow from '@/components/SectionEyebrow';
 import CTAButton from '@/components/CTAButton';
 
@@ -16,13 +15,18 @@ export default function Hero() {
         paddingBlock  : 'clamp(3rem, 8vh, 6rem)',
       }}
     >
-      {/* Foto de fondo (escenario) */}
+      {/* Vídeo de fondo (mismo clip cinematográfico del proyecto original) */}
       <div aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <Image src="/images/jd-stage.jpg" alt="" fill priority quality={90}
-          sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center 30%' }} />
+        <video
+          autoPlay muted loop playsInline preload="auto"
+          poster="/images/jd-stage.jpg"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%' }}
+        >
+          <source src="/videos/hero.mp4.mp4" type="video/mp4" />
+        </video>
         {/* Velo para legibilidad + insinuación de color de escenario */}
         <div style={{ position: 'absolute', inset: 0,
-          background: 'linear-gradient(90deg, rgba(10,10,10,0.96) 0%, rgba(10,10,10,0.78) 42%, rgba(10,10,10,0.32) 100%)' }} />
+          background: 'linear-gradient(90deg, rgba(10,10,10,0.94) 0%, rgba(10,10,10,0.72) 42%, rgba(10,10,10,0.28) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0,
           background: 'radial-gradient(120% 90% at 100% 0%, rgba(124,58,237,0.28) 0%, rgba(190,24,93,0.12) 40%, transparent 70%)' }} />
       </div>

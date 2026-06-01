@@ -37,11 +37,11 @@ export default function SobreJoseda() {
 
           <div style={{ display: 'grid', gap: '2.5rem', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', alignItems: 'start' }}>
             <Reveal>
-              <div style={{ position: 'relative', width: '100%', aspectRatio: '4 / 5', borderRadius: '18px', overflow: 'hidden',
-                border: '1px solid var(--border-subtle)' }}>
+              <div style={{ position: 'relative', width: '100%', aspectRatio: '3 / 4', borderRadius: '18px', overflow: 'hidden',
+                background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                 <Image src="/images/jose-david-contacto.jpg" alt="Joseda" fill quality={90}
                   sizes="(max-width: 768px) 100vw, 420px"
-                  style={{ objectFit: 'cover', objectPosition: 'center 25%', filter: 'grayscale(100%) contrast(1.05)' }} />
+                  style={{ objectFit: 'contain', objectPosition: 'center' }} />
               </div>
             </Reveal>
 

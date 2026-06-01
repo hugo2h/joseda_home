@@ -25,13 +25,13 @@ export default function AboutTeaser() {
           <SectionEyebrow number="03" text="Sobre Joseda" />
         </div>
 
-        {/* Retrato B/N */}
+        {/* Retrato a color · figura completa (sin recorte) */}
         <Reveal>
-          <div style={{ position: 'relative', width: 'clamp(180px, 40vw, 260px)', aspectRatio: '1 / 1',
+          <div style={{ position: 'relative', width: 'clamp(200px, 44vw, 300px)', aspectRatio: '3 / 4',
             borderRadius: '20px', overflow: 'hidden', border: '3px solid rgba(255,255,255,0.85)',
-            boxShadow: '0 30px 80px rgba(0,0,0,0.45)' }}>
+            background: 'rgba(0,0,0,0.18)', boxShadow: '0 30px 80px rgba(0,0,0,0.45)' }}>
             <Image src="/images/jose-david-contacto.jpg" alt="Joseda" fill quality={90}
-              sizes="260px" style={{ objectFit: 'cover', objectPosition: 'center 25%', filter: 'grayscale(100%) contrast(1.05)' }} />
+              sizes="300px" style={{ objectFit: 'contain', objectPosition: 'center' }} />
           </div>
         </Reveal>
 

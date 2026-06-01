@@ -43,7 +43,7 @@ export default function Card({
       {image && (
         <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', background: '#1f1f1f' }}>
           <Image src={image} alt={imageAlt ?? title} fill quality={90} sizes="(max-width:768px) 100vw, 33vw"
-            style={{ objectFit: 'cover', filter: 'grayscale(100%)' }} />
+            style={{ objectFit: 'cover' }} />
         </div>
       )}
 
