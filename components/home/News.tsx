@@ -7,23 +7,23 @@ import CTAButton from '@/components/CTAButton';
 const POSTS = [
   {
     image: '/images/ponencia-7.jpg',
-    imageAlt: 'Artículo de blog',
+    imageAlt: 'Joseda en una ponencia ante un auditorio',
     meta: 'Aula · 22 may 2026',
     title: 'Cinco usos de la IA que sí ahorran tiempo al corregir.',
     linkText: 'Leer',
     href: '/blog',
   },
   {
-    image: '/images/ponencia-9.jpg',
-    imageAlt: 'Artículo de blog',
+    image: '/images/ponencia-8.jpg',
+    imageAlt: 'Joseda durante una charla',
     meta: 'Criterio · 8 may 2026',
     title: 'Lo que la IA no debería hacer nunca por un docente.',
     linkText: 'Leer',
     href: '/blog',
   },
   {
-    image: '/images/ponencia-11.jpg',
-    imageAlt: 'Artículo de blog',
+    image: '/images/ponencia-1.jpg',
+    imageAlt: 'Joseda en un congreso educativo',
     meta: 'Casos · 30 abr 2026',
     title: 'Cómo un claustro pasó del miedo a la IA al criterio.',
     linkText: 'Leer',
