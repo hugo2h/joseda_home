@@ -615,6 +615,237 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 ---
 
+## 6) Componentes auxiliares (opcionales pero recomendados)
+
+Estos no son obligatorios, pero mantienen la coherencia visual. Rutas:
+```tsx
+import SectionEyebrow from '@/components/SectionEyebrow';
+import Card           from '@/components/Card';
+import LogoMarquee    from '@/components/LogoMarquee';
+import Reveal         from '@/components/Reveal';
+```
+
+### `components/SectionEyebrow.tsx`
+Etiqueta de sección tipo "01 — INICIO" (mono, azul). Props: `number?: string`, `text: string`.
+
+```tsx
+// ─────────────────────────────────────────────────────────────────────────────
+// SectionEyebrow — "01 — INICIO" (Geist Mono, azul acento). §2.2 / §4
+// ─────────────────────────────────────────────────────────────────────────────
+export default function SectionEyebrow({
+  number,
+  text,
+}: {
+  number?: string;
+  text: string;
+}) {
+  return (
+    <p className="eyebrow" style={{ marginBottom: '1.25rem' }}>
+      {number ? `${number} — ` : ''}{text}
+    </p>
+  );
+}
+```
+Uso: `<SectionEyebrow number="02" text="Cómo te ayudo" />`
+
+---
+
+### `components/Card.tsx`
+Tarjeta flexible. Dos usos: **icono + título + cuerpo + link** (servicios) o **imagen 16:9 + meta + título + link** (novedades).
+Props: `icon?`, `image?`, `imageAlt?`, `meta?`, `title` (req.), `body?`, `linkText?`, `href?`.
+
+```tsx
+'use client';
+
+import Link from 'next/link';
+import Image from 'next/image';
+import type { ReactNode } from 'react';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Card — tarjeta reutilizable (§4). Soporta dos usos:
+//   · "Cómo te ayudo": icon + title + body + link
+//   · "Novedades":     image + meta + title + link
+// ─────────────────────────────────────────────────────────────────────────────
+export default function Card({
+  icon,
+  image,
+  imageAlt,
+  meta,
+  title,
+  body,
+  linkText,
+  href,
+}: {
+  icon?: ReactNode;
+  image?: string;
+  imageAlt?: string;
+  meta?: string;
+  title: string;
+  body?: string;
+  linkText?: string;
+  href?: string;
+}) {
+  return (
+    <article
+      style={{
+        display      : 'flex',
+        flexDirection: 'column',
+        background   : 'var(--bg-card)',
+        border       : '1px solid var(--border-subtle)',
+        borderRadius : '14px',
+        overflow     : 'hidden',
+        height       : '100%',
+      }}
+    >
+      {image && (
+        <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', background: '#1f1f1f' }}>
+          <Image src={image} alt={imageAlt ?? title} fill quality={90} sizes="(max-width:768px) 100vw, 33vw"
+            style={{ objectFit: 'cover' }} />
+        </div>
+      )}
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1.5rem' }}>
+        {icon && <div style={{ fontSize: '1.6rem', lineHeight: 1 }} aria-hidden="true">{icon}</div>}
+
+        {meta && (
+          <span style={{ fontFamily: 'var(--mono)', fontSize: '0.7rem', letterSpacing: '0.08em',
+            textTransform: 'uppercase', color: 'var(--accent-blue)' }}>
+            {meta}
+          </span>
+        )}
+
+        <h3 style={{ fontFamily: 'var(--sans)', fontSize: 'clamp(1.25rem, 2.4vw, 1.5rem)', fontWeight: 700,
+          letterSpacing: '-0.02em', lineHeight: 1.15, color: '#fff' }}>
+          {title}
+        </h3>
+
+        {body && (
+          <p style={{ fontSize: '0.98rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
+            {body}
+          </p>
+        )}
+
+        {linkText && href && (
+          <Link href={href} style={{ marginTop: '0.35rem', display: 'inline-flex', alignItems: 'center',
+            gap: '0.4rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--accent-blue-soft)' }}>
+            {linkText} <span aria-hidden="true">→</span>
+          </Link>
+        )}
+      </div>
+    </article>
+  );
+}
+```
+
+---
+
+### `components/LogoMarquee.tsx`
+Carrusel infinito de logos/wordmarks (usa las clases `.marquee` del `globals.css`).
+Props: `logos: string[]`, `direction?: 'left' | 'right'` (def. `'left'`), `duration?: number` (segundos, def. `60`).
+
+```tsx
+// ─────────────────────────────────────────────────────────────────────────────
+// LogoMarquee — carrusel infinito de logos/wordmarks (§6 guía técnica)
+//   · Mientras no haya SVG curados, se renderizan wordmarks de texto monocromos.
+//   · 3 filas en home (dir. alternada). Pausa al hover (CSS, solo desktop).
+// ─────────────────────────────────────────────────────────────────────────────
+export default function LogoMarquee({
+  logos,
+  direction = 'left',
+  duration = 60,
+}: {
+  logos: string[];
+  direction?: 'left' | 'right';
+  duration?: number;
+}) {
+  // Duplicamos la lista para un loop continuo sin saltos.
+  const loop = [...logos, ...logos];
+
+  return (
+    <div className="marquee" data-dir={direction} style={{ ['--marquee-duration' as string]: `${duration}s` }}>
+      <div className="marquee__track" aria-hidden="true">
+        {loop.map((name, i) => (
+          <span
+            key={`${name}-${i}`}
+            style={{
+              fontFamily   : 'var(--sans)',
+              fontSize     : 'clamp(0.95rem, 1.6vw, 1.25rem)',
+              fontWeight   : 700,
+              letterSpacing: '-0.01em',
+              color        : 'rgba(255,255,255,0.55)',
+              whiteSpace   : 'nowrap',
+              transition   : 'color 0.2s',
+            }}
+          >
+            {name}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+Uso: `<LogoMarquee logos={['ESA', 'ONU', 'Edelvives', 'UNED']} direction="right" duration={55} />`
+
+---
+
+### `components/Reveal.tsx`
+Wrapper de animación fade-up al entrar en viewport (IntersectionObserver).
+Props: `children` (req.), `delay?: number` (segundos), `as?: 'div' | 'section' | 'span'`, `style?: CSSProperties`.
+
+```tsx
+'use client';
+
+import { useEffect, useRef, useState, type ReactNode, type CSSProperties } from 'react';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Reveal — fade-up sutil al entrar en viewport (respeta reduced-motion vía CSS).
+// ─────────────────────────────────────────────────────────────────────────────
+export default function Reveal({
+  children,
+  delay = 0,
+  as: Tag = 'div',
+  style,
+}: {
+  children: ReactNode;
+  delay?: number;
+  as?: 'div' | 'section' | 'span';
+  style?: CSSProperties;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setShown(true); obs.disconnect(); } },
+      { rootMargin: '0px 0px -10% 0px', threshold: 0.1 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const Comp = Tag as 'div';
+  return (
+    <Comp
+      ref={ref}
+      style={{
+        opacity   : shown ? 1 : 0,
+        transform : shown ? 'translateY(0)' : 'translateY(24px)',
+        transition: `opacity 0.7s ease ${delay}s, transform 0.7s ease ${delay}s`,
+        ...style,
+      }}
+    >
+      {children}
+    </Comp>
+  );
+}
+```
+Uso: `<Reveal delay={0.1}><h2>…</h2></Reveal>`
+
+---
+
 ## Notas finales
 - **Acento azul** `#3B82F6` para eyebrows y links; **gradiente vibrante** (`--grad-moment`) solo para los "color moments" puntuales (no abusar).
 - **Texto secundario** `#A1A1AA` sobre fondos oscuros.
