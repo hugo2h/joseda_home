@@ -15,30 +15,46 @@
    Base editorial negra + acento azul. "Color moments" en secciones 03 y 06.
 ══════════════════════════════════════════════════════════════════════════ */
 :root {
+  /* ──── Base oscura (lienzo de toda la web) ──── */
   --bg-primary    : #0A0A0A;   /* fondo principal */
-  --bg-deep       : #000000;   /* manifiesto */
-  --bg-invert     : #1E3A8A;   /* boletín EDU+IA, azul cobalto */
-  --bg-card       : #141414;   /* tarjetas */
+  --bg-deep       : #000000;   /* manifiesto, secciones de mayor peso */
+  --bg-card       : #141414;   /* tarjetas y bloques secundarios */
   --text-primary  : #FFFFFF;
   --text-secondary: #A1A1AA;
-  --accent-blue   : #3B82F6;   /* azul de eyebrows y links */
-  --accent-blue-soft: #60A5FA;
   --border-subtle : rgba(255, 255, 255, 0.08);
 
-  /* Gradiente "color moment" (secciones 03 y 06) — ruptura visual vibrante */
-  --grad-moment: linear-gradient(
-    135deg,
-    #1E3A8A 0%,
-    #4338CA 26%,
-    #7C3AED 46%,
-    #BE185D 68%,
-    #EA580C 100%
-  );
+  /* ──── Marca: gradiente intenso violeta → magenta → naranja (3 paradas) ──── */
+  --brand-violet : #5E2DD6;    /* morado eléctrico, parte izquierda */
+  --brand-magenta: #D63595;    /* rosa-magenta intenso, parte central */
+  --brand-orange : #E85A2C;    /* naranja vibrante, parte derecha */
+
+  --brand-gradient: linear-gradient(135deg,
+       var(--brand-violet) 0%,
+       var(--brand-magenta) 50%,
+       var(--brand-orange) 100%);
+
+  /* Variantes para hover, links y bordes sobre fondo oscuro */
+  --brand-violet-deep : #4A1FB0;   /* hover, estados activos */
+  --brand-magenta-soft: #E879C0;   /* links secundarios */
+  --link-color        : #B59FE5;   /* lavanda claro legible sobre negro */
+  --link-hover        : var(--brand-magenta);
+
+  /* ──── Aplicaciones específicas ──── */
+  --eyebrow-color     : #B59FE5;   /* lavanda claro para "01 — INICIO" */
+  --bg-newsletter     : var(--brand-gradient);  /* sección 06 EDU + IA */
+  --text-on-brand     : #FFFFFF;   /* texto BLANCO sobre gradiente intenso */
+  --button-on-brand-bg  : #0A0A0A;
+  --button-on-brand-text: #FFFFFF;
 
   --sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
   --mono: 'Geist Mono', ui-monospace, monospace;
 
   --header-h: 64px;
+
+  /* Aliases legacy → marca nueva (compatibilidad con componentes ya escritos) */
+  --accent-blue     : var(--eyebrow-color);
+  --accent-blue-soft: var(--link-color);
+  --grad-moment     : var(--brand-gradient);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -61,7 +77,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-::selection { background: var(--accent-blue); color: #ffffff; }
+::selection { background: var(--brand-magenta); color: #ffffff; }
 
 a { color: inherit; text-decoration: none; }
 
@@ -78,7 +94,7 @@ a { color: inherit; text-decoration: none; }
   font-size     : 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color         : var(--accent-blue);
+  color         : var(--eyebrow-color);
 }
 
 /* ── Contenedor de ancho máximo ── */

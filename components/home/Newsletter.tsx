@@ -23,7 +23,7 @@ export default function Newsletter() {
       id="boletin"
       style={{
         position    : 'relative',
-        background  : 'linear-gradient(135deg, #1E3A8A 0%, #4338CA 30%, #7C3AED 55%, #BE185D 80%, #EA580C 100%)',
+        background  : 'var(--brand-gradient)',
         paddingBlock: 'clamp(4.5rem, 13vh, 8.5rem)',
         overflow    : 'hidden',
       }}
@@ -67,14 +67,14 @@ export default function Newsletter() {
           />
           <button type="submit"
             style={{ padding: '0.95rem 1.7rem', fontSize: '0.82rem', fontWeight: 600, letterSpacing: '0.06em',
-              textTransform: 'uppercase', color: '#0A0A0A', background: '#fff', border: 'none', borderRadius: '10px',
-              cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+              textTransform: 'uppercase', color: 'var(--button-on-brand-text)', background: 'var(--button-on-brand-bg)',
+              border: 'none', borderRadius: '10px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
             Quiero recibirlo <span aria-hidden="true">→</span>
           </button>
         </form>
 
         <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)' }}>
-          Únete a +1.200 docentes que ya lo reciben. Sin spam.
+          Sin spam. Te das de baja cuando quieras.
         </p>
       </div>
     </section>

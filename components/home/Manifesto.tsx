@@ -22,7 +22,7 @@ export default function Manifesto() {
           No es que no llegues. Es que te piden absurdos.
         </p>
 
-        <div aria-hidden="true" style={{ width: 64, height: 2, background: 'var(--accent-blue)', margin: '2.5rem 0' }} />
+        <div aria-hidden="true" style={{ width: 64, height: 3, background: 'var(--brand-gradient)', margin: '2.5rem 0' }} />
 
         <p style={{ fontSize: 'clamp(1.15rem, 2.2vw, 1.6rem)', lineHeight: 1.55, color: '#fff', fontWeight: 500, maxWidth: '50ch' }}>
           La IA bien usada no te convierte en un robot: te devuelve las horas que el sistema te roba.
