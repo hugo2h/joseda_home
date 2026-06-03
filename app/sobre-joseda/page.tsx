@@ -83,7 +83,7 @@ export default function SobreJoseda() {
       {/* Hitos */}
       <section className="section" style={{ background: 'var(--bg-deep)' }}>
         <div className="container">
-          <SectionEyebrow text="Hitos" />
+          <SectionEyebrow as="h2" text="Hitos" />
           <div style={{ display: 'grid', gap: '1rem', marginTop: '0.5rem',
             gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))' }}>
             {HITOS.map((h, idx) => (
@@ -102,7 +102,7 @@ export default function SobreJoseda() {
       {/* Qué me guía */}
       <section className="section" style={{ background: 'var(--bg-primary)' }}>
         <div className="container">
-          <SectionEyebrow text="Qué me guía" />
+          <SectionEyebrow as="h2" text="Qué me guía" />
           <div style={{ display: 'grid', gap: '1.25rem', marginTop: '1rem',
             gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))' }}>
             {PRINCIPIOS.map(({ Icon, title, body }) => (
