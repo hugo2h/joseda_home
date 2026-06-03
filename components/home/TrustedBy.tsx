@@ -5,24 +5,25 @@ import LogoMarquee, { type MarqueeLogo } from '@/components/LogoMarquee';
 // Logos reales confirmados. Las instituciones aún sin logo o sin confirmar se
 // añaden cuando estén (ver §6: confirmar colaboración antes de publicar).
 // Solo logos con fondo TRANSPARENTE (quedan limpios en blanco sobre el negro).
-// Pendientes de versión transparente: Ministerio de Educación (bloque relleno),
-// Universidad de Alicante, SEPE, Edelvives, SIMO (opacos) y UMH (bloque relleno).
+// 4 por fila (4/4/4). Pendientes de versión transparente (ahora opacos/bloque):
+// Ministerio, Universidad de Alicante, Edelvives, SIMO, UMH, UNED, CEFIRE, Maristas.
 const ROW_1: MarqueeLogo[] = [
   { name: 'ESA — Agencia Espacial Europea', src: '/logos/esa.png' },
   { name: 'ONU', src: '/logos/onu.png' },
   { name: 'Google for Education', src: '/logos/google-2015.png' },
-  { name: 'FUNDAE', src: '/logos/fundae.webp' },
+  { name: 'SEPE', src: '/logos/sepe.png' },
 ];
 
 const ROW_2: MarqueeLogo[] = [
   { name: 'Junta de Andalucía', src: '/logos/junta-andalucia.png' },
   { name: 'Xunta de Galicia', src: '/logos/xunta-galicia.png' },
+  { name: 'FUNDAE', src: '/logos/fundae.webp' },
   { name: 'AMCO', src: '/logos/amco.png' },
-  { name: 'Edpuzzle', src: '/logos/edpuzzle.png' },
 ];
 
 const ROW_3: MarqueeLogo[] = [
   { name: 'Escuelas Católicas', src: '/logos/escuelas-catolicas.png' },
+  { name: 'Edpuzzle', src: '/logos/edpuzzle.png' },
   { name: 'Jesuitas (Compañía de Jesús)', src: '/logos/jesuitas.png' },
   { name: 'Salesianos', src: '/logos/salesianos.png' },
 ];
