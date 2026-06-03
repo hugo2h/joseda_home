@@ -49,7 +49,8 @@ export default function SobreJoseda() {
               </div>
             </Reveal>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div className="about-intro__text" style={{ display: 'flex', flexDirection: 'column',
+              gap: '1.25rem', height: '100%' }}>
               <p style={{ fontSize: 'clamp(1.05rem, 2vw, 1.3rem)', lineHeight: 1.7, color: 'var(--text-secondary)' }}>
                 Soy de los que llegan a clase con la tiza y se quedan hasta las once corrigiendo en casa. Por eso
                 entiendo el agobio: lo he vivido.
@@ -68,11 +69,13 @@ export default function SobreJoseda() {
           </div>
         </div>
 
-        {/* Texto centrado verticalmente junto a la imagen para no dejar hueco (desktop) */}
+        {/* Imagen grande; el texto se reparte (space-between) para ocupar su misma altura (desktop) */}
         <style>{`
-          .about-intro { display: grid; gap: 2.5rem; align-items: center; }
+          .about-intro { display: grid; gap: 2.5rem; align-items: stretch; }
+          .about-intro__text { justify-content: flex-start; }
           @media (min-width: 900px) {
-            .about-intro { grid-template-columns: minmax(300px, 430px) 1fr; gap: clamp(2rem, 5vw, 4rem); }
+            .about-intro { grid-template-columns: 1fr 1.08fr; gap: clamp(2rem, 5vw, 4rem); }
+            .about-intro__text { justify-content: space-between; }
           }
         `}</style>
       </section>
