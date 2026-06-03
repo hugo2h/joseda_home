@@ -25,13 +25,19 @@ export default function LogoMarquee({
       <div className="marquee__track" aria-hidden="true">
         {loop.map((logo, i) =>
           logo.src ? (
-            <img
+            <span
               key={`${logo.name}-${i}`}
-              src={logo.src}
-              alt={logo.name}
-              style={{ height: 'clamp(28px, 4.5vw, 44px)', width: 'auto', objectFit: 'contain',
-                opacity: 0.75, filter: 'grayscale(1) brightness(0) invert(1)' }}
-            />
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                height: 'clamp(52px, 7vw, 68px)', padding: '0 clamp(14px, 2vw, 22px)', background: '#fff',
+                borderRadius: '12px' }}
+            >
+              <img
+                src={logo.src}
+                alt={logo.name}
+                style={{ height: 'auto', width: 'auto', maxHeight: 'clamp(26px, 4vw, 38px)',
+                  maxWidth: 'clamp(90px, 16vw, 150px)', objectFit: 'contain', display: 'block' }}
+              />
+            </span>
           ) : (
             <span
               key={`${logo.name}-${i}`}
