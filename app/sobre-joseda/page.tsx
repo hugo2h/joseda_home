@@ -39,7 +39,7 @@ export default function SobreJoseda() {
             Joseda.<br />Maestro. Psicopedagogo. Ingeniero.
           </h1>
 
-          <div style={{ display: 'grid', gap: '2.5rem', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', alignItems: 'start' }}>
+          <div className="about-intro">
             <Reveal>
               <div style={{ position: 'relative', width: '100%', aspectRatio: '2 / 3', borderRadius: '18px', overflow: 'hidden',
                 background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
@@ -67,6 +67,14 @@ export default function SobreJoseda() {
             </div>
           </div>
         </div>
+
+        {/* Texto centrado verticalmente junto a la imagen para no dejar hueco (desktop) */}
+        <style>{`
+          .about-intro { display: grid; gap: 2.5rem; align-items: center; }
+          @media (min-width: 900px) {
+            .about-intro { grid-template-columns: minmax(300px, 430px) 1fr; gap: clamp(2rem, 5vw, 4rem); }
+          }
+        `}</style>
       </section>
 
       {/* Hitos */}

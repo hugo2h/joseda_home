@@ -16,12 +16,23 @@ export default function HowIHelp() {
     <section className="section" style={{ background: 'var(--bg-primary)' }}>
       <div className="container">
         <SectionEyebrow number="05" text="Cómo te ayudo" />
-        <div style={{ display: 'grid', gap: '1.25rem', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', marginTop: '0.5rem' }}>
+        <div className="help-grid" style={{ marginTop: '0.5rem' }}>
           {CARDS.map((c) => (
-            <Card key={c.title} icon={c.icon} title={c.title} body={c.body} linkText={c.linkText} href={c.href} />
+            <div key={c.title} className="help-grid__item">
+              <Card icon={c.icon} title={c.title} body={c.body} linkText={c.linkText} href={c.href} />
+            </div>
           ))}
         </div>
       </div>
+
+      {/* 1 columna en móvil (stack, §5.2); 3 por fila en desktop con la 4ª (Podcasts) centrada */}
+      <style>{`
+        .help-grid { display: flex; flex-wrap: wrap; gap: 1.25rem; justify-content: center; }
+        .help-grid__item { width: 100%; }
+        @media (min-width: 880px) {
+          .help-grid__item { width: calc((100% - 2 * 1.25rem) / 3); }
+        }
+      `}</style>
     </section>
   );
 }
