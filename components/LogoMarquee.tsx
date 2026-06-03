@@ -5,7 +5,7 @@
 //   · Cada logo: string (texto) o { name, src } (imagen con alt = name).
 //   · 3 filas en home (dir. alternada). Pausa al hover (CSS, solo desktop).
 // ─────────────────────────────────────────────────────────────────────────────
-export type MarqueeLogo = { name: string; src?: string };
+export type MarqueeLogo = { name: string; src?: string; scale?: number };
 
 export default function LogoMarquee({
   logos,
@@ -32,8 +32,8 @@ export default function LogoMarquee({
               key={`${logo.name}-${i}`}
               src={logo.src}
               alt={logo.name}
-              style={{ flexShrink: 0, height: 'clamp(28px, 4.5vw, 42px)', width: 'auto',
-                maxWidth: 'clamp(110px, 18vw, 170px)', objectFit: 'contain', display: 'block',
+              style={{ flexShrink: 0, height: `calc(clamp(30px, 5vw, 44px) * ${logo.scale ?? 1})`, width: 'auto',
+                maxWidth: `calc(clamp(120px, 19vw, 185px) * ${logo.scale ?? 1})`, objectFit: 'contain', display: 'block',
                 opacity: 0.8, filter: 'brightness(0) invert(1)' }}
             />
           ) : (
