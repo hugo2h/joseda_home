@@ -4,28 +4,26 @@ import LogoMarquee, { type MarqueeLogo } from '@/components/LogoMarquee';
 // ── 02 · HAN CONFIADO EN MÍ — 3 filas de logos en marquee (§5.2 / §6) ──
 // Logos reales confirmados. Las instituciones aún sin logo o sin confirmar se
 // añaden cuando estén (ver §6: confirmar colaboración antes de publicar).
+// Solo logos con fondo TRANSPARENTE (quedan limpios en blanco sobre el negro).
+// Pendientes de versión transparente: SEPE, Edelvives, Universidad de Alicante,
+// SIMO (son opacos) y UMH (bloque relleno). 4 por fila para que esté compensado.
 const ROW_1: MarqueeLogo[] = [
   { name: 'ESA — Agencia Espacial Europea', src: '/logos/esa.png' },
   { name: 'ONU', src: '/logos/onu.png' },
   { name: 'Google for Education', src: '/logos/google.webp' },
   { name: 'Ministerio de Educación, FP y Deportes', src: '/logos/ministerio-educacion.png' },
-  { name: 'Junta de Andalucía', src: '/logos/junta-andalucia.png' },
-  { name: 'Xunta de Galicia', src: '/logos/xunta-galicia.png' },
 ];
 
 const ROW_2: MarqueeLogo[] = [
-  { name: 'Universidad de Alicante', src: '/logos/universidad-alicante.webp' },
-  { name: 'SEPE', src: '/logos/sepe.jpg' },
+  { name: 'Junta de Andalucía', src: '/logos/junta-andalucia.png' },
+  { name: 'Xunta de Galicia', src: '/logos/xunta-galicia.png' },
   { name: 'FUNDAE', src: '/logos/fundae.webp' },
-  { name: 'Universidad Miguel Hernández de Elche', src: '/logos/umh.png' },
-  { name: 'SIMO Educación', src: '/logos/simo.png' },
-  { name: 'Edpuzzle', src: '/logos/edpuzzle.png' },
+  { name: 'AMCO', src: '/logos/amco.png' },
 ];
 
 const ROW_3: MarqueeLogo[] = [
-  { name: 'Edelvives', src: '/logos/edelvives.jpg' },
-  { name: 'AMCO', src: '/logos/amco.png' },
   { name: 'Escuelas Católicas', src: '/logos/escuelas-catolicas.png' },
+  { name: 'Edpuzzle', src: '/logos/edpuzzle.png' },
   { name: 'Jesuitas (Compañía de Jesús)', src: '/logos/jesuitas.png' },
   { name: 'Salesianos', src: '/logos/salesianos.png' },
 ];

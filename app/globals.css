@@ -137,9 +137,6 @@ a { color: inherit; text-decoration: none; }
   will-change : transform;
 }
 .marquee[data-dir="right"] .marquee__track { animation-name: marquee-right; }
-@media (hover: hover) {
-  .marquee:hover .marquee__track { animation-play-state: paused; }
-}
 
 /* ══════════════════════════════════════════════════════════════════════════
    ANIMACIÓN reveal on-scroll (sutil)

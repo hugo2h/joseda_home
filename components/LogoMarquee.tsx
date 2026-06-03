@@ -17,27 +17,25 @@ export default function LogoMarquee({
   duration?: number;
 }) {
   const norm: MarqueeLogo[] = logos.map((l) => (typeof l === 'string' ? { name: l } : l));
-  // Duplicamos la lista para un loop continuo sin saltos.
-  const loop = [...norm, ...norm];
+  // Repetimos la lista hasta tener suficientes por mitad y duplicamos en dos
+  // mitades idénticas para que el loop (-50%) sea continuo y siempre llene la fila.
+  const reps = Math.max(1, Math.ceil(12 / Math.max(1, norm.length)));
+  const half = Array.from({ length: reps }).flatMap(() => norm);
+  const loop = [...half, ...half];
 
   return (
     <div className="marquee" data-dir={direction} style={{ ['--marquee-duration' as string]: `${duration}s` }}>
       <div className="marquee__track" aria-hidden="true">
         {loop.map((logo, i) =>
           logo.src ? (
-            <span
+            <img
               key={`${logo.name}-${i}`}
-              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                height: 'clamp(52px, 7vw, 68px)', padding: '0 clamp(14px, 2vw, 22px)', background: '#fff',
-                borderRadius: '12px' }}
-            >
-              <img
-                src={logo.src}
-                alt={logo.name}
-                style={{ height: 'auto', width: 'auto', maxHeight: 'clamp(26px, 4vw, 38px)',
-                  maxWidth: 'clamp(90px, 16vw, 150px)', objectFit: 'contain', display: 'block' }}
-              />
-            </span>
+              src={logo.src}
+              alt={logo.name}
+              style={{ flexShrink: 0, height: 'clamp(28px, 4.5vw, 42px)', width: 'auto',
+                maxWidth: 'clamp(110px, 18vw, 170px)', objectFit: 'contain', display: 'block',
+                opacity: 0.8, filter: 'brightness(0) invert(1)' }}
+            />
           ) : (
             <span
               key={`${logo.name}-${i}`}
