@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { Target, Ban, Heart } from 'lucide-react';
 import SectionEyebrow from '@/components/SectionEyebrow';
 import CTAButton from '@/components/CTAButton';
 import Reveal from '@/components/Reveal';
@@ -20,9 +21,9 @@ const HITOS = [
 ];
 
 const PRINCIPIOS = [
-  { icon: '🎯', title: 'Criterio antes que herramienta.', body: 'La IA no sustituye al docente: amplifica su juicio.' },
-  { icon: '🚫', title: 'Honestidad anti-hype.',           body: 'Te cuento lo que la IA SÍ puede hacer y lo que NO.' },
-  { icon: '❤️', title: 'Tecnología al servicio de la vida.', body: 'El éxito no es hacer más; es recuperar tiempo y presencia.' },
+  { Icon: Target, title: 'Criterio antes que herramienta.', body: 'La IA no sustituye al docente: amplifica su juicio.' },
+  { Icon: Ban,    title: 'Honestidad anti-hype.',           body: 'Te cuento lo que la IA SÍ puede hacer y lo que NO.' },
+  { Icon: Heart,  title: 'Tecnología al servicio de la vida.', body: 'El éxito no es hacer más; es recuperar tiempo y presencia.' },
 ];
 
 export default function SobreJoseda() {
@@ -75,7 +76,7 @@ export default function SobreJoseda() {
           <div style={{ display: 'grid', gap: '1rem', marginTop: '0.5rem',
             gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))' }}>
             {HITOS.map((h, idx) => (
-              <Reveal key={h} delay={idx * 50}>
+              <Reveal key={h} delay={idx * 0.06}>
                 <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start', background: 'var(--bg-card)',
                   border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '1.25rem', height: '100%' }}>
                   <span aria-hidden="true" style={{ color: 'var(--eyebrow-color)', flexShrink: 0 }}>▸</span>
@@ -93,13 +94,14 @@ export default function SobreJoseda() {
           <SectionEyebrow text="Qué me guía" />
           <div style={{ display: 'grid', gap: '1.25rem', marginTop: '1rem',
             gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))' }}>
-            {PRINCIPIOS.map((p) => (
-              <div key={p.title} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
+            {PRINCIPIOS.map(({ Icon, title, body }) => (
+              <div key={title} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
                 borderRadius: '14px', padding: '1.75rem' }}>
-                <div aria-hidden="true" style={{ fontSize: '1.6rem', lineHeight: 1, marginBottom: '0.85rem' }}>{p.icon}</div>
+                <Icon size={28} strokeWidth={1.75} aria-hidden="true"
+                  style={{ color: 'var(--eyebrow-color)', marginBottom: '0.85rem' }} />
                 <h3 style={{ fontFamily: 'var(--sans)', fontSize: '1.2rem', fontWeight: 700, letterSpacing: '-0.02em',
-                  color: '#fff', marginBottom: '0.6rem' }}>{p.title}</h3>
-                <p style={{ fontSize: '1rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>{p.body}</p>
+                  color: '#fff', marginBottom: '0.6rem' }}>{title}</h3>
+                <p style={{ fontSize: '1rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>{body}</p>
               </div>
             ))}
           </div>
