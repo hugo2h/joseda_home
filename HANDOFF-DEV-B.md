@@ -670,22 +670,25 @@ Etiqueta de sección tipo "01 — INICIO" (mono, lavanda). Props: `number?: stri
 ```tsx
 // ─────────────────────────────────────────────────────────────────────────────
 // SectionEyebrow — "01 — INICIO" (Geist Mono, lavanda de marca). §2.2 / §4
+// `as` permite renderizarlo como heading (h2) cuando es el título de la sección.
 // ─────────────────────────────────────────────────────────────────────────────
 export default function SectionEyebrow({
   number,
   text,
+  as: Tag = 'p',
 }: {
   number?: string;
   text: string;
+  as?: 'p' | 'h2';
 }) {
   return (
-    <p className="eyebrow" style={{ marginBottom: '1.25rem' }}>
+    <Tag className="eyebrow" style={{ marginBottom: '1.25rem' }}>
       {number ? `${number} — ` : ''}{text}
-    </p>
+    </Tag>
   );
 }
 ```
-Uso: `<SectionEyebrow number="02" text="Cómo te ayudo" />`
+Uso: `<SectionEyebrow number="02" text="Cómo te ayudo" />` · como heading: `<SectionEyebrow as="h2" text="Hitos" />`
 
 ---
 
@@ -882,6 +885,77 @@ export default function Reveal({
 }
 ```
 Uso: `<Reveal delay={0.1}><h2>…</h2></Reveal>`
+
+---
+
+## 7) Componentes compartidos del §4 (para tus páginas)
+
+Estos los construye Dev A; tú los **importas y usas** en ProfeLibre, Formaciones, etc.
+Rutas:
+```tsx
+import HeroBlock         from '@/components/HeroBlock';
+import TestimonialCard   from '@/components/TestimonialCard';
+import Accordion         from '@/components/Accordion';
+import TimelineHorizontal from '@/components/TimelineHorizontal';
+```
+
+> ⏳ **`<EmbedForm>` (Brevo)** queda **pendiente de acordar contigo** (toca tu cuenta de
+> Brevo). Decidimos si lo construye Dev A como envoltorio o lo montas tú directamente.
+
+---
+
+### `<HeroBlock />`
+Cabecera con fondo de imagen opcional (velo oscuro + insinuación del gradiente), eyebrow, título, subtítulo, body y CTAs.
+
+| Prop | Tipo | Notas |
+|------|------|-------|
+| `bgImage` | `string?` | Ruta de la foto de fondo. Sin ella, fondo negro. |
+| `bgAlt` | `string?` | Alt de la foto (vacío = decorativa). |
+| `eyebrow` | `{ number?, text }?` | Etiqueta "01 — INICIO". |
+| `title` | `ReactNode` | H1 (admite `<br/>`). **Obligatorio.** |
+| `subtitle` | `ReactNode?` | H2. |
+| `body` | `ReactNode?` | Párrafo. |
+| `ctas` | `{ label, href, variant?, arrow? }[]` | Botones (usa `CTAButton`). |
+| `align` | `'left' \| 'center'` | Por defecto `'left'`. |
+| `minHeight` | `string?` | Por defecto `'95svh'`. |
+
+```tsx
+<HeroBlock
+  bgImage="/images/ponencia-7.jpg"
+  eyebrow={{ text: 'ProfeLibre' }}
+  title={<>Conviértete en un<br/>profe libre.</>}
+  subtitle="El sistema completo de IA aplicada al aula."
+  ctas={[{ label: 'Apúntame a la lista', href: '/lista-espera' }]}
+/>
+```
+
+### `<TestimonialCard />`
+Tarjeta de testimonio con foto opcional (si no hay, avatar con iniciales).
+Props: `photo?: string`, `quote: string` (obligatorio), `name: string` (obligatorio), `role?: string`.
+```tsx
+<TestimonialCard quote="Recuperé mis tardes." name="María L." role="Profesora · Secundaria" />
+```
+
+### `<Accordion />`
+Lista plegable accesible (aria-expanded, chevron que gira). FAQ de ProfeLibre y Formaciones.
+Props: `items: { title: string; content: ReactNode }[]`, `allowMultiple?: boolean` (por defecto `false`).
+```tsx
+<Accordion items={[
+  { title: '¿Cuándo abre el carrito?', content: 'El lunes 22 de junio a las 19:00.' },
+  { title: '¿Cuánto cuesta?', content: 'Early bird 297 €; después 347 €.' },
+]} />
+```
+
+### `<TimelineHorizontal />`
+Pasos con línea conectora. Desktop en fila horizontal; móvil en columna. ProfeLibre §05.
+Props: `steps: { label?: string; title: string; text?: string }[]`.
+```tsx
+<TimelineHorizontal steps={[
+  { label: 'Junio', title: 'Apertura', text: 'Acceso al curso y la comunidad.' },
+  { label: 'Sept', title: 'Arranque de curso', text: 'Aplicas la IA desde el día 1.' },
+  { label: 'Junio 27', title: 'Cierre', text: '12 meses de actualizaciones.' },
+]} />
+```
 
 ---
 
