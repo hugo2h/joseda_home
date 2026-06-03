@@ -899,8 +899,9 @@ import Accordion         from '@/components/Accordion';
 import TimelineHorizontal from '@/components/TimelineHorizontal';
 ```
 
-> ⏳ **`<EmbedForm>` (Brevo)** queda **pendiente de acordar contigo** (toca tu cuenta de
-> Brevo). Decidimos si lo construye Dev A como envoltorio o lo montas tú directamente.
+> ⏳ **`<EmbedForm>` (Brevo)** es el ÚNICO componente del §4 que **NO está hecho**.
+> Lo **construye Dev B**, porque depende de tu cuenta de Brevo (listId, doble opt-in,
+> tracking). Dev A no lo monta. Úsalo en el Boletín y en la Lista de espera.
 
 ---
 
