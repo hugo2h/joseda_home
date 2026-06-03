@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import CTAButton from './CTAButton';
@@ -57,10 +58,10 @@ export default function Header() {
       }}
     >
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-        {/* Logo / wordmark */}
-        <Link href="/" aria-label="Joseda — inicio" style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
-          <span style={{ fontFamily: 'var(--sans)', fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.03em', color: '#fff' }}>joseda</span>
-          <span style={{ fontFamily: 'var(--mono)', fontSize: '0.7rem', color: 'var(--accent-blue)' }}>.education</span>
+        {/* Logo */}
+        <Link href="/" aria-label="Joseda — inicio" style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <Image src="/images/logo-joseda-white.png" alt="Joseda" width={150} height={35} priority
+            style={{ height: 34, width: 'auto' }} />
         </Link>
 
         {/* Nav desktop */}

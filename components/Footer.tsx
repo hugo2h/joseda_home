@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { ReactNode } from 'react';
 
 // Iconos de marca en SVG inline (lucide-react no incluye logos de marca).
@@ -44,11 +45,11 @@ export default function Footer() {
         flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '1.75rem' }}>
 
         {/* Marca */}
-        <Link href="/" aria-label="Joseda — inicio" style={{ display: 'inline-flex', alignItems: 'baseline', gap: '0.25rem' }}>
-          <span style={{ fontFamily: 'var(--sans)', fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.03em', color: '#fff' }}>joseda</span>
-          <span style={{ fontFamily: 'var(--mono)', fontSize: '0.78rem', color: 'var(--eyebrow-color)' }}>.education</span>
+        <Link href="/" aria-label="Joseda — inicio" style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <Image src="/images/logo-joseda-white.png" alt="Joseda" width={193} height={45}
+            style={{ height: 44, width: 'auto' }} />
         </Link>
-        <p style={{ marginTop: '-0.75rem', fontSize: '0.98rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
+        <p style={{ fontSize: '0.98rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
           Educación + IA con criterio docente.
         </p>
 
