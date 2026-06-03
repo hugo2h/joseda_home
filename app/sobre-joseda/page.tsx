@@ -40,11 +40,11 @@ export default function SobreJoseda() {
 
           <div style={{ display: 'grid', gap: '2.5rem', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', alignItems: 'start' }}>
             <Reveal>
-              <div style={{ position: 'relative', width: '100%', aspectRatio: '3 / 4', borderRadius: '18px', overflow: 'hidden',
+              <div style={{ position: 'relative', width: '100%', aspectRatio: '2 / 3', borderRadius: '18px', overflow: 'hidden',
                 background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                <Image src="/images/jose-david-contacto.jpg" alt="Joseda en una formación" fill quality={90}
+                <Image src="/images/ponencia-11.jpg" alt="Joseda en una ponencia" fill quality={90}
                   sizes="(max-width: 768px) 100vw, 460px"
-                  style={{ objectFit: 'contain', objectPosition: 'center' }} />
+                  style={{ objectFit: 'cover', objectPosition: 'center' }} />
               </div>
             </Reveal>
 
@@ -84,15 +84,6 @@ export default function SobreJoseda() {
               </Reveal>
             ))}
           </div>
-
-          {/* Foto en ponencia (stopgap de archivo, §8) */}
-          <Reveal>
-            <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', borderRadius: '18px',
-              overflow: 'hidden', marginTop: '2.5rem', border: '1px solid var(--border-subtle)' }}>
-              <Image src="/images/jd-stage.jpg" alt="Joseda en una ponencia" fill quality={90}
-                sizes="(max-width: 768px) 100vw, 1100px" style={{ objectFit: 'cover', objectPosition: 'center 35%' }} />
-            </div>
-          </Reveal>
         </div>
       </section>
 
