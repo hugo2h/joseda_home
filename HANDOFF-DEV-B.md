@@ -1,5 +1,10 @@
 # Handoff Dev A → Dev B · Sistema de diseño compartido
 
+> 🔄 **Actualizado a la paleta de marca v1.2** (violeta → magenta → naranja).
+> Ya **NO hay azul**: los eyebrows y links van en **lavanda `#B59FE5`** y los
+> "color moments" usan el **gradiente de marca de 3 paradas**. Si tenías la
+> versión anterior con azul cobalto, sustituye los tokens por los de abajo.
+
 Todo lo necesario para que la **landing** use el mismo sistema visual que la web.
 Copia los bloques tal cual. Orden recomendado:
 
@@ -59,34 +64,60 @@ Si prefieres no usar alias, cambia los imports `@/components/...` por rutas rela
 
 /* ══════════════════════════════════════════════════════════════════════════
    DESIGN TOKENS (§2.3 del documento maestro)
-   Base editorial negra + acento azul. "Color moments" en secciones 03 y 06.
+   Base editorial negra + gradiente de marca. "Color moments" en secciones 03 y 06.
 ══════════════════════════════════════════════════════════════════════════ */
 :root {
+  /* ──── Base oscura (lienzo de toda la web) ──── */
   --bg-primary    : #0A0A0A;   /* fondo principal */
-  --bg-deep       : #000000;   /* manifiesto */
-  --bg-invert     : #1E3A8A;   /* boletín EDU+IA, azul cobalto */
-  --bg-card       : #141414;   /* tarjetas */
+  --bg-deep       : #000000;   /* manifiesto, secciones de mayor peso */
+  --bg-card       : #141414;   /* tarjetas y bloques secundarios */
   --text-primary  : #FFFFFF;
   --text-secondary: #A1A1AA;
-  --accent-blue   : #3B82F6;   /* azul de eyebrows y links */
-  --accent-blue-soft: #60A5FA;
   --border-subtle : rgba(255, 255, 255, 0.08);
 
-  /* Gradiente "color moment" (secciones 03 y 06) — ruptura visual vibrante */
-  --grad-moment: linear-gradient(
-    135deg,
-    #1E3A8A 0%,
-    #4338CA 26%,
-    #7C3AED 46%,
-    #BE185D 68%,
-    #EA580C 100%
-  );
+  /* ──── Marca: gradiente intenso violeta → magenta → naranja (3 paradas) ──── */
+  --brand-violet : #5E2DD6;    /* morado eléctrico, izquierda */
+  --brand-magenta: #D63595;    /* rosa-magenta intenso, centro */
+  --brand-orange : #E85A2C;    /* naranja vibrante, derecha */
+
+  --brand-gradient: linear-gradient(135deg,
+       var(--brand-violet) 0%,
+       var(--brand-magenta) 50%,
+       var(--brand-orange) 100%);
+
+  /* Variantes para hover, links y bordes sobre fondo oscuro */
+  --brand-violet-deep : #4A1FB0;   /* hover, estados activos */
+  --brand-magenta-soft: #E879C0;   /* links secundarios */
+  --link-color        : #B59FE5;   /* lavanda claro legible sobre negro */
+  --link-hover        : var(--brand-magenta);
+
+  /* ──── Aplicaciones específicas ──── */
+  --eyebrow-color     : #B59FE5;   /* lavanda claro para "01 — INICIO" */
+  --bg-newsletter     : var(--brand-gradient);  /* sección 06 EDU + IA */
+  --text-on-brand     : #FFFFFF;   /* texto BLANCO sobre gradiente intenso */
+  --button-on-brand-bg  : #0A0A0A;
+  --button-on-brand-text: #FFFFFF;
 
   --sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
   --mono: 'Geist Mono', ui-monospace, monospace;
 
   --header-h: 64px;
+
+  /* Aliases legacy → marca nueva (compatibilidad con componentes ya escritos) */
+  --accent-blue     : var(--eyebrow-color);
+  --accent-blue-soft: var(--link-color);
+  --grad-moment     : var(--brand-gradient);
 }
+
+/* Reglas de uso del gradiente (§2.3):
+   ✅ Fondo completo SOLO en momentos clave: hero (con velo negro), Sobre Joseda,
+      sección 06 Newsletter, landing /boletin, /lista-espera.
+   ✅ Hover de CTA primario, bordes/separadores destacados (2-3px), acento
+      tipográfico puntual con background-clip: text.
+   ✅ Eyebrows y links: lavanda #B59FE5, NO el gradiente entero.
+   ❌ NO el gradiente como fondo de toda una página. Máx. 3 momentos en la home.
+   ❌ NO mezclar con otros acentos (azul, verde, amarillo). El gradiente es el único.
+   Texto sobre gradiente: BLANCO #FFFFFF. Botón sobre gradiente: negro #0A0A0A + texto blanco. */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -108,13 +139,13 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-::selection { background: var(--accent-blue); color: #ffffff; }
+::selection { background: var(--brand-magenta); color: #ffffff; }
 
 a { color: inherit; text-decoration: none; }
 
 /* Foco accesible visible en todos los interactivos (§2.7) */
 :where(a, button, input, textarea, select):focus-visible {
-  outline: 2px solid var(--accent-blue);
+  outline: 2px solid var(--link-color);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -125,7 +156,7 @@ a { color: inherit; text-decoration: none; }
   font-size     : 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color         : var(--accent-blue);
+  color         : var(--eyebrow-color);
 }
 
 /* ── Contenedor de ancho máximo ── */
@@ -195,7 +226,7 @@ a { color: inherit; text-decoration: none; }
 ```
 
 ### Clases helper que aportan los componentes
-- `.eyebrow` → mono, 0.75rem, uppercase, color `--accent-blue` (para "01 — INICIO").
+- `.eyebrow` → mono, 0.75rem, uppercase, color `--eyebrow-color` (lavanda `#B59FE5`, para "01 — INICIO").
 - `.container` → ancho máx 1280px, centrado, padding lateral fluido.
 - `.section` → `padding-block` fluido para secciones.
 
@@ -342,7 +373,7 @@ export default function CTAButton({
 | `type`     | `'button' \| 'submit'`                | `'button'`  | Solo en modo botón. |
 | `style`    | `CSSProperties`                       | —           | Sobrescribe/extiende estilos (ej. padding más pequeño). |
 
-**Variantes:** `primary` = botón blanco sólido · `secondary` = outline blanco (invierte a blanco al hover) · `ghost` = link azul subrayado al hover.
+**Variantes:** `primary` = botón blanco sólido · `secondary` = outline blanco (invierte a blanco al hover) · `ghost` = link lavanda subrayado al hover.
 
 ---
 
@@ -353,6 +384,7 @@ export default function CTAButton({
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import CTAButton from './CTAButton';
@@ -408,10 +440,10 @@ export default function Header() {
       }}
     >
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-        {/* Logo / wordmark */}
-        <Link href="/" aria-label="Joseda — inicio" style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
-          <span style={{ fontFamily: 'var(--sans)', fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.03em', color: '#fff' }}>joseda</span>
-          <span style={{ fontFamily: 'var(--mono)', fontSize: '0.7rem', color: 'var(--accent-blue)' }}>.education</span>
+        {/* Logo (Logo-joseda-white.png en /public/images) */}
+        <Link href="/" aria-label="Joseda — inicio" style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <Image src="/images/logo-joseda-white.png" alt="Joseda" width={150} height={35} priority
+            style={{ height: 34, width: 'auto' }} />
         </Link>
 
         {/* Nav desktop */}
@@ -483,6 +515,13 @@ export default function Header() {
 ---
 
 ### `components/Footer.tsx`
+
+> ℹ️ **Versión actual (v1.2):** layout **centrado** con el logo real
+> (`/images/logo-joseda-white.png`), tagline "Educación + IA con criterio
+> docente.", redes (LinkedIn · YouTube · Instagram; TikTok y Spotify
+> pendientes de URL), nav y copyright "© Joseda · SERENDIPIUM IA S.L.".
+> Lo consumes como `<Footer />` (sin props). El bloque de abajo es una
+> revisión anterior de referencia; la fuente de verdad es el repo.
 
 ```tsx
 import Link from 'next/link';
@@ -587,7 +626,7 @@ export default function Footer() {
 // Secundario sin flecha
 <CTAButton variant="secondary" href="/contacto" arrow={false}>Hablemos</CTAButton>
 
-// Ghost (link azul)
+// Ghost (link lavanda)
 <CTAButton variant="ghost" href="/blog">Ver todas las novedades</CTAButton>
 
 // Externo (abre <a>)
@@ -626,11 +665,11 @@ import Reveal         from '@/components/Reveal';
 ```
 
 ### `components/SectionEyebrow.tsx`
-Etiqueta de sección tipo "01 — INICIO" (mono, azul). Props: `number?: string`, `text: string`.
+Etiqueta de sección tipo "01 — INICIO" (mono, lavanda). Props: `number?: string`, `text: string`.
 
 ```tsx
 // ─────────────────────────────────────────────────────────────────────────────
-// SectionEyebrow — "01 — INICIO" (Geist Mono, azul acento). §2.2 / §4
+// SectionEyebrow — "01 — INICIO" (Geist Mono, lavanda de marca). §2.2 / §4
 // ─────────────────────────────────────────────────────────────────────────────
 export default function SectionEyebrow({
   number,
@@ -847,7 +886,7 @@ Uso: `<Reveal delay={0.1}><h2>…</h2></Reveal>`
 ---
 
 ## Notas finales
-- **Acento azul** `#3B82F6` para eyebrows y links; **gradiente vibrante** (`--grad-moment`) solo para los "color moments" puntuales (no abusar).
+- **Acento lavanda** `#B59FE5` (`--eyebrow-color` / `--link-color`) para eyebrows y links; **gradiente de marca** (`--brand-gradient`, 3 paradas violeta→magenta→naranja) solo para los "color moments" puntuales (no abusar, máx. 3 en la home).
 - **Texto secundario** `#A1A1AA` sobre fondos oscuros.
 - **Tarjetas:** fondo `--bg-card` (#141414), borde `--border-subtle`, radio ~14px.
 - **Mobile-first:** usa `svh` (no `100vh`) en alturas de pantalla completa.
