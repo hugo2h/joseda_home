@@ -13,15 +13,15 @@ const ROW_1: MarqueeLogo[] = [
   { name: 'ONU', src: '/logos/onu.png' },
   { name: 'Google for Education', src: '/logos/google-2015.png' },
   { name: 'SEPE', src: '/logos/sepe.png' },
-  { name: 'FUNDAE', src: '/logos/fundae.webp' },
+  { name: 'Ministerio de Educación, FP y Deportes', src: '/logos/ministerio.png' },
 ];
 
 const ROW_2: MarqueeLogo[] = [
   { name: 'Junta de Andalucía', src: '/logos/junta-andalucia.png' },
   { name: 'Xunta de Galicia', src: '/logos/xunta-galicia.png' },
   { name: 'Universidad de Alicante', src: '/logos/universidad-alicante.png', scale: 1.35 },
-  { name: 'UNED', src: '/logos/uned.png', scale: 1.35 },
   { name: 'CEFIRE', src: '/logos/cefire.png' },
+  { name: 'FUNDAE', src: '/logos/fundae.webp' },
 ];
 
 const ROW_3: MarqueeLogo[] = [
@@ -29,7 +29,7 @@ const ROW_3: MarqueeLogo[] = [
   { name: 'Edelvives', src: '/logos/edelvives.png' },
   { name: 'SIMO Educación', src: '/logos/simo.png', scale: 1.35 },
   { name: 'Maristas', src: '/logos/maristas.png' },
-  { name: 'Jesuitas (Compañía de Jesús)', src: '/logos/jesuitas.png' },
+  { name: 'UNED', src: '/logos/uned.png', scale: 1.35 },
 ];
 
 export default function TrustedBy() {
