@@ -25,11 +25,11 @@ const NAV = [
   { label: 'Contacto',    href: '/contacto' },
 ];
 
-// Redes reales confirmadas. TikTok y Spotify se añadirán cuando Joseda pase las URLs.
 const SOCIAL = [
   { label: 'LinkedIn',  href: 'https://www.linkedin.com/in/jose-david-perez-ibanez/' },
   { label: 'YouTube',   href: 'https://www.youtube.com/@jose-david' },
   { label: 'Instagram', href: 'https://www.instagram.com/joseda.education' },
+  { label: 'TikTok',    href: 'https://www.tiktok.com/@joseda.ai' },
 ];
 
 const LEGAL = [

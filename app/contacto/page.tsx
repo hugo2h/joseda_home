@@ -22,11 +22,11 @@ const BULLETS = [
   '¿Tienes una pregunta como docente individual?',
 ];
 
-// Redes reales confirmadas. TikTok y Spotify se añadirán al pasar las URLs.
 const SOCIAL = [
   { label: 'LinkedIn',  href: 'https://www.linkedin.com/in/jose-david-perez-ibanez/' },
   { label: 'YouTube',   href: 'https://www.youtube.com/@jose-david' },
   { label: 'Instagram', href: 'https://www.instagram.com/joseda.education' },
+  { label: 'TikTok',    href: 'https://www.tiktok.com/@joseda.ai' },
 ];
 
 const inputStyle = {
