@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import Image from 'next/image';
 import SectionEyebrow from '@/components/SectionEyebrow';
 import CTAButton from '@/components/CTAButton';
 import Card from '@/components/Card';
@@ -135,11 +134,11 @@ export default function BoletinPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: 860 }}>
               <div style={{ flexShrink: 0, width: 'min(260px, 100%)', aspectRatio: '3/4', borderRadius: 14,
                 overflow: 'hidden', position: 'relative', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="/images/joseda-bio.jpg"
                   alt="José David Pérez — formador de docentes"
-                  fill quality={90} sizes="260px"
-                  style={{ objectFit: 'cover', objectPosition: 'center 20%', transform: 'scale(1.05)' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%' }}
                 />
               </div>
               <div>
