@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ModulosScrollSpy — sticky layout: ruta de puntos a la izquierda +
 // tarjetas apiladas a la derecha. El índice activo avanza con el scroll.
 // ─────────────────────────────────────────────────────────────────────────────
-export type Modulo = { icon: string; title: string; body: string };
+export type Modulo = { icon: ReactNode; title: string; body: string };
 
 export default function ModulosScrollSpy({ modulos }: { modulos: Modulo[] }) {
   const [active, setActive] = useState(0);
@@ -65,7 +65,7 @@ export default function ModulosScrollSpy({ modulos }: { modulos: Modulo[] }) {
             animation: 'modulo-in 0.4s cubic-bezier(0.22,1,0.36,1) both' }}>
             <style>{`@keyframes modulo-in { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:none } }`}</style>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-              <span style={{ fontSize: '2rem', background: 'rgba(94,45,214,0.18)', padding: '0.6rem 0.8rem', borderRadius: 10 }} aria-hidden="true">
+              <span style={{ display: 'inline-flex', background: 'rgba(94,45,214,0.18)', padding: '0.7rem', borderRadius: 10, color: 'var(--eyebrow-color)' }} aria-hidden="true">
                 {modulos[active].icon}
               </span>
               <span style={{ fontFamily: 'var(--mono)', fontSize: '0.72rem', letterSpacing: '0.08em',

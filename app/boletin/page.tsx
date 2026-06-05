@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { Clock, FlaskConical, Wrench, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import SectionEyebrow from '@/components/SectionEyebrow';
 import CTAButton from '@/components/CTAButton';
 import Card from '@/components/Card';
@@ -9,11 +10,13 @@ import AnimatedCounter from '@/components/AnimatedCounter';
 
 // ── BOLETÍN EDU + IA — Landing de suscripción ──
 
+const ICO = { size: 20, strokeWidth: 1.75 } as const;
+
 const COMPROMISOS = [
-  { emoji: '⏱️', text: 'Menos de 5 minutos de lectura.' },
-  { emoji: '🔬', text: 'Solo lo que tiene fundamento: sin hype ni tendencias vacías.' },
-  { emoji: '🛠️', text: 'Al menos una herramienta o técnica aplicable esta semana.' },
-  { emoji: '🚫', text: 'Cero spam. Te puedes dar de baja cuando quieras.' },
+  { icon: <Clock {...ICO} />, text: 'Menos de 5 minutos de lectura.' },
+  { icon: <FlaskConical {...ICO} />, text: 'Solo lo que tiene fundamento: sin hype ni tendencias vacías.' },
+  { icon: <Wrench {...ICO} />, text: 'Al menos una herramienta o técnica aplicable esta semana.' },
+  { icon: <ShieldCheck {...ICO} />, text: 'Cero spam. Te puedes dar de baja cuando quieras.' },
 ];
 
 const EDICIONES = [
@@ -74,7 +77,7 @@ export default function BoletinPage() {
           <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '2.5rem' }}>
             {COMPROMISOS.map((c) => (
               <li key={c.text} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-                <span style={{ fontSize: '1.1rem', flexShrink: 0 }} aria-hidden="true">{c.emoji}</span>
+                <span style={{ display: 'inline-flex', flexShrink: 0, color: 'var(--eyebrow-color)', marginTop: '0.1rem' }} aria-hidden="true">{c.icon}</span>
                 <span style={{ fontSize: '0.97rem', lineHeight: 1.55, color: 'rgba(255,255,255,0.78)' }}>{c.text}</span>
               </li>
             ))}
@@ -84,7 +87,9 @@ export default function BoletinPage() {
           <div ref={formRef}>
             {estado === 'ok' ? (
               <div style={{ background: 'rgba(94,45,214,0.15)', border: '1px solid var(--brand-violet)', borderRadius: 12, padding: '1.5rem 2rem' }}>
-                <p style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff', marginBottom: '0.35rem' }}>¡Ya estás dentro! 🎉</p>
+                <p style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff', marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={22} strokeWidth={2} style={{ color: 'var(--eyebrow-color)', flexShrink: 0 }} /> ¡Ya estás dentro!
+                </p>
                 <p style={{ fontSize: '0.93rem', color: 'var(--text-secondary)' }}>Revisa tu bandeja de entrada — deberías recibir la confirmación en unos minutos.</p>
               </div>
             ) : (

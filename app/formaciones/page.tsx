@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { Target, Compass, BarChart3, RefreshCw, Zap, CalendarDays, CalendarRange, School } from 'lucide-react';
 import HeroBlock from '@/components/HeroBlock';
 import SectionEyebrow from '@/components/SectionEyebrow';
 import CTAButton from '@/components/CTAButton';
@@ -7,18 +8,20 @@ import Reveal from '@/components/Reveal';
 
 // ── §5.x · FORMACIONES — B2B para centros, redes y organismos ──
 
+const ICO = { strokeWidth: 1.75 } as const;
+
 const BENEFICIOS = [
-  { emoji: '🎯', text: 'Formación 100% práctica: el docente sale con herramientas listas para usar el lunes siguiente.' },
-  { emoji: '🧭', text: 'Adaptada al nivel real del claustro: desde cero hasta uso avanzado.' },
-  { emoji: '📊', text: 'Memoria de formación y materiales incluidos para el centro.' },
-  { emoji: '🔁', text: 'Acompañamiento post-formación disponible en modalidades premium.' },
+  { icon: <Target size={26} {...ICO} />, text: 'Formación 100% práctica: el docente sale con herramientas listas para usar el lunes siguiente.' },
+  { icon: <Compass size={26} {...ICO} />, text: 'Adaptada al nivel real del claustro: desde cero hasta uso avanzado.' },
+  { icon: <BarChart3 size={26} {...ICO} />, text: 'Memoria de formación y materiales incluidos para el centro.' },
+  { icon: <RefreshCw size={26} {...ICO} />, text: 'Acompañamiento post-formación disponible en modalidades premium.' },
 ];
 
 const FORMATOS = [
-  { icon: '⚡', title: 'Sesión de choque', body: 'Una sesión intensiva de 2-3 h para descubrir la IA en el aula. Ideal para claustros que empiezan.', meta: '2–3 h · Presencial / Online' },
-  { icon: '📅', title: 'Taller de un día', body: 'Jornada completa de 6 h con teoría, práctica guiada y propuesta de implementación.', meta: '6 h · Presencial' },
-  { icon: '🗓️', title: 'Programa trimestral', body: '4 sesiones distribuidas en un trimestre con seguimiento entre sesiones y entregables.', meta: '4 sesiones · Presencial / Mixto' },
-  { icon: '🏫', title: 'Proyecto de centro', body: 'Plan anual de formación con diagnóstico inicial, itinerario personalizado y evaluación final.', meta: 'Curso completo · A medida' },
+  { icon: <Zap size={28} {...ICO} />, title: 'Sesión de choque', body: 'Una sesión intensiva de 2-3 h para descubrir la IA en el aula. Ideal para claustros que empiezan.', meta: '2–3 h · Presencial / Online' },
+  { icon: <CalendarDays size={28} {...ICO} />, title: 'Taller de un día', body: 'Jornada completa de 6 h con teoría, práctica guiada y propuesta de implementación.', meta: '6 h · Presencial' },
+  { icon: <CalendarRange size={28} {...ICO} />, title: 'Programa trimestral', body: '4 sesiones distribuidas en un trimestre con seguimiento entre sesiones y entregables.', meta: '4 sesiones · Presencial / Mixto' },
+  { icon: <School size={28} {...ICO} />, title: 'Proyecto de centro', body: 'Plan anual de formación con diagnóstico inicial, itinerario personalizado y evaluación final.', meta: 'Curso completo · A medida' },
 ];
 
 const INSTITUCIONES = [
@@ -74,7 +77,7 @@ export default function FormacionesPage() {
             {BENEFICIOS.map((b, i) => (
               <Reveal key={b.text} delay={i * 0.1}>
                 <li style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 14, padding: '1.75rem' }}>
-                  <span style={{ display: 'inline-block', fontSize: '1.5rem', marginBottom: '1rem', background: 'rgba(94,45,214,0.18)', padding: '0.5rem 0.75rem', borderRadius: 8 }} aria-hidden="true">{b.emoji}</span>
+                  <span style={{ display: 'inline-flex', marginBottom: '1rem', background: 'rgba(94,45,214,0.18)', padding: '0.65rem', borderRadius: 8, color: 'var(--eyebrow-color)' }} aria-hidden="true">{b.icon}</span>
                   <p style={{ fontSize: '1rem', lineHeight: 1.65, color: 'var(--text-secondary)' }}>{b.text}</p>
                 </li>
               </Reveal>
@@ -94,7 +97,7 @@ export default function FormacionesPage() {
             {FORMATOS.map((f, i) => (
               <Reveal key={f.title} delay={i * 0.1}>
                 <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 14, padding: '1.75rem', height: '100%' }}>
-                  <span style={{ fontSize: '1.8rem', display: 'block', marginBottom: '1rem' }} aria-hidden="true">{f.icon}</span>
+                  <span style={{ display: 'inline-flex', marginBottom: '1rem', color: 'var(--eyebrow-color)' }} aria-hidden="true">{f.icon}</span>
                   <p style={{ fontFamily: 'var(--mono)', fontSize: '0.7rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--eyebrow-color)', marginBottom: '0.5rem' }}>{f.meta}</p>
                   <h3 style={{ fontFamily: 'var(--sans)', fontSize: '1.2rem', fontWeight: 700, color: '#fff', marginBottom: '0.75rem' }}>{f.title}</h3>
                   <p style={{ fontSize: '0.95rem', lineHeight: 1.65, color: 'var(--text-secondary)' }}>{f.body}</p>

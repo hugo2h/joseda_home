@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { Mic, Presentation, Users, Zap, Check } from 'lucide-react';
 import HeroBlock from '@/components/HeroBlock';
 import SectionEyebrow from '@/components/SectionEyebrow';
 import CTAButton from '@/components/CTAButton';
@@ -7,11 +8,13 @@ import Reveal from '@/components/Reveal';
 
 // ── §5.x · PONENCIAS — keynotes y charlas para congresos y jornadas ──
 
+const ICO = { strokeWidth: 1.75 } as const;
+
 const FORMATOS = [
-  { emoji: '🎤', label: 'Keynote de apertura', desc: 'Charla de 45-60 min que abre el evento con energía, datos y provocación intelectual.' },
-  { emoji: '🧩', label: 'Ponencia central', desc: 'Sesión de 30-45 min centrada en un tema concreto con demostraciones en vivo.' },
-  { emoji: '🪑', label: 'Mesa redonda', desc: 'Participación como experto en debates moderados sobre IA y educación.' },
-  { emoji: '⚡', label: 'TED-style', desc: 'Formato corto de 18 min, alta energía y mensaje claro. Ideal para eventos híbridos.' },
+  { icon: <Mic size={30} {...ICO} />, label: 'Keynote de apertura', desc: 'Charla de 45-60 min que abre el evento con energía, datos y provocación intelectual.' },
+  { icon: <Presentation size={30} {...ICO} />, label: 'Ponencia central', desc: 'Sesión de 30-45 min centrada en un tema concreto con demostraciones en vivo.' },
+  { icon: <Users size={30} {...ICO} />, label: 'Mesa redonda', desc: 'Participación como experto en debates moderados sobre IA y educación.' },
+  { icon: <Zap size={30} {...ICO} />, label: 'TED-style', desc: 'Formato corto de 18 min, alta energía y mensaje claro. Ideal para eventos híbridos.' },
 ];
 
 const TEMAS = [
@@ -70,7 +73,7 @@ export default function PonenciasPage() {
             {FORMATOS.map((f, i) => (
               <Reveal key={f.label} delay={i * 0.1}>
                 <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 14, padding: '2rem', textAlign: 'center' }}>
-                  <span style={{ fontSize: '2.2rem', display: 'block', marginBottom: '1rem' }} aria-hidden="true">{f.emoji}</span>
+                  <span style={{ display: 'inline-flex', marginBottom: '1rem', color: 'var(--eyebrow-color)' }} aria-hidden="true">{f.icon}</span>
                   <h3 style={{ fontFamily: 'var(--sans)', fontSize: '1.1rem', fontWeight: 700, color: '#fff', marginBottom: '0.65rem' }}>{f.label}</h3>
                   <p style={{ fontSize: '0.92rem', lineHeight: 1.65, color: 'var(--text-secondary)' }}>{f.desc}</p>
                 </div>
@@ -93,8 +96,8 @@ export default function PonenciasPage() {
                 <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 12, padding: '1.5rem', display: 'flex', gap: '1.25rem' }}>
                   <span style={{ fontFamily: 'var(--mono)', fontSize: '0.85rem', color: 'var(--eyebrow-color)', flexShrink: 0, paddingTop: '0.15rem' }}>{t.num}</span>
                   <div>
-                    <h3 style={{ fontFamily: 'var(--sans)', fontSize: '1rem', fontWeight: 700, color: '#fff', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <span style={{ color: 'var(--accent-blue)' }}>✓</span> {t.title}
+                    <h3 style={{ fontFamily: 'var(--sans)', fontSize: '1rem', fontWeight: 700, color: '#fff', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                      <Check size={17} strokeWidth={2.5} style={{ color: 'var(--eyebrow-color)', flexShrink: 0 }} /> {t.title}
                     </h3>
                     <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text-secondary)', margin: 0 }}>{t.desc}</p>
                   </div>

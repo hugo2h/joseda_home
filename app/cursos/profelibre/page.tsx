@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { Brain, Zap, Target, BarChart3, Palette, MessageSquare, Lock, Rocket, Trophy, Gift, Check, X } from 'lucide-react';
 import SectionEyebrow from '@/components/SectionEyebrow';
 import CTAButton from '@/components/CTAButton';
 import Reveal from '@/components/Reveal';
@@ -17,16 +18,18 @@ const isCartOpen = false;
 const CTA_LABEL  = isCartOpen ? 'Quiero entrar ahora' : 'Apúntame a la lista de espera';
 const CTA_HREF   = isCartOpen ? '/cursos/profelibre/compra' : '/lista-espera';
 
+const M = { size: 26, strokeWidth: 1.75 } as const;
+
 const MODULOS = [
-  { icon: '🧠', title: 'Fundamentos de IA para docentes', body: 'Qué es realmente la IA, cómo funciona y qué implica para tu práctica docente. Sin jerga técnica.' },
-  { icon: '⚡', title: 'Productividad docente con IA', body: 'Planificaciones, rúbricas, adaptaciones y correcciones en minutos. Recupera horas cada semana.' },
-  { icon: '🎯', title: 'Diseño de actividades con IA', body: 'Cómo integrar la IA en el diseño de actividades que desarrollen el pensamiento crítico.' },
-  { icon: '📊', title: 'Evaluación en la era de la IA', body: 'Repensar la evaluación cuando la IA puede hacer los deberes. Nuevos formatos y rúbricas.' },
-  { icon: '🎨', title: 'Creación de contenido educativo', body: 'Vídeos, presentaciones, imágenes y texto generado con IA para tus clases.' },
-  { icon: '💬', title: 'Prompting avanzado para educadores', body: 'Técnicas de prompting específicas para contextos educativos. Consigue lo que necesitas de la IA.' },
-  { icon: '🔒', title: 'Ética, privacidad y uso responsable', body: 'Marco práctico para enseñar a tus alumnos a usar la IA con responsabilidad y criterio.' },
-  { icon: '🚀', title: 'Implementación en tu centro', body: 'Cómo proponer e implementar la IA en tu claustro aunque haya escepticismo inicial.' },
-  { icon: '🏆', title: 'Tu sistema docente con IA', body: 'Integra todo lo aprendido en un sistema personal sostenible que funcione a largo plazo.' },
+  { icon: <Brain {...M} />, title: 'Fundamentos de IA para docentes', body: 'Qué es realmente la IA, cómo funciona y qué implica para tu práctica docente. Sin jerga técnica.' },
+  { icon: <Zap {...M} />, title: 'Productividad docente con IA', body: 'Planificaciones, rúbricas, adaptaciones y correcciones en minutos. Recupera horas cada semana.' },
+  { icon: <Target {...M} />, title: 'Diseño de actividades con IA', body: 'Cómo integrar la IA en el diseño de actividades que desarrollen el pensamiento crítico.' },
+  { icon: <BarChart3 {...M} />, title: 'Evaluación en la era de la IA', body: 'Repensar la evaluación cuando la IA puede hacer los deberes. Nuevos formatos y rúbricas.' },
+  { icon: <Palette {...M} />, title: 'Creación de contenido educativo', body: 'Vídeos, presentaciones, imágenes y texto generado con IA para tus clases.' },
+  { icon: <MessageSquare {...M} />, title: 'Prompting avanzado para educadores', body: 'Técnicas de prompting específicas para contextos educativos. Consigue lo que necesitas de la IA.' },
+  { icon: <Lock {...M} />, title: 'Ética, privacidad y uso responsable', body: 'Marco práctico para enseñar a tus alumnos a usar la IA con responsabilidad y criterio.' },
+  { icon: <Rocket {...M} />, title: 'Implementación en tu centro', body: 'Cómo proponer e implementar la IA en tu claustro aunque haya escepticismo inicial.' },
+  { icon: <Trophy {...M} />, title: 'Tu sistema docente con IA', body: 'Integra todo lo aprendido en un sistema personal sostenible que funcione a largo plazo.' },
 ];
 
 const TIMELINE = [
@@ -129,11 +132,13 @@ export default function ProfeLibrePage() {
             <Reveal delay={0}>
               <div style={{ background: 'var(--bg-card)', border: '2px solid var(--brand-violet)', borderRadius: 16, padding: '2rem',
                 boxShadow: '0 0 40px rgba(94,45,214,0.15)' }}>
-                <h3 style={{ fontFamily: 'var(--sans)', fontSize: '1.2rem', fontWeight: 700, color: '#fff', marginBottom: '1.25rem' }}>✅ ProfeLibre es para ti si…</h3>
+                <h3 style={{ fontFamily: 'var(--sans)', fontSize: '1.2rem', fontWeight: 700, color: '#fff', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+                  <Check size={22} strokeWidth={2.5} style={{ color: 'var(--eyebrow-color)', flexShrink: 0 }} /> ProfeLibre es para ti si…
+                </h3>
                 <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                   {['Quieres usar la IA pero no sabes por dónde empezar.', 'Sientes que pierdes demasiado tiempo en tareas administrativas.', 'Te preocupa quedarte atrás mientras tus alumnos ya usan IA.', 'Buscas formación práctica, no teoría ni generalidades.'].map((t) => (
-                    <li key={t} style={{ display: 'flex', gap: '0.65rem', fontSize: '0.95rem', lineHeight: 1.55, color: 'rgba(255,255,255,0.85)' }}>
-                      <span style={{ color: 'var(--eyebrow-color)', flexShrink: 0 }}>✓</span>{t}
+                    <li key={t} style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start', fontSize: '0.95rem', lineHeight: 1.55, color: 'rgba(255,255,255,0.85)' }}>
+                      <Check size={17} strokeWidth={2.5} style={{ color: 'var(--eyebrow-color)', flexShrink: 0, marginTop: '0.15rem' }} />{t}
                     </li>
                   ))}
                 </ul>
@@ -142,11 +147,13 @@ export default function ProfeLibrePage() {
             {/* Sin sistema */}
             <Reveal delay={0.1}>
               <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)', borderRadius: 16, padding: '2rem' }}>
-                <h3 style={{ fontFamily: 'var(--sans)', fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '1.25rem' }}>❌ No es para ti si…</h3>
+                <h3 style={{ fontFamily: 'var(--sans)', fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+                  <X size={22} strokeWidth={2.5} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} /> No es para ti si…
+                </h3>
                 <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                   {['Buscas una herramienta milagrosa que lo haga todo sola.', 'No estás dispuesto a invertir 2-3 horas semanales.', 'Ya tienes un sistema consolidado de IA en tu práctica docente.', 'Quieres un curso con mucha teoría y poca práctica.'].map((t) => (
-                    <li key={t} style={{ display: 'flex', gap: '0.65rem', fontSize: '0.95rem', lineHeight: 1.55, color: 'var(--text-secondary)' }}>
-                      <span style={{ flexShrink: 0, opacity: 0.5 }}>✗</span>{t}
+                    <li key={t} style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start', fontSize: '0.95rem', lineHeight: 1.55, color: 'var(--text-secondary)' }}>
+                      <X size={17} strokeWidth={2.5} style={{ flexShrink: 0, opacity: 0.5, marginTop: '0.15rem' }} />{t}
                     </li>
                   ))}
                 </ul>
@@ -168,7 +175,7 @@ export default function ProfeLibrePage() {
           <div style={{ background: 'linear-gradient(135deg, rgba(94,45,214,0.2) 0%, rgba(214,53,149,0.12) 100%)',
             border: '1px solid rgba(94,45,214,0.4)', borderRadius: 14, padding: '1.75rem 2rem',
             display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '1.8rem', flexShrink: 0 }}>🎁</span>
+            <span style={{ display: 'inline-flex', flexShrink: 0, color: 'var(--eyebrow-color)', marginTop: '0.15rem' }}><Gift size={26} strokeWidth={1.75} /></span>
             <div>
               <p style={{ fontFamily: 'var(--mono)', fontSize: '0.7rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--eyebrow-color)', marginBottom: '0.4rem' }}>BONUS</p>
               <h3 style={{ fontFamily: 'var(--sans)', fontSize: '1.1rem', fontWeight: 700, color: '#fff', marginBottom: '0.5rem' }}>Biblioteca de prompts para docentes</h3>
