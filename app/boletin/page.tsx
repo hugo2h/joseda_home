@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import SectionEyebrow from '@/components/SectionEyebrow';
 import CTAButton from '@/components/CTAButton';
 import Card from '@/components/Card';
@@ -36,10 +37,23 @@ export default function BoletinPage() {
     e.preventDefault();
     if (!email) return;
     setEstado('loading');
-    // TODO: reemplazar por fetch real al endpoint de Brevo
-    setTimeout(() => {
-      setEstado('ok');
-    }, 900);
+    try {
+      const res = await fetch('/api/suscribir', {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body   : JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        setEstado('ok');
+      } else {
+        const data = await res.json();
+        alert(data.error ?? 'Ha ocurrido un error. Inténtalo de nuevo.');
+        setEstado('idle');
+      }
+    } catch {
+      alert('Error de conexión. Inténtalo de nuevo.');
+      setEstado('idle');
+    }
   }
 
   return (
@@ -119,12 +133,14 @@ export default function BoletinPage() {
         <div className="container">
           <Reveal>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: 860 }}>
-              <div style={{ flexShrink: 0, width: 'min(220px, 100%)', aspectRatio: '3/4', borderRadius: 14,
-                overflow: 'hidden', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                {/* Placeholder foto — reemplazar con <Image> cuando joseda-bio.jpg esté optimizado */}
-                <div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, var(--brand-violet) 0%, var(--brand-magenta) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: '4rem' }}>👨‍🏫</span>
-                </div>
+              <div style={{ flexShrink: 0, width: 'min(260px, 100%)', aspectRatio: '3/4', borderRadius: 14,
+                overflow: 'hidden', position: 'relative', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                <Image
+                  src="/images/joseda-bio.jpg"
+                  alt="José David Pérez — formador de docentes"
+                  fill quality={90} sizes="260px"
+                  style={{ objectFit: 'cover', objectPosition: 'center 20%', transform: 'scale(1.05)' }}
+                />
               </div>
               <div>
                 <SectionEyebrow number="02" text="Quién escribe esto" />
