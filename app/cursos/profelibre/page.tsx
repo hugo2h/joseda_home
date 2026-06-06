@@ -209,13 +209,20 @@ export default function ProfeLibrePage() {
         <div style={wrap}>
           <SectionEyebrow number="06" text="Resultados" />
           <h2 style={{ ...h2s, marginBottom: 'clamp(2.5rem,6vh,4rem)', maxWidth: '28ch' }}>Números que hablan solos.</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px,1fr))', gap: '1.25rem' }}>
+          <style>{`
+            .pl-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1.25rem; }
+            .pl-results > * { height: 100%; }
+            /* La tarjeta destacada ocupa 2 columnas solo cuando hay sitio (≥600px) */
+            @media (min-width: 600px) {
+              .pl-results > :first-child { grid-column: span 2; }
+            }
+          `}</style>
+          <div className="pl-results">
             {RESULTADOS.map((r, i) => (
-              <Reveal key={r.desc} delay={i * 0.08}>
-                <div style={{ background: i === 0 ? 'linear-gradient(135deg, rgba(94,45,214,0.25), rgba(214,53,149,0.15))' : 'var(--bg-card)',
+              <Reveal key={r.desc} delay={i * 0.08} style={{ height: '100%' }}>
+                <div style={{ height: '100%', background: i === 0 ? 'linear-gradient(135deg, rgba(94,45,214,0.25), rgba(214,53,149,0.15))' : 'var(--bg-card)',
                   border: `1px solid ${i === 0 ? 'rgba(94,45,214,0.5)' : 'var(--border-subtle)'}`,
-                  borderRadius: 14, padding: '1.5rem',
-                  gridColumn: i === 0 ? 'span 2' : undefined }}>
+                  borderRadius: 14, padding: '1.5rem' }}>
                   <p style={{ fontFamily: 'var(--sans)', fontSize: i === 0 ? 'clamp(2.5rem,6vw,4rem)' : 'clamp(2rem,5vw,3rem)',
                     fontWeight: 800, letterSpacing: '-0.04em', color: '#fff', lineHeight: 1, marginBottom: '0.5rem' }}>
                     <AnimatedCounter value={r.value} prefix={r.prefix} suffix={r.suffix} />

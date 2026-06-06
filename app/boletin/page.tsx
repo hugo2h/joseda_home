@@ -61,7 +61,7 @@ export default function BoletinPage() {
   return (
     <>
       {/* HERO + FORMULARIO */}
-      <section className="section" style={{ background: 'var(--bg-primary)', minHeight: '90svh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <section className="section" style={{ background: 'var(--bg-primary)', minHeight: '95svh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div className="container" style={{ maxWidth: 680 }}>
           <SectionEyebrow text="Boletín semanal" />
           <h1 style={{ fontFamily: 'var(--sans)', fontSize: 'clamp(2.8rem,9vw,5rem)', fontWeight: 800,
@@ -135,8 +135,12 @@ export default function BoletinPage() {
       {/* 02 · QUIÉN ESCRIBE */}
       <section className="section" style={{ background: 'var(--bg-deep)' }}>
         <div className="container">
+          <style>{`
+            .quien-escribe { display: flex; flex-direction: column; gap: 2rem; max-width: 860px; align-items: flex-start; }
+            @media (min-width: 768px) { .quien-escribe { flex-direction: row; align-items: center; } }
+          `}</style>
           <Reveal>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: 860 }}>
+            <div className="quien-escribe">
               <div style={{ flexShrink: 0, width: 'min(260px, 100%)', aspectRatio: '3/4', borderRadius: 14,
                 overflow: 'hidden', position: 'relative', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -39,8 +39,8 @@ export default function ModulosScrollSpy({ modulos }: { modulos: Modulo[] }) {
   };
 
   return (
-    <div ref={containerRef} style={{ height: `${modulos.length * 85}vh`, position: 'relative' }}>
-      <div style={{ position: 'sticky', top: '4.5rem', height: 'calc(100vh - 4.5rem)', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+    <div ref={containerRef} style={{ height: `${modulos.length * 85}svh`, position: 'relative' }}>
+      <div style={{ position: 'sticky', top: '4.5rem', height: 'calc(100svh - 4.5rem)', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <div style={{ display: 'flex', gap: 'clamp(2rem,5vw,4rem)', width: '100%', maxWidth: 1280, marginInline: 'auto', paddingInline: 'clamp(1.25rem,5vw,4rem)', alignItems: 'center' }}>
 
           {/* Ruta de puntos */}
