@@ -92,33 +92,52 @@ export default function Header() {
       </div>
     </header>
 
-      {/* Overlay menú móvil — FUERA del <header> para que el backdrop-filter del
-          header no atrape su position:fixed (causaba que solo abriera arriba del todo). */}
+      {/* Menú móvil a PANTALLA COMPLETA con su propia barra (logo + X dentro).
+          Es autónomo: cubre toda la pantalla desde y=0 y la X siempre es
+          pulsable, sin depender de la posición del header (que en móvil dejaba
+          un hueco arriba y bloqueaba la X). */}
       {open && (
         <div
           style={{
             position      : 'fixed',
-            inset         : 'var(--header-h) 0 0 0',
-            zIndex        : 1001,
+            inset         : 0,
+            zIndex        : 2100,
             background    : '#0A0A0A',
             display       : 'flex',
             flexDirection : 'column',
-            padding       : '2rem clamp(1.25rem, 5vw, 4rem) 3rem',
-            gap           : '0.25rem',
+            paddingTop    : 'env(safe-area-inset-top)',
             overflowY     : 'auto',
             animation     : 'menu-in 0.3s cubic-bezier(0.22,1,0.36,1)',
           }}
         >
-          {NAV.map(({ label, href }, idx) => (
-            <Link key={href} href={href} className="menu-item" style={{ ['--d' as string]: `${idx * 0.04}s`,
-              padding: '0.95rem 0', fontSize: '1.5rem', fontWeight: 600, letterSpacing: '-0.02em',
-              color: '#fff', borderBottom: '1px solid var(--border-subtle)' }}>
-              {label}
+          {/* Barra superior del menú: logo + cerrar (alineada con el header) */}
+          <div style={{ height: 'var(--header-h)', flexShrink: 0, display: 'flex', alignItems: 'center',
+            justifyContent: 'space-between', paddingInline: 'clamp(1.25rem, 5vw, 4rem)' }}>
+            <Link href="/" aria-label="Joseda — inicio" onClick={() => setOpen(false)}
+              style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <Image src="/images/logo-joseda-white.png" alt="Joseda" width={150} height={35}
+                style={{ height: 34, width: 'auto' }} />
             </Link>
-          ))}
-          <div style={{ marginTop: '1.75rem' }}>
-            <CTAButton variant="primary" href="/boletin">Suscríbete a EDU + IA</CTAButton>
+            <button type="button" aria-label="Cerrar menú" onClick={() => setOpen(false)}
+              style={{ display: 'flex', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', padding: '0.4rem' }}>
+              <X size={28} />
+            </button>
           </div>
+
+          {/* Enlaces */}
+          <nav aria-label="Menú móvil" style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem',
+            padding: '1.5rem clamp(1.25rem, 5vw, 4rem) 3rem' }}>
+            {NAV.map(({ label, href }, idx) => (
+              <Link key={href} href={href} className="menu-item" style={{ ['--d' as string]: `${idx * 0.04}s`,
+                padding: '0.95rem 0', fontSize: '1.5rem', fontWeight: 600, letterSpacing: '-0.02em',
+                color: '#fff', borderBottom: '1px solid var(--border-subtle)' }}>
+                {label}
+              </Link>
+            ))}
+            <div style={{ marginTop: '1.75rem' }}>
+              <CTAButton variant="primary" href="/boletin">Suscríbete a EDU + IA</CTAButton>
+            </div>
+          </nav>
         </div>
       )}
 
