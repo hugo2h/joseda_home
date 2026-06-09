@@ -1,13 +1,12 @@
 'use client';
 
 /* eslint-disable @next/next/no-img-element */
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import SectionEyebrow from '@/components/SectionEyebrow';
 
-// ── 07 · TESTIMONIOS — carrusel coverflow de capturas reales (§5.2) ──
-// Capturas reales de mensajes de docentes (nombres ocultos por privacidad),
-// recogidas de jose-david.com. Tarjeta central destacada + laterales asomando.
+// ── 07 · TESTIMONIOS — "Wall of love": dos filas en marquee + lightbox (§5.2) ──
+// Capturas reales de mensajes de docentes (nombres ocultos por privacidad).
+// Pausa al pasar el ratón. Clic en una captura para ampliarla y leerla.
 const SHOTS = [
   '/images/testimonios/testimonio-01.png',
   '/images/testimonios/testimonio-02.png',
@@ -19,37 +18,37 @@ const SHOTS = [
   '/images/testimonios/testimonio-09.webp',
 ];
 
-const N = SHOTS.length;
-const AUTOPLAY_MS = 5000;
+const ROW_1 = SHOTS.slice(0, 4);
+const ROW_2 = SHOTS.slice(4);
+
+function Row({ imgs, dir, duration, onOpen }: {
+  imgs: string[]; dir: 'left' | 'right'; duration: number; onOpen: (src: string) => void;
+}) {
+  const loop = [...imgs, ...imgs];
+  return (
+    <div className="twall" data-dir={dir}>
+      <div className="twall__track" style={{ animationDuration: `${duration}s` }}>
+        {loop.map((src, i) => (
+          <button key={`${src}-${i}`} type="button" className="twall__card" onClick={() => onOpen(src)}
+            aria-label="Ampliar testimonio">
+            <img src={src} alt="Testimonio de un docente" loading="lazy" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Testimonials() {
-  const [i, setI] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const touchX = useRef<number | null>(null);
-
-  const go = useCallback((dir: number) => setI((p) => (p + dir + N) % N), []);
+  const [open, setOpen] = useState<string | null>(null);
 
   useEffect(() => {
-    if (paused) return;
-    const id = setInterval(() => setI((p) => (p + 1) % N), AUTOPLAY_MS);
-    return () => clearInterval(id);
-  }, [paused]);
-
-  const onTouchStart = (e: React.TouchEvent) => { touchX.current = e.touches[0].clientX; };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchX.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchX.current;
-    if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
-    touchX.current = null;
-  };
-
-  // Distancia circular de cada tarjeta a la activa (-N/2 … N/2)
-  const dist = (idx: number) => {
-    let d = idx - i;
-    if (d > N / 2) d -= N;
-    if (d < -N / 2) d += N;
-    return d;
-  };
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(null); };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, [open]);
 
   return (
     <section className="section" style={{ background: 'var(--bg-deep)', overflow: 'hidden' }}>
@@ -60,94 +59,60 @@ export default function Testimonials() {
           Esto cuentan quienes ya han pasado por aquí.
         </h2>
         <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginBottom: 'clamp(2.5rem, 6vh, 4rem)' }}>
-          Mensajes reales de docentes. Nombres ocultos por privacidad.
+          Mensajes reales de docentes. Nombres ocultos por privacidad · <span style={{ color: 'var(--eyebrow-color)' }}>toca una captura para ampliarla</span>.
         </p>
       </div>
 
-      {/* Carrusel coverflow (full-bleed para que asomen los laterales) */}
-      <div
-        role="group" aria-roledescription="carrusel" aria-label="Testimonios de docentes"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onFocusCapture={() => setPaused(true)}
-        onBlurCapture={() => setPaused(false)}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-        onKeyDown={(e) => { if (e.key === 'ArrowLeft') go(-1); if (e.key === 'ArrowRight') go(1); }}
-        style={{ position: 'relative' }}
-      >
-        {/* Escenario */}
-        <div style={{ position: 'relative', height: 'clamp(320px, 52vh, 440px)',
-          ['--gap' as string]: 'clamp(155px, 34vw, 300px)' }}>
-          {/* Glow de marca detrás de la tarjeta central — da profundidad (estilo godly) */}
-          <div aria-hidden="true" style={{ position: 'absolute', left: '50%', top: '50%',
-            transform: 'translate(-50%,-50%)', width: 'min(620px, 88vw)', height: '70%',
-            background: 'radial-gradient(ellipse at center, rgba(124,58,237,0.22), rgba(214,53,149,0.10) 45%, transparent 72%)',
-            filter: 'blur(40px)', pointerEvents: 'none', zIndex: 0 }} />
-          {SHOTS.map((src, idx) => {
-            const d = dist(idx);
-            const ad = Math.abs(d);
-            const visible = ad <= 1;
-            const center = d === 0;
-            return (
-              <button
-                key={src} type="button" aria-hidden={!center} tabIndex={center ? 0 : -1}
-                aria-label={center ? `Testimonio ${idx + 1}` : `Ver testimonio ${idx + 1}`}
-                onClick={() => { if (!center && visible) setI(idx); }}
-                style={{
-                  position: 'absolute', top: 0, left: '50%', margin: 0, padding: 0, border: 'none',
-                  width: 'clamp(280px, 80vw, 500px)', height: '100%',
-                  background: '#fff', borderRadius: 16, overflow: 'hidden',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: center ? 'default' : (visible ? 'pointer' : 'default'),
-                  transform: `translateX(calc(-50% + ${d} * var(--gap))) scale(${center ? 1 : 0.82})`,
-                  opacity: center ? 1 : (ad === 1 ? 0.45 : 0),
-                  filter: center ? 'none' : 'blur(1.5px)',
-                  boxShadow: center
-                    ? '0 30px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.07), 0 0 50px rgba(124,58,237,0.18)'
-                    : '0 16px 40px rgba(0,0,0,0.4)',
-                  zIndex: 30 - ad,
-                  pointerEvents: visible ? 'auto' : 'none',
-                  transition: 'transform 0.6s cubic-bezier(0.22,1,0.36,1), opacity 0.6s ease, filter 0.6s ease, box-shadow 0.6s ease',
-                }}
-              >
-                <img src={src} alt={`Testimonio de un docente (${idx + 1})`} loading={idx < 2 ? 'eager' : 'lazy'}
-                  style={{ maxWidth: '92%', maxHeight: '88%', width: 'auto', height: 'auto', objectFit: 'contain', display: 'block' }} />
-              </button>
-            );
-          })}
-
-          {/* Flechas */}
-          <button type="button" aria-label="Testimonio anterior" onClick={() => go(-1)} className="tcar-arrow" style={{ left: 'clamp(0.5rem, 3vw, 2.5rem)' }}>
-            <ChevronLeft size={22} />
-          </button>
-          <button type="button" aria-label="Testimonio siguiente" onClick={() => go(1)} className="tcar-arrow" style={{ right: 'clamp(0.5rem, 3vw, 2.5rem)' }}>
-            <ChevronRight size={22} />
-          </button>
-        </div>
-
-        {/* Puntos */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.55rem', marginTop: 'clamp(1.75rem, 4vh, 2.75rem)' }}>
-          {SHOTS.map((_, idx) => (
-            <button key={idx} type="button" aria-label={`Ir al testimonio ${idx + 1}`} aria-current={idx === i}
-              onClick={() => setI(idx)}
-              style={{ width: idx === i ? 26 : 9, height: 9, borderRadius: 9999, border: 'none', cursor: 'pointer', padding: 0,
-                background: idx === i ? 'var(--eyebrow-color)' : 'rgba(255,255,255,0.25)', transition: 'width 0.3s, background 0.3s' }} />
-          ))}
-        </div>
+      {/* Muro: dos filas en direcciones opuestas */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(0.85rem, 2vw, 1.25rem)' }}>
+        <Row imgs={ROW_1} dir="left"  duration={48} onOpen={setOpen} />
+        <Row imgs={ROW_2} dir="right" duration={58} onOpen={setOpen} />
       </div>
 
+      {/* Lightbox */}
+      {open && (
+        <div role="dialog" aria-modal="true" aria-label="Testimonio ampliado"
+          onClick={() => setOpen(null)}
+          style={{ position: 'fixed', inset: 0, zIndex: 3000, background: 'rgba(5,5,5,0.88)',
+            backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: 'clamp(1rem, 5vw, 3rem)', animation: 'tlb-in 0.25s ease' }}>
+          <img src={open} alt="Testimonio de un docente (ampliado)"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: 'min(900px, 96vw)', maxHeight: '90vh', width: 'auto', height: 'auto',
+              objectFit: 'contain', borderRadius: 14, boxShadow: '0 40px 100px rgba(0,0,0,0.7)', background: '#fff' }} />
+          <button type="button" aria-label="Cerrar" onClick={() => setOpen(null)}
+            style={{ position: 'absolute', top: 'clamp(1rem,3vw,2rem)', right: 'clamp(1rem,3vw,2rem)',
+              width: 44, height: 44, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.25)',
+              background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: '1.3rem', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
+        </div>
+      )}
+
       <style>{`
-        .tcar-arrow {
-          position: absolute; top: 50%; transform: translateY(-50%); z-index: 40;
-          width: 46px; height: 46px; border-radius: 50%; cursor: pointer;
-          display: flex; align-items: center; justify-content: center;
-          background: rgba(20,20,20,0.6); color: #fff;
-          border: 1px solid var(--border-subtle); backdrop-filter: blur(8px);
-          transition: background 0.2s, transform 0.2s;
+        @keyframes twall-left  { from { transform: translateX(0); }      to { transform: translateX(-50%); } }
+        @keyframes twall-right { from { transform: translateX(-50%); }   to { transform: translateX(0); } }
+        @keyframes tlb-in      { from { opacity: 0; } to { opacity: 1; } }
+        .twall {
+          display: flex; overflow: hidden; width: 100%;
+          -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+                  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
         }
-        .tcar-arrow:hover { background: rgba(20,20,20,0.92); transform: translateY(-50%) scale(1.08); }
-        @media (max-width: 520px) { .tcar-arrow { width: 38px; height: 38px; } }
+        .twall__track {
+          display: flex; flex-shrink: 0; gap: clamp(14px, 2vw, 24px);
+          padding-right: clamp(14px, 2vw, 24px); min-width: max-content;
+          animation: twall-left linear infinite; will-change: transform;
+        }
+        .twall[data-dir="right"] .twall__track { animation-name: twall-right; }
+        .twall:hover .twall__track { animation-play-state: paused; }
+        .twall__card {
+          height: clamp(180px, 26vh, 228px); flex-shrink: 0; padding: 0; border: none; cursor: pointer;
+          background: #fff; border-radius: 14px; overflow: hidden; display: block;
+          box-shadow: 0 14px 40px rgba(0,0,0,0.4);
+          transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
+        }
+        .twall__card:hover { transform: translateY(-5px); box-shadow: 0 22px 55px rgba(0,0,0,0.6); }
+        .twall__card img { height: 100%; width: auto; display: block; }
+        @media (prefers-reduced-motion: reduce) { .twall__track { animation: none !important; } }
       `}</style>
     </section>
   );
