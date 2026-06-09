@@ -4,9 +4,9 @@
 import { useState, useEffect } from 'react';
 import SectionEyebrow from '@/components/SectionEyebrow';
 
-// ── 07 · TESTIMONIOS — "Wall of love": dos filas en marquee + lightbox (§5.2) ──
+// ── 07 · TESTIMONIOS — fila única en movimiento continuo + lightbox (§5.2) ──
 // Capturas reales de mensajes de docentes (nombres ocultos por privacidad).
-// Pausa al pasar el ratón. Clic en una captura para ampliarla y leerla.
+// Marquee infinito que NO se detiene al pasar el ratón. Clic para ampliar y leer.
 const SHOTS = [
   '/images/testimonios/testimonio-01.png',
   '/images/testimonios/testimonio-02.png',
@@ -18,29 +18,9 @@ const SHOTS = [
   '/images/testimonios/testimonio-09.webp',
 ];
 
-const ROW_1 = SHOTS.slice(0, 4);
-const ROW_2 = SHOTS.slice(4);
-
-function Row({ imgs, dir, duration, onOpen }: {
-  imgs: string[]; dir: 'left' | 'right'; duration: number; onOpen: (src: string) => void;
-}) {
-  const loop = [...imgs, ...imgs];
-  return (
-    <div className="twall" data-dir={dir}>
-      <div className="twall__track" style={{ animationDuration: `${duration}s` }}>
-        {loop.map((src, i) => (
-          <button key={`${src}-${i}`} type="button" className="twall__card" onClick={() => onOpen(src)}
-            aria-label="Ampliar testimonio">
-            <img src={src} alt="Testimonio de un docente" loading="lazy" />
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function Testimonials() {
   const [open, setOpen] = useState<string | null>(null);
+  const loop = [...SHOTS, ...SHOTS];
 
   useEffect(() => {
     if (!open) return;
@@ -63,10 +43,16 @@ export default function Testimonials() {
         </p>
       </div>
 
-      {/* Muro: dos filas en direcciones opuestas */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(0.85rem, 2vw, 1.25rem)' }}>
-        <Row imgs={ROW_1} dir="left"  duration={48} onOpen={setOpen} />
-        <Row imgs={ROW_2} dir="right" duration={58} onOpen={setOpen} />
+      {/* Fila única en movimiento continuo */}
+      <div className="twall">
+        <div className="twall__track">
+          {loop.map((src, i) => (
+            <button key={`${src}-${i}`} type="button" className="twall__card" onClick={() => setOpen(src)}
+              aria-label="Ampliar testimonio">
+              <img src={src} alt="Testimonio de un docente" loading="lazy" />
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Lightbox */}
@@ -89,28 +75,25 @@ export default function Testimonials() {
       )}
 
       <style>{`
-        @keyframes twall-left  { from { transform: translateX(0); }      to { transform: translateX(-50%); } }
-        @keyframes twall-right { from { transform: translateX(-50%); }   to { transform: translateX(0); } }
-        @keyframes tlb-in      { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes twall-left { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes tlb-in     { from { opacity: 0; } to { opacity: 1; } }
         .twall {
           display: flex; overflow: hidden; width: 100%;
-          -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-                  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+          -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+                  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
         }
         .twall__track {
-          display: flex; flex-shrink: 0; gap: clamp(14px, 2vw, 24px);
-          padding-right: clamp(14px, 2vw, 24px); min-width: max-content;
-          animation: twall-left linear infinite; will-change: transform;
+          display: flex; flex-shrink: 0; gap: clamp(16px, 2.2vw, 28px);
+          padding-right: clamp(16px, 2.2vw, 28px); min-width: max-content;
+          animation: twall-left 55s linear infinite; will-change: transform;
         }
-        .twall[data-dir="right"] .twall__track { animation-name: twall-right; }
-        .twall:hover .twall__track { animation-play-state: paused; }
         .twall__card {
-          height: clamp(180px, 26vh, 228px); flex-shrink: 0; padding: 0; border: none; cursor: pointer;
-          background: #fff; border-radius: 14px; overflow: hidden; display: block;
-          box-shadow: 0 14px 40px rgba(0,0,0,0.4);
-          transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
+          height: clamp(240px, 40vh, 330px); flex-shrink: 0; padding: 0; border: none; cursor: pointer;
+          background: #fff; border-radius: 16px; overflow: hidden; display: block;
+          box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+          transition: box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.22,1,0.36,1);
         }
-        .twall__card:hover { transform: translateY(-5px); box-shadow: 0 22px 55px rgba(0,0,0,0.6); }
+        .twall__card:hover { transform: scale(1.025); box-shadow: 0 26px 65px rgba(0,0,0,0.6); }
         .twall__card img { height: 100%; width: auto; display: block; }
         @media (prefers-reduced-motion: reduce) { .twall__track { animation: none !important; } }
       `}</style>
