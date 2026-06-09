@@ -79,6 +79,11 @@ export default function Testimonials() {
         {/* Escenario */}
         <div style={{ position: 'relative', height: 'clamp(320px, 52vh, 440px)',
           ['--gap' as string]: 'clamp(155px, 34vw, 300px)' }}>
+          {/* Glow de marca detrás de la tarjeta central — da profundidad (estilo godly) */}
+          <div aria-hidden="true" style={{ position: 'absolute', left: '50%', top: '50%',
+            transform: 'translate(-50%,-50%)', width: 'min(620px, 88vw)', height: '70%',
+            background: 'radial-gradient(ellipse at center, rgba(124,58,237,0.22), rgba(214,53,149,0.10) 45%, transparent 72%)',
+            filter: 'blur(40px)', pointerEvents: 'none', zIndex: 0 }} />
           {SHOTS.map((src, idx) => {
             const d = dist(idx);
             const ad = Math.abs(d);
@@ -98,7 +103,9 @@ export default function Testimonials() {
                   transform: `translateX(calc(-50% + ${d} * var(--gap))) scale(${center ? 1 : 0.82})`,
                   opacity: center ? 1 : (ad === 1 ? 0.45 : 0),
                   filter: center ? 'none' : 'blur(1.5px)',
-                  boxShadow: center ? '0 30px 80px rgba(0,0,0,0.55)' : '0 16px 40px rgba(0,0,0,0.4)',
+                  boxShadow: center
+                    ? '0 30px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.07), 0 0 50px rgba(124,58,237,0.18)'
+                    : '0 16px 40px rgba(0,0,0,0.4)',
                   zIndex: 30 - ad,
                   pointerEvents: visible ? 'auto' : 'none',
                   transition: 'transform 0.6s cubic-bezier(0.22,1,0.36,1), opacity 0.6s ease, filter 0.6s ease, box-shadow 0.6s ease',
