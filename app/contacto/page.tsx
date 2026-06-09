@@ -56,14 +56,25 @@ export default function Contacto() {
   const [centro, setCentro]     = useState('');
   const [consulta, setConsulta] = useState(CONSULTAS[0]);
   const [mensaje, setMensaje]   = useState('');
+  const [estado, setEstado]     = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`[Web] ${consulta} — ${nombre || 'Contacto'}`);
-    const body = encodeURIComponent(
-      `Nombre: ${nombre}\nEmail: ${email}\nCentro / organización: ${centro}\nTipo de consulta: ${consulta}\n\n${mensaje}`,
-    );
-    window.location.href = `mailto:hola@serendipium.com?subject=${subject}&body=${body}`;
+    setEstado('loading');
+    try {
+      const res = await fetch('/api/contacto', {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body   : JSON.stringify({ nombre, email, centro, consulta, mensaje }),
+      });
+      if (res.ok) {
+        setEstado('ok');
+      } else {
+        setEstado('error');
+      }
+    } catch {
+      setEstado('error');
+    }
   };
 
   return (
@@ -121,12 +132,33 @@ export default function Contacto() {
                 required rows={5} style={{ ...inputStyle, resize: 'vertical' }} />
             </div>
 
-            <button type="submit"
-              style={{ alignSelf: 'flex-start', padding: '0.95rem 1.9rem', fontSize: '0.82rem', fontWeight: 600,
-                letterSpacing: '0.06em', textTransform: 'uppercase', color: '#0A0A0A', background: '#fff',
-                border: 'none', borderRadius: '10px', cursor: 'pointer', fontFamily: 'var(--sans)' }}>
-              Enviar →
-            </button>
+            {estado === 'ok' ? (
+              <div style={{ background: 'rgba(94,45,214,0.15)', border: '1px solid var(--brand-violet)',
+                borderRadius: '10px', padding: '1.25rem 1.5rem' }}>
+                <p style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff', marginBottom: '0.35rem' }}>
+                  ¡Mensaje enviado! ✓
+                </p>
+                <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)' }}>
+                  Gracias, {nombre || 'gracias'}. Te respondo personalmente en menos de 48 horas.
+                </p>
+              </div>
+            ) : (
+              <>
+                <button type="submit" disabled={estado === 'loading'}
+                  style={{ alignSelf: 'flex-start', padding: '0.95rem 1.9rem', fontSize: '0.82rem', fontWeight: 600,
+                    letterSpacing: '0.06em', textTransform: 'uppercase', color: '#0A0A0A', background: '#fff',
+                    border: 'none', borderRadius: '10px', cursor: estado === 'loading' ? 'default' : 'pointer',
+                    fontFamily: 'var(--sans)', opacity: estado === 'loading' ? 0.6 : 1, transition: 'opacity 0.2s' }}>
+                  {estado === 'loading' ? 'Enviando…' : 'Enviar →'}
+                </button>
+                {estado === 'error' && (
+                  <p style={{ fontSize: '0.88rem', color: '#ff8a8a' }}>
+                    No se pudo enviar. Inténtalo de nuevo o escríbeme a{' '}
+                    <a href="mailto:hola@serendipium.com" style={{ color: 'var(--link-color)', textDecoration: 'underline' }}>hola@serendipium.com</a>.
+                  </p>
+                )}
+              </>
+            )}
           </form>
 
           {/* Vía directa */}

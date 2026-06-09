@@ -70,7 +70,7 @@ export default function Header() {
           {NAV.map(({ label, href }) => {
             const active = href === '/' ? pathname === '/' : pathname.startsWith(href);
             return (
-              <Link key={href} href={href}
+              <Link key={href} href={href} className="nav-link" data-active={active || undefined}
                 style={{ fontSize: '0.85rem', fontWeight: active ? 600 : 400,
                   color: active ? '#fff' : 'rgba(255,255,255,0.62)', transition: 'color 0.2s' }}>
                 {label}
@@ -123,6 +123,19 @@ export default function Header() {
         @media (min-width: 769px) {
           .nav-desktop { display: flex !important; }
           .nav-burger  { display: none !important; }
+        }
+        /* Subrayado animado de los enlaces de navegación */
+        .nav-link { position: relative; }
+        .nav-link::after {
+          content: ''; position: absolute; left: 0; right: 0; bottom: -5px; height: 1.5px;
+          background: var(--brand-gradient); border-radius: 1px;
+          transform: scaleX(0); transform-origin: right center;
+          transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .nav-link:hover::after,
+        .nav-link[data-active]::after { transform: scaleX(1); transform-origin: left center; }
+        @media (prefers-reduced-motion: reduce) {
+          .nav-link::after { transition: none; }
         }
       `}</style>
     </header>

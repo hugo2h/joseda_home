@@ -36,8 +36,9 @@ export default function Reveal({
       ref={ref}
       style={{
         opacity   : shown ? 1 : 0,
-        transform : shown ? 'translateY(0)' : 'translateY(24px)',
-        transition: `opacity 0.7s ease ${delay}s, transform 0.7s ease ${delay}s`,
+        transform : shown ? 'translateY(0)' : 'translateY(28px)',
+        transition: `opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s`,
+        willChange: 'opacity, transform',
         ...style,
       }}
     >

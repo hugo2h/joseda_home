@@ -3,6 +3,7 @@ import './globals.css';
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import ScrollProgress from '@/components/ScrollProgress';
 
 const SITE_URL = 'https://joseda.education';
 const DESCRIPTION =
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es">
       <body className="font-sans" style={{ background: 'var(--bg-primary)' }}>
+        <ScrollProgress />
         <Header />
         <main>{children}</main>
         <Footer />

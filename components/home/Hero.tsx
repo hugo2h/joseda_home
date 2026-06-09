@@ -47,6 +47,7 @@ export default function Hero() {
           poster="/images/jd-stage.jpg"
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleEnded}
+          className="hero-video"
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: 0.85 }}
         >
           <source src="/videos/hero.mp4.mp4" type="video/mp4" />
@@ -66,7 +67,34 @@ export default function Hero() {
           background: 'radial-gradient(120% 90% at 100% 0%, rgba(124,58,237,0.22) 0%, rgba(190,24,93,0.10) 40%, transparent 70%)' }} />
       </div>
 
-      <div className="container" style={{ position: 'relative', zIndex: 1, maxWidth: '1100px' }}>
+      <style>{`
+        /* Momento wow — entrada cinematográfica escalonada del hero */
+        @keyframes hero-rise {
+          from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+          to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+        }
+        @keyframes ken-burns {
+          from { transform: scale(1.0); }
+          to   { transform: scale(1.09); }
+        }
+        @keyframes scroll-cue {
+          0%, 100% { transform: translateY(0);   opacity: 0.5; }
+          50%      { transform: translateY(7px); opacity: 1; }
+        }
+        .hero-content > * { animation: hero-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .hero-content > *:nth-child(1) { animation-delay: 0.05s; }
+        .hero-content > *:nth-child(2) { animation-delay: 0.18s; }
+        .hero-content > *:nth-child(3) { animation-delay: 0.32s; }
+        .hero-content > *:nth-child(4) { animation-delay: 0.46s; }
+        .hero-content > *:nth-child(5) { animation-delay: 0.60s; }
+        .hero-video { animation: ken-burns 22s ease-out forwards; }
+        .hero-cue   { animation: scroll-cue 1.8s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce) {
+          .hero-content > *, .hero-video, .hero-cue { animation: none !important; }
+        }
+      `}</style>
+
+      <div className="container hero-content" style={{ position: 'relative', zIndex: 1, maxWidth: '1100px' }}>
         <SectionEyebrow number="01" text="Inicio" />
 
         <h1 style={{ fontFamily: 'var(--sans)', fontSize: 'clamp(3.5rem, 14vw, 8rem)', fontWeight: 800,
@@ -88,6 +116,17 @@ export default function Hero() {
           <CTAButton variant="primary" href="/boletin">Suscríbete a EDU + IA</CTAButton>
           <CTAButton variant="secondary" href="/contacto" arrow={false}>Hablemos</CTAButton>
         </div>
+      </div>
+
+      {/* Indicador de scroll */}
+      <div aria-hidden="true" style={{ position: 'absolute', bottom: 'clamp(1.25rem, 4vh, 2.5rem)', left: '50%',
+        transform: 'translateX(-50%)', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+        <span style={{ fontFamily: 'var(--mono)', fontSize: '0.62rem', letterSpacing: '0.18em', textTransform: 'uppercase',
+          color: 'rgba(255,255,255,0.5)' }}>Scroll</span>
+        <svg className="hero-cue" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.65)"
+          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
       </div>
     </section>
   );
