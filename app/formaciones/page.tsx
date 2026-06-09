@@ -4,6 +4,7 @@ import HeroBlock from '@/components/HeroBlock';
 import SectionEyebrow from '@/components/SectionEyebrow';
 import CTAButton from '@/components/CTAButton';
 import LogoMarquee from '@/components/LogoMarquee';
+import { LOGO_ROWS } from '@/components/institutionLogos';
 import Reveal from '@/components/Reveal';
 
 // ── §5.x · FORMACIONES — B2B para centros, redes y organismos ──
@@ -22,17 +23,6 @@ const FORMATOS = [
   { icon: <CalendarDays size={28} {...ICO} />, title: 'Taller de un día', body: 'Jornada completa de 6 h con teoría, práctica guiada y propuesta de implementación.', meta: '6 h · Presencial' },
   { icon: <CalendarRange size={28} {...ICO} />, title: 'Programa trimestral', body: '4 sesiones distribuidas en un trimestre con seguimiento entre sesiones y entregables.', meta: '4 sesiones · Presencial / Mixto' },
   { icon: <School size={28} {...ICO} />, title: 'Proyecto de centro', body: 'Plan anual de formación con diagnóstico inicial, itinerario personalizado y evaluación final.', meta: 'Curso completo · A medida' },
-];
-
-const INSTITUCIONES = [
-  'ESA — Agencia Espacial Europea',
-  'ONU',
-  'Junta de Andalucía',
-  'Xunta de Galicia',
-  'CEFIRE',
-  'FUNDAE',
-  'Escuelas Católicas',
-  'Maristas',
 ];
 
 const CASOS = [
@@ -112,9 +102,13 @@ export default function FormacionesPage() {
       <section className="section" style={{ background: 'var(--bg-deep)' }}>
         <div style={{ ...wrap, marginBottom: 'clamp(2rem,5vh,3rem)' }}>
           <SectionEyebrow number="03" text="Instituciones" />
-          <h2 style={{ ...h2s, maxWidth: '28ch' }}>Han confiado en este programa.</h2>
+          <h2 style={{ ...h2s, maxWidth: '28ch' }}>Han confiado en mis formaciones.</h2>
         </div>
-        <LogoMarquee logos={INSTITUCIONES} duration={80} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(1rem, 2.5vh, 1.5rem)' }}>
+          <LogoMarquee logos={LOGO_ROWS[0]} direction="right" duration={68} />
+          <LogoMarquee logos={LOGO_ROWS[1]} direction="left"  duration={60} />
+          <LogoMarquee logos={[...LOGO_ROWS[2]]} direction="right" duration={74} />
+        </div>
       </section>
 
       {/* 04 · CASOS REALES */}

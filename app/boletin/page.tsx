@@ -15,7 +15,7 @@ const ICO = { size: 20, strokeWidth: 1.75 } as const;
 const COMPROMISOS = [
   { icon: <Clock {...ICO} />, text: 'Menos de 5 minutos de lectura.' },
   { icon: <FlaskConical {...ICO} />, text: 'Solo lo que tiene fundamento: sin hype ni tendencias vacías.' },
-  { icon: <Wrench {...ICO} />, text: 'Al menos una herramienta o técnica aplicable esta semana.' },
+  { icon: <Wrench {...ICO} />, text: 'Al menos una herramienta o técnica aplicable cada semana.' },
   { icon: <ShieldCheck {...ICO} />, text: 'Cero spam. Te puedes dar de baja cuando quieras.' },
 ];
 
@@ -108,7 +108,7 @@ export default function BoletinPage() {
             )}
             <p style={{ fontFamily: 'var(--mono)', fontSize: '0.7rem', letterSpacing: '0.04em',
               color: 'var(--text-secondary)', marginTop: '0.9rem' }}>
-              +<AnimatedCounter value={2500} /> docentes ya suscritos · Sin spam · Baja cuando quieras
+              +<AnimatedCounter value={20000} /> docentes ya suscritos · Sin spam · Baja cuando quieras
             </p>
           </div>
         </div>
@@ -175,7 +175,7 @@ export default function BoletinPage() {
               Cada semana, una idea que puedes usar el lunes.
             </h2>
             <p style={{ fontSize: '1.05rem', lineHeight: 1.65, color: 'rgba(255,255,255,0.85)', marginBottom: '2rem' }}>
-              Únete a más de 2.500 docentes que ya reciben EDU + IA.
+              Únete a más de 20.000 docentes que ya reciben EDU + IA.
             </p>
             <button onClick={scrollToForm}
               style={{ display: 'inline-flex', alignItems: 'center', gap: '0.55rem', padding: '0.95rem 1.9rem',

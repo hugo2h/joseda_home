@@ -17,7 +17,7 @@ const ICONS: Record<string, ReactNode> = {
 const NAV = [
   { label: 'Inicio',      href: '/' },
   { label: 'Sobre',       href: '/sobre-joseda' },
-  { label: 'Cursos',      href: '/cursos' },
+  { label: 'Cursos',      href: 'https://profelibre.joseda.education/' },
   { label: 'Formaciones', href: '/formaciones' },
   { label: 'Ponencias',   href: '/ponencias' },
   { label: 'Podcasts',    href: '/podcasts' },
@@ -33,9 +33,9 @@ const SOCIAL = [
 ];
 
 const LEGAL = [
-  { label: 'Aviso legal',          href: '/legal/aviso-legal' },
-  { label: 'Política de privacidad', href: '/legal/privacidad' },
-  { label: 'Cookies',              href: '/legal/cookies' },
+  { label: 'Aviso legal',            href: 'https://profelibre.joseda.education/aviso-legal' },
+  { label: 'Política de privacidad', href: 'https://profelibre.joseda.education/politica-privacidad' },
+  { label: 'Cookies',                href: 'https://profelibre.joseda.education/politica-cookies' },
 ];
 
 export default function Footer() {
@@ -67,7 +67,9 @@ export default function Footer() {
         {/* Navegación */}
         <nav aria-label="Pie" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem 1.5rem', justifyContent: 'center' }}>
           {NAV.map(({ label, href }) => (
-            <Link key={href} href={href} style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.62)' }}>{label}</Link>
+            href.startsWith('http')
+              ? <a key={href} href={href} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.62)' }}>{label}</a>
+              : <Link key={href} href={href} style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.62)' }}>{label}</Link>
           ))}
         </nav>
 
@@ -76,7 +78,8 @@ export default function Footer() {
           paddingTop: '1.75rem', borderTop: '1px solid var(--border-subtle)', width: '100%' }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', justifyContent: 'center' }}>
             {LEGAL.map(({ label, href }) => (
-              <Link key={href} href={href} style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)' }}>{label}</Link>
+              <a key={href} href={href} target="_blank" rel="noopener noreferrer"
+                style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)' }}>{label}</a>
             ))}
           </div>
           <p style={{ fontFamily: 'var(--mono)', fontSize: '0.74rem', color: 'rgba(255,255,255,0.4)' }}>

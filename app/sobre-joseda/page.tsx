@@ -51,7 +51,7 @@ export default function SobreJoseda() {
 
             <div className="about-intro__text" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <p style={{ fontSize: 'clamp(1.05rem, 2vw, 1.3rem)', lineHeight: 1.7, color: 'var(--text-secondary)' }}>
-                Soy de los que llegan a clase con la tiza y se quedan hasta las once corrigiendo en casa. Por eso
+                He sido de los que llegan a clase con la tiza y se quedan hasta las once corrigiendo en casa. Por eso
                 entiendo el agobio: lo he vivido.
               </p>
               <p style={{ fontSize: 'clamp(1.05rem, 2vw, 1.3rem)', lineHeight: 1.7, color: 'var(--text-secondary)' }}>

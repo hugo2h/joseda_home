@@ -4,6 +4,7 @@ import HeroBlock from '@/components/HeroBlock';
 import SectionEyebrow from '@/components/SectionEyebrow';
 import CTAButton from '@/components/CTAButton';
 import LogoMarquee from '@/components/LogoMarquee';
+import { LOGO_ROWS } from '@/components/institutionLogos';
 import Reveal from '@/components/Reveal';
 
 // ── §5.x · PONENCIAS — keynotes y charlas para congresos y jornadas ──
@@ -24,17 +25,6 @@ const TEMAS = [
   { num: '04', title: 'IA sin brecha digital', desc: 'Cómo integrar IA en centros con recursos limitados y docentes escépticos.' },
   { num: '05', title: 'Creatividad y IA en el aula', desc: 'Proyectos reales de creación con IA: escritura, imagen, música y código.' },
   { num: '06', title: 'Ética e IA para docentes', desc: 'Marco práctico para enseñar a los alumnos a usar la IA con criterio y responsabilidad.' },
-];
-
-const EVENTOS = [
-  'SIMO Educación',
-  'Google for Education',
-  'Escuelas Católicas',
-  'Jornadas CEFIRE',
-  'Congreso EDUTEC',
-  'Encuentros Maristas',
-  'Jornadas FUNDAE',
-  'Encuentro Docente ESA',
 ];
 
 const PASOS = [
@@ -112,9 +102,13 @@ export default function PonenciasPage() {
       <section className="section" style={{ background: 'var(--bg-deep)' }}>
         <div style={{ ...wrap, marginBottom: 'clamp(2rem,5vh,3rem)' }}>
           <SectionEyebrow number="03" text="Dónde he estado" />
-          <h2 style={{ ...h2s, maxWidth: '28ch' }}>Eventos en los que he participado.</h2>
+          <h2 style={{ ...h2s, maxWidth: '28ch' }}>Instituciones y eventos que han confiado en mí.</h2>
         </div>
-        <LogoMarquee logos={EVENTOS} direction="right" duration={45} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(1rem, 2.5vh, 1.5rem)' }}>
+          <LogoMarquee logos={LOGO_ROWS[0]} direction="left"  duration={66} />
+          <LogoMarquee logos={LOGO_ROWS[1]} direction="right" duration={58} />
+          <LogoMarquee logos={[...LOGO_ROWS[2]]} direction="left"  duration={72} />
+        </div>
       </section>
 
       {/* 04 · CÓMO FUNCIONA */}

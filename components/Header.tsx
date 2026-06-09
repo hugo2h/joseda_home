@@ -11,7 +11,7 @@ import CTAButton from './CTAButton';
 const NAV = [
   { label: 'Inicio',      href: '/' },
   { label: 'Sobre',       href: '/sobre-joseda' },
-  { label: 'Cursos',      href: '/cursos' },
+  { label: 'Cursos',      href: 'https://profelibre.joseda.education/', external: true },
   { label: 'Formaciones', href: '/formaciones' },
   { label: 'Ponencias',   href: '/ponencias' },
   { label: 'Podcasts',    href: '/podcasts' },
@@ -68,14 +68,14 @@ export default function Header() {
         {/* Nav desktop */}
         <nav aria-label="Navegación principal" className="nav-desktop"
           style={{ display: 'none', alignItems: 'center', gap: '1.4rem' }}>
-          {NAV.map(({ label, href }) => {
-            const active = href === '/' ? pathname === '/' : pathname.startsWith(href);
-            return (
-              <Link key={href} href={href} className="nav-link" data-active={active || undefined}
-                style={{ fontSize: '0.85rem', fontWeight: active ? 600 : 400,
-                  color: active ? '#fff' : 'rgba(255,255,255,0.62)', transition: 'color 0.2s' }}>
-                {label}
-              </Link>
+          {NAV.map(({ label, href, external }) => {
+            const active = external ? false : (href === '/' ? pathname === '/' : pathname.startsWith(href));
+            const css = { fontSize: '0.85rem', fontWeight: active ? 600 : 400,
+              color: active ? '#fff' : 'rgba(255,255,255,0.62)', transition: 'color 0.2s' } as const;
+            return external ? (
+              <a key={href} href={href} target="_blank" rel="noopener noreferrer" className="nav-link" style={css}>{label}</a>
+            ) : (
+              <Link key={href} href={href} className="nav-link" data-active={active || undefined} style={css}>{label}</Link>
             );
           })}
           <CTAButton variant="primary" href="/boletin" arrow={false} style={{ padding: '0.6rem 1.1rem', fontSize: '0.74rem' }}>
@@ -127,13 +127,15 @@ export default function Header() {
           {/* Enlaces */}
           <nav aria-label="Menú móvil" style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem',
             padding: '1.5rem clamp(1.25rem, 5vw, 4rem) 3rem' }}>
-            {NAV.map(({ label, href }, idx) => (
-              <Link key={href} href={href} className="menu-item" style={{ ['--d' as string]: `${idx * 0.04}s`,
-                padding: '0.95rem 0', fontSize: '1.5rem', fontWeight: 600, letterSpacing: '-0.02em',
-                color: '#fff', borderBottom: '1px solid var(--border-subtle)' }}>
-                {label}
-              </Link>
-            ))}
+            {NAV.map(({ label, href, external }, idx) => {
+              const css = { ['--d' as string]: `${idx * 0.04}s`, padding: '0.95rem 0', fontSize: '1.5rem',
+                fontWeight: 600, letterSpacing: '-0.02em', color: '#fff', borderBottom: '1px solid var(--border-subtle)' };
+              return external ? (
+                <a key={href} href={href} target="_blank" rel="noopener noreferrer" className="menu-item" style={css}>{label}</a>
+              ) : (
+                <Link key={href} href={href} className="menu-item" style={css}>{label}</Link>
+              );
+            })}
             <div style={{ marginTop: '1.75rem' }}>
               <CTAButton variant="primary" href="/boletin">Suscríbete a EDU + IA</CTAButton>
             </div>
