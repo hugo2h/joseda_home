@@ -3,13 +3,21 @@
 import { useRef } from 'react';
 import SectionEyebrow from '@/components/SectionEyebrow';
 import CTAButton from '@/components/CTAButton';
+import Magnetic from '@/components/Magnetic';
 
-// ── 01 · HERO — vídeo cinematográfico de fondo (loop seamless) + CTA (§5.2) ──
-// Réplica del manejo de vídeo del proyecto original: loop manual con fundido a
-// negro 0.6 s antes del final para que el corte del bucle no se note.
+// ── 01 · HERO — vídeo cinematográfico + interactividad al cursor (§5.2) ──
+// Vídeo en loop con fundido a negro 0.6 s antes del corte (seamless).
+// Interactividad: parallax suave del contenido, brillo que sigue al ratón,
+// letras de "JOSEDA" reactivas al hover y CTAs magnéticos.
+const TITULO = 'JOSEDA';
+
 export default function Hero() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const seamRef  = useRef<HTMLDivElement>(null);
+  const videoRef   = useRef<HTMLVideoElement>(null);
+  const seamRef    = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const glowRef    = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const rafRef     = useRef<number>(0);
 
   const handleTimeUpdate = () => {
     const v = videoRef.current;
@@ -27,8 +35,39 @@ export default function Hero() {
     if (s) requestAnimationFrame(() => { s.style.opacity = '0'; });
   };
 
+  // Parallax + brillo que sigue al cursor (throttle con rAF).
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const sec = sectionRef.current;
+    if (!sec) return;
+    const r = sec.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    const px = (x / r.width) - 0.5;   // -0.5 … 0.5
+    const py = (y / r.height) - 0.5;
+
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      if (glowRef.current) {
+        glowRef.current.style.background =
+          `radial-gradient(420px circle at ${x}px ${y}px, rgba(124,58,237,0.20), rgba(214,53,149,0.10) 40%, transparent 70%)`;
+        glowRef.current.style.opacity = '1';
+      }
+      if (contentRef.current) {
+        contentRef.current.style.transform = `translate3d(${px * -14}px, ${py * -10}px, 0)`;
+      }
+    });
+  };
+
+  const handleMouseLeave = () => {
+    if (glowRef.current) glowRef.current.style.opacity = '0';
+    if (contentRef.current) contentRef.current.style.transform = 'translate3d(0,0,0)';
+  };
+
   return (
     <section
+      ref={sectionRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       style={{
         position      : 'relative',
         minHeight     : '95svh',
@@ -39,7 +78,7 @@ export default function Hero() {
         paddingBlock  : 'clamp(3rem, 8vh, 6rem)',
       }}
     >
-      {/* Vídeo de fondo — mismo clip del proyecto original */}
+      {/* Vídeo de fondo */}
       <div aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
         <video
           ref={videoRef}
@@ -53,34 +92,31 @@ export default function Hero() {
           <source src="/videos/hero.mp4.mp4" type="video/mp4" />
         </video>
 
-        {/* Capa de crossfade — funde a negro 0.6 s en el punto de loop */}
+        {/* Crossfade del loop */}
         <div ref={seamRef} aria-hidden="true"
           style={{ position: 'absolute', inset: 0, background: '#000', opacity: 0,
             transition: 'opacity 0.6s ease', pointerEvents: 'none' }} />
 
-        {/* Velo de legibilidad (suave, deja ver el vídeo a la derecha) */}
+        {/* Velos de legibilidad */}
         <div style={{ position: 'absolute', inset: 0,
           background: 'linear-gradient(90deg, rgba(10,10,10,0.82) 0%, rgba(10,10,10,0.45) 45%, rgba(10,10,10,0.08) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0,
           background: 'linear-gradient(to top, rgba(10,10,10,0.6) 0%, transparent 40%)' }} />
-        <div style={{ position: 'absolute', inset: 0,
-          background: 'radial-gradient(120% 90% at 100% 0%, rgba(124,58,237,0.22) 0%, rgba(190,24,93,0.10) 40%, transparent 70%)' }} />
+
+        {/* Brillo que sigue al cursor (reacción tipo MAV) */}
+        <div ref={glowRef} aria-hidden="true"
+          style={{ position: 'absolute', inset: 0, opacity: 0, transition: 'opacity 0.4s ease', pointerEvents: 'none' }} />
       </div>
 
       <style>{`
-        /* Momento wow — entrada cinematográfica escalonada del hero */
         @keyframes hero-rise {
           from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
           to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
         }
-        @keyframes ken-burns {
-          from { transform: scale(1.0); }
-          to   { transform: scale(1.09); }
-        }
-        @keyframes scroll-cue {
-          0%, 100% { transform: translateY(0);   opacity: 0.5; }
-          50%      { transform: translateY(7px); opacity: 1; }
-        }
+        @keyframes ken-burns { from { transform: scale(1.0); } to { transform: scale(1.09); } }
+        @keyframes scroll-cue { 0%,100% { transform: translateY(0); opacity: 0.5; } 50% { transform: translateY(7px); opacity: 1; } }
+
+        .hero-content { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
         .hero-content > * { animation: hero-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
         .hero-content > *:nth-child(1) { animation-delay: 0.05s; }
         .hero-content > *:nth-child(2) { animation-delay: 0.18s; }
@@ -89,17 +125,31 @@ export default function Hero() {
         .hero-content > *:nth-child(5) { animation-delay: 0.60s; }
         .hero-video { animation: ken-burns 22s ease-out forwards; }
         .hero-cue   { animation: scroll-cue 1.8s ease-in-out infinite; }
+
+        /* Letras de JOSEDA reactivas al cursor */
+        .jd-letter {
+          display: inline-block; cursor: default;
+          transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease, text-shadow 0.3s ease;
+        }
+        .jd-letter:hover {
+          transform: translateY(-0.09em) scale(1.04);
+          color: var(--brand-magenta);
+          text-shadow: 0 8px 30px rgba(214,53,149,0.45);
+        }
+
         @media (prefers-reduced-motion: reduce) {
-          .hero-content > *, .hero-video, .hero-cue { animation: none !important; }
+          .hero-content, .hero-content > *, .hero-video, .hero-cue, .jd-letter { animation: none !important; transition: none !important; }
         }
       `}</style>
 
-      <div className="container hero-content" style={{ position: 'relative', zIndex: 1, maxWidth: '1100px' }}>
+      <div ref={contentRef} className="container hero-content" style={{ position: 'relative', zIndex: 1, maxWidth: '1100px' }}>
         <SectionEyebrow number="01" text="Inicio" />
 
         <h1 style={{ fontFamily: 'var(--sans)', fontSize: 'clamp(3.5rem, 14vw, 8rem)', fontWeight: 800,
           letterSpacing: '-0.05em', lineHeight: 0.92, color: '#fff', marginBottom: '0.75rem' }}>
-          JOSEDA
+          {TITULO.split('').map((ch, i) => (
+            <span key={i} className="jd-letter">{ch}</span>
+          ))}
         </h1>
 
         <h2 style={{ fontFamily: 'var(--sans)', fontSize: 'clamp(1.5rem, 4.5vw, 2.6rem)', fontWeight: 600,
@@ -113,8 +163,8 @@ export default function Hero() {
         </p>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-          <CTAButton variant="primary" href="/boletin">Suscríbete a EDU + IA</CTAButton>
-          <CTAButton variant="secondary" href="/contacto" arrow={false}>Hablemos</CTAButton>
+          <Magnetic><CTAButton variant="primary" href="/boletin">Suscríbete a EDU + IA</CTAButton></Magnetic>
+          <Magnetic><CTAButton variant="secondary" href="/contacto" arrow={false}>Hablemos</CTAButton></Magnetic>
         </div>
       </div>
 
