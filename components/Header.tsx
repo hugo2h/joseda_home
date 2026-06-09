@@ -41,6 +41,7 @@ export default function Header() {
   }, [open]);
 
   return (
+    <>
     <header
       style={{
         position      : 'sticky',
@@ -89,14 +90,16 @@ export default function Header() {
           {open ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
+    </header>
 
-      {/* Overlay menú móvil */}
+      {/* Overlay menú móvil — FUERA del <header> para que el backdrop-filter del
+          header no atrape su position:fixed (causaba que solo abriera arriba del todo). */}
       {open && (
         <div
           style={{
             position      : 'fixed',
             inset         : 'var(--header-h) 0 0 0',
-            zIndex        : 999,
+            zIndex        : 1001,
             background    : 'rgba(10,10,10,0.98)',
             backdropFilter: 'blur(8px)',
             display       : 'flex',
@@ -104,12 +107,13 @@ export default function Header() {
             padding       : '2rem clamp(1.25rem, 5vw, 4rem) 3rem',
             gap           : '0.25rem',
             overflowY     : 'auto',
+            animation     : 'menu-in 0.3s cubic-bezier(0.22,1,0.36,1)',
           }}
         >
-          {NAV.map(({ label, href }) => (
-            <Link key={href} href={href}
-              style={{ padding: '0.95rem 0', fontSize: '1.5rem', fontWeight: 600, letterSpacing: '-0.02em',
-                color: '#fff', borderBottom: '1px solid var(--border-subtle)' }}>
+          {NAV.map(({ label, href }, idx) => (
+            <Link key={href} href={href} className="menu-item" style={{ ['--d' as string]: `${idx * 0.04}s`,
+              padding: '0.95rem 0', fontSize: '1.5rem', fontWeight: 600, letterSpacing: '-0.02em',
+              color: '#fff', borderBottom: '1px solid var(--border-subtle)' }}>
               {label}
             </Link>
           ))}
@@ -134,10 +138,15 @@ export default function Header() {
         }
         .nav-link:hover::after,
         .nav-link[data-active]::after { transform: scaleX(1); transform-origin: left center; }
+        /* Entrada del menú móvil + sus items escalonados */
+        @keyframes menu-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes menu-item-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .menu-item { animation: menu-item-in 0.4s cubic-bezier(0.22,1,0.36,1) both; animation-delay: var(--d); }
         @media (prefers-reduced-motion: reduce) {
           .nav-link::after { transition: none; }
+          .menu-item { animation: none; }
         }
       `}</style>
-    </header>
+    </>
   );
 }
