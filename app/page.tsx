@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Hero         from '@/components/home/Hero';
 import TrustedBy    from '@/components/home/TrustedBy';
 import AboutTeaser  from '@/components/home/AboutTeaser';
+import Stats        from '@/components/home/Stats';
 import Manifesto    from '@/components/home/Manifesto';
 import HowIHelp     from '@/components/home/HowIHelp';
 import Newsletter   from '@/components/home/Newsletter';
@@ -38,6 +39,7 @@ export default function Home() {
       <Hero />
       <TrustedBy />
       <AboutTeaser />
+      <Stats />
       <Manifesto />
       <HowIHelp />
       <Newsletter />

@@ -1,0 +1,38 @@
+import AnimatedCounter from '@/components/AnimatedCounter';
+import Reveal from '@/components/Reveal';
+
+// ── BANDA DE CIFRAS — autoridad de un vistazo ──
+// ⚠️ Cifras a CONFIRMAR por Joseda. Edita value/prefix/suffix/label aquí.
+const STATS = [
+  { value: 15,     prefix: '+', suffix: '', label: 'Años formando docentes' },
+  { value: 20000,  prefix: '+', suffix: '', label: 'Docentes alcanzados' },
+  { value: 100000, prefix: '+', suffix: '', label: 'Comunidad en YouTube' },
+  { value: 20,     prefix: '+', suffix: '', label: 'Instituciones y organismos' },
+];
+
+export default function Stats() {
+  return (
+    <section style={{ background: 'var(--bg-deep)', paddingBlock: 'clamp(3rem, 8vh, 5.5rem)',
+      borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
+      <div className="container">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+          gap: 'clamp(2rem, 5vw, 3rem)' }}>
+          {STATS.map((s, i) => (
+            <Reveal key={s.label} delay={i * 0.1} style={{ textAlign: 'center' }}>
+              <p style={{ fontFamily: 'var(--sans)', fontSize: 'clamp(2.6rem, 7vw, 4rem)', fontWeight: 800,
+                letterSpacing: '-0.04em', lineHeight: 1, color: '#fff', marginBottom: '0.6rem',
+                background: 'var(--brand-gradient)', WebkitBackgroundClip: 'text', backgroundClip: 'text',
+                WebkitTextFillColor: 'transparent' }}>
+                <AnimatedCounter value={s.value} prefix={s.prefix} suffix={s.suffix} />
+              </p>
+              <p style={{ fontFamily: 'var(--mono)', fontSize: '0.78rem', letterSpacing: '0.06em',
+                textTransform: 'uppercase', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                {s.label}
+              </p>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
