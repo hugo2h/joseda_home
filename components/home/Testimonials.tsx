@@ -7,15 +7,17 @@ import SectionEyebrow from '@/components/SectionEyebrow';
 // ── 07 · TESTIMONIOS — fila única en movimiento continuo + lightbox (§5.2) ──
 // Capturas reales de mensajes de docentes (nombres ocultos por privacidad).
 // Marquee infinito que NO se detiene al pasar el ratón. Clic para ampliar y leer.
+// Dimensiones reales de cada captura → reservan el ancho/alto correctos al
+// instante (sin esto, en móvil las tarjetas colapsaban a 0 hasta cargar).
 const SHOTS = [
-  '/images/testimonios/testimonio-01.png',
-  '/images/testimonios/testimonio-02.png',
-  '/images/testimonios/testimonio-03.webp',
-  '/images/testimonios/testimonio-04.webp',
-  '/images/testimonios/testimonio-05.webp',
-  '/images/testimonios/testimonio-06.png',
-  '/images/testimonios/testimonio-08.webp',
-  '/images/testimonios/testimonio-09.webp',
+  { src: '/images/testimonios/testimonio-01.png',  w: 1024, h: 340 },
+  { src: '/images/testimonios/testimonio-02.png',  w: 1024, h: 627 },
+  { src: '/images/testimonios/testimonio-03.webp', w: 1024, h: 557 },
+  { src: '/images/testimonios/testimonio-04.webp', w: 1024, h: 545 },
+  { src: '/images/testimonios/testimonio-05.webp', w: 1024, h: 341 },
+  { src: '/images/testimonios/testimonio-06.png',  w: 1024, h: 660 },
+  { src: '/images/testimonios/testimonio-08.webp', w: 1024, h: 501 },
+  { src: '/images/testimonios/testimonio-09.webp', w: 1024, h: 629 },
 ];
 
 export default function Testimonials() {
@@ -46,10 +48,11 @@ export default function Testimonials() {
       {/* Fila única en movimiento continuo */}
       <div className="twall">
         <div className="twall__track">
-          {loop.map((src, i) => (
-            <button key={`${src}-${i}`} type="button" className="twall__card" onClick={() => setOpen(src)}
+          {loop.map((shot, i) => (
+            <button key={`${shot.src}-${i}`} type="button" className="twall__card" onClick={() => setOpen(shot.src)}
               aria-label="Ampliar testimonio">
-              <img src={src} alt="Testimonio de un docente" loading="lazy" />
+              <img src={shot.src} alt="Testimonio de un docente" width={shot.w} height={shot.h}
+                loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
             </button>
           ))}
         </div>
