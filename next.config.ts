@@ -15,6 +15,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // "Cursos" → landing de lanzamiento (clase en directo 8 abril), servida desde /public.
+      { source: '/cursos', destination: '/clase-en-directo.html', permanent: false },
+      // Avisos legales → web anterior de Joseda (provisional, hasta tener páginas propias).
+      { source: '/legal', destination: 'https://jose-david.com/legal/', permanent: false },
+      { source: '/legal/:path*', destination: 'https://jose-david.com/legal/', permanent: false },
+    ];
+  },
 };
 
 export default nextConfig;
