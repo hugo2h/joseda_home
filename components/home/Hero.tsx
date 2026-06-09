@@ -35,13 +35,15 @@ export default function Hero() {
     if (s) requestAnimationFrame(() => { s.style.opacity = '0'; });
   };
 
-  // Parallax + brillo que sigue al cursor (throttle con rAF).
-  const handleMouseMove = (e: React.MouseEvent) => {
+  // Parallax + brillo que sigue al puntero/dedo (throttle con rAF).
+  // Funciona tanto con ratón (desktop) como con tacto (móvil): al deslizar
+  // el dedo por el hero, el contenido se mueve y aparece el brillo.
+  const moveTo = (clientX: number, clientY: number) => {
     const sec = sectionRef.current;
     if (!sec) return;
     const r = sec.getBoundingClientRect();
-    const x = e.clientX - r.left;
-    const y = e.clientY - r.top;
+    const x = clientX - r.left;
+    const y = clientY - r.top;
     const px = (x / r.width) - 0.5;   // -0.5 … 0.5
     const py = (y / r.height) - 0.5;
 
@@ -58,7 +60,10 @@ export default function Hero() {
     });
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseMove  = (e: React.MouseEvent) => moveTo(e.clientX, e.clientY);
+  const handleTouchMove  = (e: React.TouchEvent) => { const t = e.touches[0]; if (t) moveTo(t.clientX, t.clientY); };
+
+  const reset = () => {
     if (glowRef.current) glowRef.current.style.opacity = '0';
     if (contentRef.current) contentRef.current.style.transform = 'translate3d(0,0,0)';
   };
@@ -67,7 +72,9 @@ export default function Hero() {
     <section
       ref={sectionRef}
       onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onMouseLeave={reset}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={reset}
       style={{
         position      : 'relative',
         minHeight     : '95svh',
