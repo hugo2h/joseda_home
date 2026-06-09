@@ -2,12 +2,12 @@ import AnimatedCounter from '@/components/AnimatedCounter';
 import Reveal from '@/components/Reveal';
 
 // ── BANDA DE CIFRAS — autoridad de un vistazo ──
-// ⚠️ Cifras a CONFIRMAR por Joseda. Edita value/prefix/suffix/label aquí.
+// Cifras reales (fuente: jose-david.com). Edita value/prefix/suffix/label aquí.
 const STATS = [
-  { value: 15,  prefix: '+', suffix: '',  label: 'Años formando docentes' },
-  { value: 20,  prefix: '+', suffix: 'K', label: 'Docentes alcanzados' },
-  { value: 100, prefix: '+', suffix: 'K', label: 'Comunidad en YouTube' },
-  { value: 20,  prefix: '+', suffix: '',  label: 'Instituciones y organismos' },
+  { value: 12,  prefix: '+', suffix: 'K', label: 'Docentes formados en IA' },
+  { value: 300, prefix: '+', suffix: '',  label: 'Formaciones en centros' },
+  { value: 160, prefix: '+', suffix: 'K', label: 'Suscriptores en YouTube' },
+  { value: 17,  prefix: '+', suffix: 'M', label: 'Personas alcanzadas' },
 ];
 
 export default function Stats() {
