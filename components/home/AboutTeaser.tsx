@@ -49,8 +49,8 @@ export default function AboutTeaser() {
           <div className="about03__media" style={{ position: 'relative', width: '100%', maxWidth: 360,
             aspectRatio: '3 / 4', borderRadius: '20px', overflow: 'hidden', border: '3px solid rgba(255,255,255,0.85)',
             background: 'rgba(0,0,0,0.18)', boxShadow: '0 30px 80px rgba(0,0,0,0.45)' }}>
-            <Image src="/images/jose-david-contacto.jpg" alt="Joseda dando una formación" fill quality={90}
-              sizes="(max-width: 900px) 80vw, 360px" style={{ objectFit: 'cover', objectPosition: 'center 12%' }} />
+            <Image src="/images/joseda-sobre.jpeg" alt="Joseda dando una formación a docentes" fill quality={90}
+              sizes="(max-width: 900px) 80vw, 360px" style={{ objectFit: 'cover', objectPosition: 'center 28%' }} />
           </div>
         </Reveal>
       </div>
