@@ -4,6 +4,7 @@ import { Target, Ban, Heart } from 'lucide-react';
 import SectionEyebrow from '@/components/SectionEyebrow';
 import CTAButton from '@/components/CTAButton';
 import Reveal from '@/components/Reveal';
+import AnimatedCounter from '@/components/AnimatedCounter';
 
 export const metadata: Metadata = {
   title      : 'Sobre Joseda',
@@ -12,12 +13,12 @@ export const metadata: Metadata = {
 
 // ── §5.4 · SOBRE JOSEDA (copy del documento maestro v1.2) ──
 const HITOS = [
-  'Más de 15 años aplicando tecnología e IA al aula.',
-  'Cientos de docentes formados en varias cohortes de ProfeLibre.',
-  'Google Certified Trainer · Innovator · Innovator Coach.',
-  'Premio Innovación Educativa 2019.',
-  'Ponente en SIMO, congresos universitarios y jornadas internacionales.',
-  'Creador del sistema ProfeLibre y la App ProfeLibre.',
+  { value: 15,   suffix: '+',  title: 'Años de trayectoria',           body: 'Aplicando tecnología e IA al aula real, antes de que estuviera de moda.' },
+  { value: 12,   suffix: 'K+', title: 'Docentes formados',             body: 'En varias cohortes del sistema ProfeLibre.' },
+  { value: 3,    suffix: '',   title: 'Certificaciones Google',        body: 'Trainer, Innovator e Innovator Coach oficial.' },
+  { value: 2019, suffix: '',   title: 'Premio Innovación Educativa',   body: 'Reconocimiento a la innovación en el aula.' },
+  { text: 'SIMO',              title: 'Ponente internacional',         body: 'En congresos universitarios y jornadas educativas.' },
+  { value: 300,  suffix: '+',  title: 'Formaciones en centros',        body: 'Creador del sistema y la App ProfeLibre.' },
 ];
 
 const PRINCIPIOS = [
@@ -81,14 +82,17 @@ export default function SobreJoseda() {
       <section className="section" style={{ background: 'var(--bg-deep)' }}>
         <div className="container">
           <SectionEyebrow as="h2" text="Hitos" />
-          <div style={{ display: 'grid', gap: '1rem', marginTop: '0.5rem',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
             {HITOS.map((h, idx) => (
-              <Reveal key={h} delay={idx * 0.06}>
-                <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start', background: 'var(--bg-card)',
-                  border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '1.25rem', height: '100%' }}>
-                  <span aria-hidden="true" style={{ color: 'var(--eyebrow-color)', flexShrink: 0 }}>▸</span>
-                  <p style={{ fontSize: '1rem', lineHeight: 1.5, color: 'var(--text-primary)' }}>{h}</p>
+              <Reveal key={h.title} delay={idx * 0.06}>
+                <div className="group flex flex-col items-center justify-center text-center p-8 rounded-3xl bg-zinc-900/30 border border-white/5 hover:border-purple-500/30 hover:bg-zinc-900/60 transition-all duration-300 h-full">
+                  <span className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-500 mb-4 transition-transform duration-300 group-hover:scale-110">
+                    {h.value !== undefined
+                      ? <AnimatedCounter value={h.value} suffix={h.suffix} />
+                      : h.text}
+                  </span>
+                  <h3 className="text-lg font-bold text-white mb-2">{h.title}</h3>
+                  <p className="text-zinc-400 text-sm leading-relaxed max-w-[200px]">{h.body}</p>
                 </div>
               </Reveal>
             ))}
