@@ -8,6 +8,10 @@ import { getAllPosts, formatDate } from '@/lib/blog';
 export const metadata = {
   title: 'Blog — Joseda',
   description: 'Ideas sobre IA y educación que llegan al lunes siguiente.',
+  alternates: {
+    canonical: '/blog',
+    types: { 'application/rss+xml': '/blog/rss.xml' },
+  },
 };
 
 const CATEGORIAS = ['Todos', 'IA', 'Pedagogía', 'Casos', 'Opinión'];
@@ -55,13 +59,14 @@ export default function BlogPage() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px,1fr))', gap: '1.75rem' }}>
               {posts.map((post, i) => (
-                <Reveal key={post.slug} delay={i * 0.07}>
+                <Reveal key={post.slug} delay={i * 0.07} style={{ height: '100%' }}>
                   <Card
                     meta={`${post.category} · ${formatDate(post.date)} · ${post.readingTime} min`}
                     title={post.title}
                     body={post.excerpt}
                     linkText="Leer artículo"
                     href={`/blog/${post.slug}`}
+                    center
                   />
                 </Reveal>
               ))}

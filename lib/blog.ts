@@ -19,6 +19,7 @@ export type PostMeta = {
   category: string;
   readingTime: number;
   coverImage?: string;
+  draft?: boolean;
 };
 
 export type Post = PostMeta & { contentHtml: string };
@@ -51,10 +52,13 @@ export function getAllPosts(): PostMeta[] {
       category: data.category ?? 'General',
       readingTime: data.readingTime ?? 3,
       coverImage: data.coverImage,
+      draft: data.draft ?? false,
     } satisfies PostMeta;
   });
 
-  return posts.sort((a, b) => formatDateSort(b.date) - formatDateSort(a.date));
+  return posts
+    .filter((post) => !post.draft)
+    .sort((a, b) => formatDateSort(b.date) - formatDateSort(a.date));
 }
 
 export async function getPostBySlug(slug: string): Promise<Post> {
@@ -78,11 +82,7 @@ export async function getPostBySlug(slug: string): Promise<Post> {
 }
 
 export function getAllSlugs(): string[] {
-  if (!fs.existsSync(postsDirectory)) return [];
-  return fs
-    .readdirSync(postsDirectory)
-    .filter((f) => f.endsWith('.md'))
-    .map((f) => f.replace(/\.md$/, ''));
+  return getAllPosts().map((post) => post.slug);
 }
 
 export function formatDate(dateStr: string): string {

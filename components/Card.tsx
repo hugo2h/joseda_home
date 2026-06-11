@@ -18,6 +18,7 @@ export default function Card({
   body,
   linkText,
   href,
+  center = false,
 }: {
   icon?: ReactNode;
   image?: string;
@@ -27,6 +28,7 @@ export default function Card({
   body?: string;
   linkText?: string;
   href?: string;
+  center?: boolean;
 }) {
   return (
     <article
@@ -47,7 +49,15 @@ export default function Card({
         </div>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1.5rem' }}>
+      <div style={{
+        display      : 'flex',
+        flexDirection: 'column',
+        gap          : '0.75rem',
+        padding      : '1.5rem',
+        flex         : 1,
+        textAlign    : center ? 'center' : undefined,
+        alignItems   : center ? 'center' : undefined,
+      }}>
         {icon && <div style={{ fontSize: '1.6rem', lineHeight: 1 }} aria-hidden="true">{icon}</div>}
 
         {meta && (
@@ -69,7 +79,8 @@ export default function Card({
         )}
 
         {linkText && href && (
-          <Link href={href} style={{ marginTop: '0.35rem', display: 'inline-flex', alignItems: 'center',
+          <Link href={href} style={{ marginTop: center ? 'auto' : '0.35rem', paddingTop: center ? '0.35rem' : undefined,
+            display: 'inline-flex', alignItems: 'center',
             gap: '0.4rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--accent-blue-soft)' }}>
             {linkText} <span aria-hidden="true">→</span>
           </Link>
