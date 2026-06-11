@@ -3,6 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
+import type { PostMeta, Post } from './blogTypes';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // lib/blog.ts — Capa de datos para el sistema de blog basado en ficheros .md
@@ -11,18 +12,8 @@ import html from 'remark-html';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
-export type PostMeta = {
-  slug: string;
-  title: string;
-  date: string;
-  excerpt: string;
-  category: string;
-  readingTime: number;
-  coverImage?: string;
-  draft?: boolean;
-};
-
-export type Post = PostMeta & { contentHtml: string };
+export type { PostMeta, Post };
+export { formatDate } from './blogTypes';
 
 function estimateReadingTime(htmlContent: string): number {
   const words = htmlContent.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
@@ -83,12 +74,4 @@ export async function getPostBySlug(slug: string): Promise<Post> {
 
 export function getAllSlugs(): string[] {
   return getAllPosts().map((post) => post.slug);
-}
-
-export function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('es-ES', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
 }

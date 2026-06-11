@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Script from 'next/script';
 import CTAButton from '@/components/CTAButton';
 import Card from '@/components/Card';
 import { getPostBySlug, getAllSlugs, getAllPosts, formatDate } from '@/lib/blog';
@@ -73,6 +74,31 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      {/* FONDO CON PROFUNDIDAD */}
+      <div
+        className="fixed inset-0 pointer-events-none -z-10"
+        style={{ background: 'radial-gradient(ellipse at top right, rgba(88,28,135,0.1), black 60%, black)' }}
+      />
+
+      {/* BARRA DE PROGRESO DE LECTURA */}
+      <div
+        id="reading-progress"
+        className="fixed top-0 left-0 h-1 bg-purple-500 z-50 w-full origin-left transform scale-x-0"
+      />
+      <Script
+        id="reading-progress-script"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            const bar = document.getElementById('reading-progress');
+            if (bar) bar.style.transform = \`scaleX(\${scrolled / 100})\`;
+          });`,
+        }}
+      />
+
       <article>
         {/* CABECERA */}
         <section className="section" style={{ background: 'var(--bg-primary)', paddingBottom: 0 }}>
@@ -107,20 +133,28 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
         {/* CUERPO */}
         <section style={{ background: 'var(--bg-primary)', paddingBottom: 'clamp(4rem,10vh,7rem)' }}>
-          <div className="container" style={{ maxWidth: 760 }}>
+          <div className="container border-l border-white/10" style={{ maxWidth: 1024, marginInline: 'auto', paddingLeft: 'clamp(2rem,4vw,3rem)' }}>
             <style>{`
-              [data-blog-body] h2 { font-family: var(--sans); font-size: clamp(1.4rem,3vw,1.9rem); font-weight: 700; letter-spacing: -0.025em; color: #fff; margin: 2.5rem 0 0.85rem; }
-              [data-blog-body] h3 { font-family: var(--sans); font-size: clamp(1.1rem,2vw,1.35rem); font-weight: 600; color: #fff; margin: 2rem 0 0.65rem; }
-              [data-blog-body] p  { font-size: clamp(0.98rem,1.8vw,1.08rem); line-height: 1.8; color: rgba(255,255,255,0.82); margin-bottom: 1.4rem; }
-              [data-blog-body] a  { color: var(--link-color); text-decoration: underline; text-underline-offset: 3px; }
-              [data-blog-body] ul, [data-blog-body] ol { padding-left: 1.5rem; margin-bottom: 1.4rem; }
-              [data-blog-body] li { font-size: clamp(0.98rem,1.8vw,1.08rem); line-height: 1.75; color: rgba(255,255,255,0.82); margin-bottom: 0.4rem; }
+              [data-blog-body] { counter-reset: h2counter; }
+              [data-blog-body] h2 { counter-increment: h2counter; font-family: var(--sans); font-size: clamp(1.4rem,3vw,1.9rem); font-weight: 700; letter-spacing: -0.025em; color: #fff; margin: 4rem 0 2rem; display: flex; align-items: baseline; gap: 1rem; }
+              [data-blog-body] h2::before { content: counter(h2counter, decimal-leading-zero); color: #a855f7; font-weight: 800; font-size: 1.2em; }
+              [data-blog-body] h3 { font-family: var(--sans); font-size: clamp(1.1rem,2vw,1.35rem); font-weight: 700; letter-spacing: -0.025em; color: #fff; margin: 4rem 0 2rem; }
+              [data-blog-body] p  { font-size: clamp(0.98rem,1.8vw,1.08rem); line-height: 1.35; color: #d4d4d8; margin-bottom: 2.5rem; }
+              [data-blog-body] a  { color: #c084fc; font-weight: 500; text-decoration: underline; text-underline-offset: 4px; transition: color 0.2s; }
+              [data-blog-body] a:hover { color: #d8b4fe; }
+              [data-blog-body] ul, [data-blog-body] ol { padding-left: 1.5rem; margin-bottom: 2rem; }
+              [data-blog-body] ul > li, [data-blog-body] ol > li { font-size: clamp(0.98rem,1.8vw,1.08rem); line-height: 1.75; color: #d4d4d8; margin-bottom: 1rem; }
+              [data-blog-body] ul > li::marker, [data-blog-body] ol > li::marker { color: #a855f7; }
               [data-blog-body] hr { border: none; border-top: 1px solid var(--border-subtle); margin: 2.5rem 0; }
-              [data-blog-body] blockquote { border-left: 3px solid var(--eyebrow-color); padding-left: 1.25rem; margin: 1.5rem 0; color: var(--text-secondary); font-style: italic; }
+              [data-blog-body] blockquote { border-left: 4px solid #a855f7; background: rgba(24,24,27,0.5); padding: 1.5rem; margin: 2rem 0; border-radius: 0 0.75rem 0.75rem 0; font-style: italic; color: #d4d4d8; }
               [data-blog-body] strong { color: #fff; font-weight: 700; }
-              [data-blog-body] code { font-family: var(--mono); font-size: 0.88em; background: var(--bg-card); padding: 0.15em 0.4em; border-radius: 4px; }
+              [data-blog-body] code { font-family: var(--mono); font-size: 0.88em; background: var(--bg-card); padding: 0.15em 0.4em; border-radius: 4px; color: #d4d4d8; }
             `}</style>
-            <div data-blog-body dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+            <div
+              data-blog-body
+              style={{ background: 'rgba(9,9,11,0.3)', borderRadius: '1.25rem', padding: 'clamp(1.5rem,5vw,3.5rem)' }}
+              dangerouslySetInnerHTML={{ __html: post.contentHtml }}
+            />
           </div>
         </section>
       </article>

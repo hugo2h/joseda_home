@@ -19,6 +19,7 @@ export default function Card({
   linkText,
   href,
   center = false,
+  className,
 }: {
   icon?: ReactNode;
   image?: string;
@@ -29,9 +30,11 @@ export default function Card({
   linkText?: string;
   href?: string;
   center?: boolean;
+  className?: string;
 }) {
   return (
     <article
+      className={className}
       style={{
         display      : 'flex',
         flexDirection: 'column',

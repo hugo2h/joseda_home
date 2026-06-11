@@ -39,50 +39,85 @@ export default function ModulosScrollSpy({ modulos }: { modulos: Modulo[] }) {
   };
 
   return (
-    <div ref={containerRef} style={{ height: `${modulos.length * 85}svh`, position: 'relative' }}>
-      <div style={{ position: 'sticky', top: '4.5rem', height: 'calc(100svh - 4.5rem)', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', gap: 'clamp(2rem,5vw,4rem)', width: '100%', maxWidth: 1280, marginInline: 'auto', paddingInline: 'clamp(1.25rem,5vw,4rem)', alignItems: 'center' }}>
+    <>
+      <style>{`
+        .modulos-mobile { display: none; }
+        @media (max-width: 767px) {
+          .modulos-desktop { display: none; }
+          .modulos-mobile { display: flex; }
+        }
+      `}</style>
 
-          {/* Ruta de puntos */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', flexShrink: 0, alignItems: 'center' }}>
-            {/* Línea superior */}
-            <div style={{ width: 2, flex: 1, background: 'var(--border-subtle)', minHeight: 24, borderRadius: 1 }} />
-            {modulos.map((m, i) => (
-              <button
-                key={i} type="button" onClick={() => scrollToIndex(i)} aria-label={`Ir a ${m.title}`}
-                style={{ width: i === active ? 12 : 8, height: i === active ? 12 : 8, borderRadius: '50%',
-                  background: i === active ? 'var(--eyebrow-color)' : 'var(--border-subtle)',
-                  border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', padding: 0, flexShrink: 0,
-                  boxShadow: i === active ? '0 0 10px rgba(181,159,229,0.5)' : 'none' }}
-              />
-            ))}
-            <div style={{ width: 2, flex: 1, background: 'var(--border-subtle)', minHeight: 24, borderRadius: 1 }} />
-          </div>
+      {/* Desktop/tablet: hilo con scroll-spy sticky */}
+      <div className="modulos-desktop" ref={containerRef} style={{ height: `${modulos.length * 85}svh`, position: 'relative' }}>
+        <div style={{ position: 'sticky', top: '4.5rem', height: 'calc(100svh - 4.5rem)', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', gap: 'clamp(2rem,5vw,4rem)', width: '100%', maxWidth: 1280, marginInline: 'auto', paddingInline: 'clamp(1.25rem,5vw,4rem)', alignItems: 'center' }}>
 
-          {/* Tarjeta activa */}
-          <div key={active} style={{ flex: 1, background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
-            borderRadius: 16, padding: 'clamp(1.5rem,4vw,2.5rem)',
-            animation: 'modulo-in 0.4s cubic-bezier(0.22,1,0.36,1) both' }}>
-            <style>{`@keyframes modulo-in { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:none } }`}</style>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-              <span style={{ display: 'inline-flex', background: 'rgba(94,45,214,0.18)', padding: '0.7rem', borderRadius: 10, color: 'var(--eyebrow-color)' }} aria-hidden="true">
-                {modulos[active].icon}
-              </span>
-              <span style={{ fontFamily: 'var(--mono)', fontSize: '0.72rem', letterSpacing: '0.08em',
-                textTransform: 'uppercase', color: 'var(--eyebrow-color)' }}>
-                Módulo {String(active + 1).padStart(2, '0')}
-              </span>
+            {/* Ruta de puntos */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', flexShrink: 0, alignItems: 'center' }}>
+              {/* Línea superior */}
+              <div style={{ width: 2, flex: 1, background: 'var(--border-subtle)', minHeight: 24, borderRadius: 1 }} />
+              {modulos.map((m, i) => (
+                <button
+                  key={i} type="button" onClick={() => scrollToIndex(i)} aria-label={`Ir a ${m.title}`}
+                  style={{ width: i === active ? 12 : 8, height: i === active ? 12 : 8, borderRadius: '50%',
+                    background: i === active ? 'var(--eyebrow-color)' : 'var(--border-subtle)',
+                    border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', padding: 0, flexShrink: 0,
+                    boxShadow: i === active ? '0 0 10px rgba(181,159,229,0.5)' : 'none' }}
+                />
+              ))}
+              <div style={{ width: 2, flex: 1, background: 'var(--border-subtle)', minHeight: 24, borderRadius: 1 }} />
             </div>
-            <h3 style={{ fontFamily: 'var(--sans)', fontSize: 'clamp(1.3rem,3vw,1.9rem)', fontWeight: 700,
-              letterSpacing: '-0.025em', color: '#fff', marginBottom: '0.85rem' }}>
-              {modulos[active].title}
-            </h3>
-            <p style={{ fontSize: 'clamp(0.95rem,1.6vw,1.05rem)', lineHeight: 1.7, color: 'var(--text-secondary)', maxWidth: '56ch' }}>
-              {modulos[active].body}
-            </p>
+
+            {/* Tarjeta activa */}
+            <div key={active} style={{ flex: 1, background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
+              borderRadius: 16, padding: 'clamp(1.5rem,4vw,2.5rem)',
+              animation: 'modulo-in 0.4s cubic-bezier(0.22,1,0.36,1) both' }}>
+              <style>{`@keyframes modulo-in { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:none } }`}</style>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
+                <span style={{ display: 'inline-flex', background: 'rgba(94,45,214,0.18)', padding: '0.7rem', borderRadius: 10, color: 'var(--eyebrow-color)' }} aria-hidden="true">
+                  {modulos[active].icon}
+                </span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: '0.72rem', letterSpacing: '0.08em',
+                  textTransform: 'uppercase', color: 'var(--eyebrow-color)' }}>
+                  Módulo {String(active + 1).padStart(2, '0')}
+                </span>
+              </div>
+              <h3 style={{ fontFamily: 'var(--sans)', fontSize: 'clamp(1.3rem,3vw,1.9rem)', fontWeight: 700,
+                letterSpacing: '-0.025em', color: '#fff', marginBottom: '0.85rem' }}>
+                {modulos[active].title}
+              </h3>
+              <p style={{ fontSize: 'clamp(0.95rem,1.6vw,1.05rem)', lineHeight: 1.7, color: 'var(--text-secondary)', maxWidth: '56ch' }}>
+                {modulos[active].body}
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Móvil: lista vertical simple, sin sticky ni hilo lateral */}
+      <div className="modulos-mobile" style={{ flexDirection: 'column', gap: '1.25rem', maxWidth: 1280, marginInline: 'auto', paddingInline: 'clamp(1.25rem,5vw,4rem)', paddingBlock: 'clamp(1.5rem,4vh,2.5rem)' }}>
+        {modulos.map((m, i) => (
+          <div key={i} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 16, padding: 'clamp(1.25rem,4vw,1.75rem)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+              <span style={{ display: 'inline-flex', background: 'rgba(94,45,214,0.18)', padding: '0.7rem', borderRadius: 10, color: 'var(--eyebrow-color)' }} aria-hidden="true">
+                {m.icon}
+              </span>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: '0.72rem', letterSpacing: '0.08em',
+                textTransform: 'uppercase', color: 'var(--eyebrow-color)' }}>
+                Módulo {String(i + 1).padStart(2, '0')}
+              </span>
+            </div>
+            <h3 style={{ fontFamily: 'var(--sans)', fontSize: 'clamp(1.15rem,5vw,1.4rem)', fontWeight: 700,
+              letterSpacing: '-0.025em', color: '#fff', marginBottom: '0.6rem' }}>
+              {m.title}
+            </h3>
+            <p style={{ fontSize: '0.95rem', lineHeight: 1.65, color: 'var(--text-secondary)' }}>
+              {m.body}
+            </p>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
