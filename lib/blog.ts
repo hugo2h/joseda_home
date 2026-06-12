@@ -3,6 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
+import type { PostMeta, Post } from './blogTypes';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // lib/blog.ts — Capa de datos para el sistema de blog basado en ficheros .md
@@ -11,17 +12,8 @@ import html from 'remark-html';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
-export type PostMeta = {
-  slug: string;
-  title: string;
-  date: string;
-  excerpt: string;
-  category: string;
-  readingTime: number;
-  coverImage?: string;
-};
-
-export type Post = PostMeta & { contentHtml: string };
+export type { PostMeta, Post };
+export { formatDate } from './blogTypes';
 
 function estimateReadingTime(htmlContent: string): number {
   const words = htmlContent.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
@@ -51,10 +43,13 @@ export function getAllPosts(): PostMeta[] {
       category: data.category ?? 'General',
       readingTime: data.readingTime ?? 3,
       coverImage: data.coverImage,
+      draft: data.draft ?? false,
     } satisfies PostMeta;
   });
 
-  return posts.sort((a, b) => formatDateSort(b.date) - formatDateSort(a.date));
+  return posts
+    .filter((post) => !post.draft)
+    .sort((a, b) => formatDateSort(b.date) - formatDateSort(a.date));
 }
 
 export async function getPostBySlug(slug: string): Promise<Post> {
@@ -78,17 +73,5 @@ export async function getPostBySlug(slug: string): Promise<Post> {
 }
 
 export function getAllSlugs(): string[] {
-  if (!fs.existsSync(postsDirectory)) return [];
-  return fs
-    .readdirSync(postsDirectory)
-    .filter((f) => f.endsWith('.md'))
-    .map((f) => f.replace(/\.md$/, ''));
-}
-
-export function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('es-ES', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+  return getAllPosts().map((post) => post.slug);
 }

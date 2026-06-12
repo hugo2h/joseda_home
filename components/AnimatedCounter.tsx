@@ -10,11 +10,13 @@ export default function AnimatedCounter({
   prefix = '',
   suffix = '',
   duration = 1500,
+  className,
 }: {
   value: number;
   prefix?: string;
   suffix?: string;
   duration?: number;
+  className?: string;
 }) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
@@ -44,7 +46,7 @@ export default function AnimatedCounter({
   }, [value, duration]);
 
   return (
-    <span ref={ref}>
+    <span ref={ref} className={className}>
       {prefix}{count.toLocaleString('es-ES')}{suffix}
     </span>
   );
