@@ -51,6 +51,13 @@ export default function CookieBanner() {
         animation: 'cookie-in 0.4s cubic-bezier(0.22,1,0.36,1) both' }}>
       <style>{`
         @keyframes cookie-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+        /* Botones: apilados a ancho completo en móvil; en fila en pantallas mayores */
+        .cookie-actions { display: flex; flex-direction: column; gap: 0.6rem; }
+        .cookie-actions .cookie-btn { width: 100%; justify-content: center; }
+        @media (min-width: 480px) {
+          .cookie-actions { flex-direction: row; flex-wrap: wrap; justify-content: flex-end; }
+          .cookie-actions .cookie-btn { width: auto; }
+        }
         @media (prefers-reduced-motion: reduce) { [aria-label="Aviso de cookies"] { animation: none !important; } }
       `}</style>
 
@@ -77,23 +84,23 @@ export default function CookieBanner() {
         </div>
       )}
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', justifyContent: 'flex-end' }}>
-        <button type="button" onClick={() => save({ necessary: true, analytics: false, marketing: false })}
+      <div className="cookie-actions">
+        <button type="button" className="cookie-btn" onClick={() => save({ necessary: true, analytics: false, marketing: false })}
           style={{ ...btnBase, background: 'transparent', color: '#fff', borderColor: 'rgba(255,255,255,0.35)' }}>
           Rechazar todas
         </button>
         {config ? (
-          <button type="button" onClick={() => save({ necessary: true, analytics, marketing })}
+          <button type="button" className="cookie-btn" onClick={() => save({ necessary: true, analytics, marketing })}
             style={{ ...btnBase, background: 'transparent', color: 'var(--link-color)', borderColor: 'var(--border-subtle)' }}>
             Guardar selección
           </button>
         ) : (
-          <button type="button" onClick={() => setConfig(true)}
+          <button type="button" className="cookie-btn" onClick={() => setConfig(true)}
             style={{ ...btnBase, background: 'transparent', color: 'rgba(255,255,255,0.7)', borderColor: 'var(--border-subtle)' }}>
             Configurar
           </button>
         )}
-        <button type="button" onClick={() => save({ necessary: true, analytics: true, marketing: true })}
+        <button type="button" className="cookie-btn" onClick={() => save({ necessary: true, analytics: true, marketing: true })}
           style={{ ...btnBase, background: '#fff', color: '#0A0A0A', borderColor: '#fff' }}>
           Aceptar todas
         </button>
